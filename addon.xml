@@ -22,7 +22,7 @@
 [B]1.4.0[/B]
 - Merged Hebrew translation from contributor "Eng2Heb"
 - Added ERT Play 2 and respective artwork
-- Choose 720p live stream by default to retain compatibility and simplify addon setup in both Jarvis & Krypton
+- Choose 720p live stream by default to retain compatibility and simplify addon setup in both Jarvis &amp; Krypton
 - Changed geo_loc provider
 
 [B]1.3.4[/B]
