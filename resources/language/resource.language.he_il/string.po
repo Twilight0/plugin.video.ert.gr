@@ -3,139 +3,153 @@
 # Addon id: plugin.video.ert.gr
 # Addon version: 1.0.0
 # Addon Provider: lambda
-
 msgid ""
 msgstr ""
-
+"Project-Id-Version: XBMC Addons\n"
+"Report-Msgid-Bugs-To: alanwww1@xbmc.org\n"
+"POT-Creation-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"PO-Revision-Date: 2017-10-22 11:05+0300\n"
+"Last-Translator: A. Dambledore\n"
+"Language-Team: Eng2Heb\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Language: he_IL\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+"X-Generator: Poedit 2.0.4\n"
 
 msgctxt "#32001"
 msgid "Live"
-msgstr ""
+msgstr "שידור חי"
 
 msgctxt "#32002"
 msgid "Latest"
-msgstr ""
+msgstr "אחרון"
 
 msgctxt "#32003"
 msgid "Sports"
-msgstr ""
+msgstr "ספורט"
 
 msgctxt "#32004"
 msgid "News"
-msgstr ""
+msgstr "חדשות"
 
 msgctxt "#32005"
 msgid "Information"
-msgstr ""
+msgstr "מידע"
 
 msgctxt "#32006"
 msgid "Weather"
-msgstr ""
+msgstr "מזג אוויר"
 
 msgctxt "#32007"
 msgid "Documentary"
-msgstr ""
+msgstr "תעודה"
 
 msgctxt "#32008"
 msgid "Culture"
-msgstr ""
+msgstr "תרבות"
 
 msgctxt "#32009"
 msgid "Cartoons"
-msgstr ""
+msgstr "סרטים מצויירים"
 
 msgctxt "#32010"
 msgid "Entertainment"
-msgstr ""
+msgstr "בידור"
 
 msgctxt "#32011"
 msgid "Categories"
-msgstr ""
+msgstr "‎קטגוריות"
 
 msgctxt "#32012"
 msgid "Bookmarks"
-msgstr ""
+msgstr "סימניות"
 
 msgctxt "#32021"
 msgid "ERT 1"
-msgstr ""
+msgstr "ERT 1"
 
 msgctxt "#32022"
 msgid "ERT 2"
-msgstr ""
+msgstr "ERT 2"
 
 msgctxt "#32023"
 msgid "ERT 3"
-msgstr ""
+msgstr "ERT 3"
 
 msgctxt "#32024"
 msgid "ERT World"
-msgstr ""
+msgstr "עולם ERT"
 
 msgctxt "#32025"
 msgid "ERT Play"
-msgstr ""
+msgstr "הפעל ERT"
 
 msgctxt "#32026"
 msgid "Radio"
-msgstr ""
+msgstr "רדיו"
 
 msgctxt "#32027"
 msgid "Districts' Stations"
-msgstr ""
+msgstr "Districts' Stations"
 
 msgctxt "#32028"
 msgid "Proto Programma"
-msgstr ""
+msgstr "Proto Programma"
 
 msgctxt "#32029"
 msgid "Deftero Programma"
-msgstr ""
+msgstr "Deftero Programma"
 
 msgctxt "#32030"
 msgid "Trito Programma"
-msgstr ""
+msgstr "Trito Programma"
 
 msgctxt "#32031"
 msgid "Kosmos"
-msgstr ""
+msgstr "Kosmos"
 
 msgctxt "#32032"
 msgid "H Foni tis Elladas"
-msgstr ""
+msgstr "H Foni tis Elladas"
 
 msgctxt "#32033"
 msgid "ERA Spor"
-msgstr ""
+msgstr "ERA Spor"
 
 msgctxt "#32034"
 msgid "958FM"
-msgstr ""
+msgstr "958FM"
 
 msgctxt "#32035"
 msgid "102FM"
-msgstr ""
+msgstr "102FM"
 
 msgctxt "#32036"
 msgid "Clear addon's cache"
-msgstr ""
+msgstr "נקה את המטמון של addon"
 
 msgctxt "#32037"
-msgid ""
-msgstr ""
+msgid "ERT Play 1"
+msgstr "ERT Play 2"
 
 msgctxt "#32038"
 msgid ""
 msgstr ""
 
+msgctxt "#30402"
+msgid "Success"
+msgstr "הַצלָחָה"
+
 msgctxt "#32500"
 msgid "Next..."
-msgstr ""
+msgstr "הבא..."
 
 msgctxt "#32501"
 msgid "Add to bookmarks"
-msgstr ""
+msgstr "הוסף לסימניות"
 
 msgctxt "#32502"
 msgid "Remove from bookmarks"
-msgstr ""
+msgstr "הסר מהסימניות"

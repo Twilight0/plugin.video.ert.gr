@@ -16,7 +16,6 @@
 '''
 
 import urlparse, json, re
-# noinspection PyUnresolvedReferences
 from tulip import bookmarks, directory, client, cache, control
 
 
@@ -41,7 +40,8 @@ class indexer:
         self.ert2_link = 'http://webtv.ert.gr/ert2-live/'
         self.ert3_link = 'http://webtv.ert.gr/ert3-live/'
         self.ertw_link = 'http://webtv.ert.gr/ertworld-live/'
-        self.ertp_link = 'http://webtv.ert.gr/ert-play-live/'
+        self.ertp1_link = 'http://webtv.ert.gr/ert-play-live/'
+        self.ertp2_link = 'http://webtv.ert.gr/ert-play-2-live/'
         self.radio_link = 'http://webradio.ert.gr/'
         self.district_link = 'http://webradio.ert.gr/liveradio/list.html'
 
@@ -49,87 +49,87 @@ class indexer:
 
         self.list = [
             {
-                'title': 32001,
+                'title': control.lang(32001),
                 'action': 'channels',
                 'icon': 'channels.png'
             }
             ,
             {
-                'title': 32002,
+                'title': control.lang(32002),
                 'action': 'popular',
                 'icon': 'popular.png'
             }
             ,
             {
-                'title': 32004,
+                'title': control.lang(32004),
                 'action': 'episodes',
                 'url': self.news_link,
                 'icon': 'news.png'
             }
             ,
             {
-                'title': 32005,
+                'title': control.lang(32005),
                 'action': 'episodes',
                 'url': self.info_link,
                 'icon': 'info.png'
             }
             ,
             {
-                'title': 32003,
+                'title': control.lang(32003),
                 'action': 'episodes',
                 'url': self.sports_link,
                 'icon': 'sports.png'
             }
             ,
             {
-                'title': 32006,
+                'title': control.lang(32006),
                 'action': 'episodes',
                 'url': self.weather_link,
                 'icon': 'weather.png'
             }
             ,
             {
-                'title': 32007,
+                'title': control.lang(32007),
                 'action': 'episodes',
                 'url': self.documentary_link,
                 'icon': 'documentary.png'
             }
             ,
             {
-                'title': 32008,
+                'title': control.lang(32008),
                 'action': 'episodes',
                 'url': self.culture_link,
                 'icon': 'culture.png'
             }
             ,
             {
-                'title': 32009,
+                'title': control.lang(32009),
                 'action': 'episodes',
                 'url': self.cartoons_link,
                 'icon': 'cartoons.png'
             }
             ,
             {
-                'title': 32010,
+                'title': control.lang(32010),
                 'action': 'episodes',
                 'url': self.entertainment_link,
                 'icon': 'entertainment.png'
             }
             ,
             {
-                'title': 32011,
+                'title': control.lang(32011),
                 'action': 'categories',
                 'icon': 'categories.png'
             }
             ,
             {
-                'title': 32026,
+                'title': control.lang(32026),
                 'action': 'radios',
                 'icon': 'radio.png'
             }
             ,
             {
-                'title': 32012,
+                'title': control.lang(32012),
                 'action': 'bookmarks',
                 'icon': 'bookmarks.png'
             }
@@ -179,9 +179,17 @@ class indexer:
             {
                 'title': 32025,
                 'action': 'live',
-                'url': 'ertp',
+                'url': 'ertp1',
                 'isFolder': 'False',
-                'icon': 'ertp.png'
+                'icon': 'ertp1.png'
+            }
+            ,
+            {
+                'title': 32037,
+                'action': 'live',
+                'url': 'ertp2',
+                'isFolder': 'False',
+                'icon': 'ertp2.png'
             }
         ]
 
@@ -269,9 +277,12 @@ class indexer:
         elif url == 'ertw':
             title = 'EPT World'
             # icon = 'ertw.png'
-        elif url == 'ertp':
-            title = 'EPT Play'
-            # icon = 'ertp.png'
+        elif url == 'ertp1':
+            title = 'EPT Play 1'
+            # icon = 'ertp1.png'
+        elif url == 'ertp2':
+            title = 'EPT Play 2'
+            # icon = 'ertp2.png'
 
         # logo = control.addonmedia(icon)
 
@@ -516,23 +527,19 @@ class indexer:
             link = self.ert3_link
         elif url == 'ertw':
             link = self.ertw_link
-        elif url == 'ertp':
-            link = self.ertp_link
+        elif url == 'ertp1':
+            link = self.ertp1_link
+        elif url == 'ertp2':
+            link = self.ertp2_link
 
-        html = client.request('http://www.whatismyip.com/my-ip-information/')
-
-        if 'gr.png' in html:
-            GR = True
-        else:
-            GR = False
-
+        # noinspection PyUnboundLocalVariable
         result = client.request(link)
 
         result = client.parseDOM(result, 'iframe', ret='src')[0]
 
         video = client.request(result)
 
-        if GR:
+        if 'Greece' in self.geo_loc():
 
             yt_link = client.parseDOM(video, 'iframe', ret='src')[-1]
         else:
@@ -547,7 +554,7 @@ class indexer:
 
         link = yt_resolve(vid)
 
-        stream = link[0]['url']
+        stream = [i['url'] for i in link if not 'mpd' in i['url']][0]
 
         return stream
 
@@ -562,3 +569,10 @@ class indexer:
             stream = re.compile('"(.+?radiostreaming.+?)"').findall(result)[0]
 
         return stream
+
+    @staticmethod
+    def geo_loc():
+
+        json_obj = client.request('http://freegeoip.net/json/')
+
+        return json_obj

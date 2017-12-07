@@ -1,5 +1,11 @@
+[B]1.4.0[/B]
+- Merged Hebrew translation from contributor "Eng2Heb"
+- Added ERT Play 2 and respective artwork
+- Choose 720p live stream by default to retain compatibility and simplify addon setup in both Jarvis & Krypton
+- Changed geo_loc provider
+
 [B]1.3.4[/B]
-- Cosmetics &amp; tweaks in addon.xml
+- Cosmetics & tweaks in addon.xml
 
 [B]1.3.3[/B]
 - Fixed link for documentaries

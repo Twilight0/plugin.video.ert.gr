@@ -10,132 +10,136 @@ msgstr ""
 
 msgctxt "#32001"
 msgid "Live"
-msgstr "Ζωντανά"
+msgstr ""
 
 msgctxt "#32002"
 msgid "Latest"
-msgstr "Πρόσφατα"
+msgstr ""
 
 msgctxt "#32003"
 msgid "Sports"
-msgstr "Αθλητικά"
+msgstr ""
 
 msgctxt "#32004"
 msgid "News"
-msgstr "Ειδήσεις"
+msgstr ""
 
 msgctxt "#32005"
 msgid "Information"
-msgstr "Ενημέρωση"
+msgstr ""
 
 msgctxt "#32006"
 msgid "Weather"
-msgstr "Καιρός"
+msgstr ""
 
 msgctxt "#32007"
 msgid "Documentary"
-msgstr "Ντοκιμαντέρ"
+msgstr ""
 
 msgctxt "#32008"
 msgid "Culture"
-msgstr "Πολιτισμός"
+msgstr ""
 
 msgctxt "#32009"
 msgid "Cartoons"
-msgstr "Παιδικά"
+msgstr ""
 
 msgctxt "#32010"
 msgid "Entertainment"
-msgstr "Ψυχαγωγία"
+msgstr ""
 
 msgctxt "#32011"
 msgid "Categories"
-msgstr "Κατηγορίες"
+msgstr ""
 
 msgctxt "#32012"
 msgid "Bookmarks"
-msgstr "Σελιδοδείκτες"
+msgstr ""
 
 msgctxt "#32021"
 msgid "ERT 1"
-msgstr "ΕΡΤ 1"
+msgstr ""
 
 msgctxt "#32022"
 msgid "ERT 2"
-msgstr "ΕΡΤ 2"
+msgstr ""
 
 msgctxt "#32023"
 msgid "ERT 3"
-msgstr "ΕΡΤ 3"
+msgstr ""
 
 msgctxt "#32024"
 msgid "ERT World"
-msgstr "ΕΡΤ World"
+msgstr ""
 
 msgctxt "#32025"
-msgid "ERT Play"
-msgstr "ERT Play"
+msgid "ERT Play 1"
+msgstr ""
 
 msgctxt "#32026"
 msgid "Radio"
-msgstr "Ραδιόφωνο"
+msgstr ""
 
 msgctxt "#32027"
 msgid "Districts' Stations"
-msgstr "Περιφερειακοί Σταθμοί"
+msgstr ""
 
 msgctxt "#32028"
 msgid "Proto Programma"
-msgstr "Πρώτο Πρόγραμμα"
+msgstr ""
 
 msgctxt "#32029"
 msgid "Deftero Programma"
-msgstr "Δεύτερο Πρόγραμμα"
+msgstr ""
 
 msgctxt "#32030"
 msgid "Trito Programma"
-msgstr "Τρίτο Πρόγραμμα"
+msgstr ""
 
 msgctxt "#32031"
 msgid "Kosmos"
-msgstr "Κόσμος"
+msgstr ""
 
 msgctxt "#32032"
 msgid "H Foni tis Elladas"
-msgstr "Η Φωνή της Ελλάδας"
+msgstr ""
 
 msgctxt "#32033"
 msgid "ERA Spor"
-msgstr "ΈΡΑ Σπορ"
+msgstr ""
 
 msgctxt "#32034"
 msgid "958FM"
-msgstr "958FM"
+msgstr ""
 
 msgctxt "#32035"
 msgid "102FM"
-msgstr "102FM"
+msgstr ""
 
 msgctxt "#32036"
 msgid "Clear addon's cache"
-msgstr "Καθαρισμός προσωρινής μνήμης"
+msgstr ""
 
 msgctxt "#32037"
-msgid ""
-msgstr ""
+msgid "ERT Play 2"
+msgstr "ERT Play 2"
 
 msgctxt "#32038"
 msgid ""
 msgstr ""
 
+msgctxt "#30402"
+msgid "Success"
+msgstr ""
+
 msgctxt "#32500"
 msgid "Next..."
-msgstr "Επόμενα..."
+msgstr ""
 
 msgctxt "#32501"
 msgid "Add to bookmarks"
-msgstr "Προσθήκη στους σελιδοδείκτες"
+msgstr ""
 
 msgctxt "#32502"
 msgid "Remove from bookmarks"
-msgstr "Αφαίρεση από σελιδοδείκτες"
+msgstr ""
