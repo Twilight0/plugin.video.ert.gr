@@ -1,3 +1,6 @@
+[B]1.4.1[/B]
+- Ammended live resolver point to non-dash streams (newer google url)
+
 [B]1.4.0[/B]
 - Merged Hebrew translation from contributor "Eng2Heb"
 - Added ERT Play 2 and respective artwork

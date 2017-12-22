@@ -554,7 +554,7 @@ class indexer:
 
         link = yt_resolve(vid)
 
-        stream = [i['url'] for i in link if not 'mpd' in i['url']][0]
+        stream = [i['url'] for i in link if not 'dash' in i['url']][0]
 
         return stream
 
