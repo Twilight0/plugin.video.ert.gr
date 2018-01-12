@@ -2,7 +2,7 @@
 # Addon Name: ERT Player
 # Addon id: plugin.video.ert.gr
 # Addon version: 1.0.0
-# Addon Provider: lambda
+# Addon Provider: lambda, twilight0
 
 msgid ""
 msgstr ""
@@ -122,7 +122,7 @@ msgstr ""
 
 msgctxt "#32037"
 msgid "ERT Play 2"
-msgstr "ERT Play 2"
+msgstr ""
 
 msgctxt "#32038"
 msgid ""

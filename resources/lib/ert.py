@@ -17,6 +17,8 @@
 
 import urlparse, json, re
 from tulip import bookmarks, directory, client, cache, control
+import streamlink.session
+session = streamlink.session.Streamlink()
 
 
 class indexer:
@@ -35,7 +37,7 @@ class indexer:
         self.culture_link = 'http://webtv.ert.gr/tag/politismos/'
         self.cartoons_link = 'http://webtv.ert.gr/category/paidika/'
         self.entertainment_link = 'http://webtv.ert.gr/tag/psichagogia/'
-        self.popular_link = 'http://webtv.ert.gr/feed/'
+        self.recent_link = 'http://webtv.ert.gr/feed/'
         self.ert1_link = 'http://webtv.ert.gr/ert1-live/'
         self.ert2_link = 'http://webtv.ert.gr/ert2-live/'
         self.ert3_link = 'http://webtv.ert.gr/ert3-live/'
@@ -56,8 +58,8 @@ class indexer:
             ,
             {
                 'title': control.lang(32002),
-                'action': 'popular',
-                'icon': 'popular.png'
+                'action': 'recent',
+                'icon': 'recent.png'
             }
             ,
             {
@@ -249,9 +251,9 @@ class indexer:
 
         directory.add(self.list, content='videos')
 
-    def popular(self):
+    def recent(self):
 
-        self.list = cache.get(self.popular_list, 1, self.popular_link)
+        self.list = cache.get(self.recent_list, 1, self.recent_link)
 
         if self.list is None:
             return
@@ -358,7 +360,7 @@ class indexer:
 
         return self.list
 
-    def popular_list(self, url):
+    def recent_list(self, url):
         try:
             result = client.request(url)
 
@@ -470,8 +472,7 @@ class indexer:
 
         directory.add(self.list)
 
-    @staticmethod
-    def resolve(url):
+    def resolve(self, url):
 
         try:
             referer = url
@@ -483,7 +484,7 @@ class indexer:
 
             try:
                 url = re.findall('(?:youtube.com|youtu.be)/(?:embed/|.+?\?v=|.+?\&v=|v/)([\w-]+)', url)[0]
-                url = 'plugin://plugin.video.youtube/play/?video_id=%s' % url
+                url = self.sl_session(url)
                 return url
             except:
                 pass
@@ -534,27 +535,31 @@ class indexer:
 
         # noinspection PyUnboundLocalVariable
         result = client.request(link)
-
         result = client.parseDOM(result, 'iframe', ret='src')[0]
-
         video = client.request(result)
+        yt_links = client.parseDOM(video, 'iframe', ret='src')
 
         if 'Greece' in self.geo_loc():
-
-            yt_link = client.parseDOM(video, 'iframe', ret='src')[-1]
+            yt_link = yt_links[-1]
         else:
-
-            yt_link = client.parseDOM(video, 'iframe', ret='src')[0]
+            yt_link = yt_links[0]
 
         regxpr = re.compile('(?:youtube.com|youtu.be)/(?:embed/|.+?\?v=|.+?\&v=|v/)([\w-]+)')
-
         vid = regxpr.findall(yt_link)[0]
 
-        from youtube_resolver import resolve as yt_resolve
+        stream = self.sl_session(vid)
 
-        link = yt_resolve(vid)
+        return stream
 
-        stream = [i['url'] for i in link if not 'dash' in i['url']][0]
+    @staticmethod
+    def sl_session(yt_id):
+
+        link = 'https://www.youtube.com/watch?v=' + yt_id
+
+        plugin = session.resolve_url(link)
+        streams = plugin.get_streams()
+
+        stream = streams['best'].url
 
         return stream
 

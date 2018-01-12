@@ -42,8 +42,8 @@ elif action == 'categories':
 elif action == 'episodes':
     ert.indexer().episodes(url)
 
-elif action == 'popular':
-    ert.indexer().popular()
+elif action == 'recent':
+    ert.indexer().recent()
 
 elif action == 'live':
     ert.indexer().live(url)

@@ -2,7 +2,7 @@
 # Addon Name: ERT Player
 # Addon id: plugin.video.ert.gr
 # Addon version: 1.0.0
-# Addon Provider: lambda
+# Addon Provider: lambda, twilight0
 
 msgid ""
 msgstr ""
@@ -121,8 +121,8 @@ msgid "Clear addon's cache"
 msgstr "Καθαρισμός προσωρινής μνήμης"
 
 msgctxt "#32037"
-msgid "ERT Play 1"
-msgstr "ERT Play 2"
+msgid "ERT Play 2"
+msgstr "EPT Play 2"
 
 msgctxt "#32038"
 msgid ""

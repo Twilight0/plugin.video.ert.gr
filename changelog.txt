@@ -1,3 +1,7 @@
+[B]1.5.0[/B]
+- Replaced youtube resolver with streamlink
+- Cosmetics
+
 [B]1.4.1[/B]
 - Ammended live resolver point to non-dash streams (newer google url)
 
