@@ -17,8 +17,7 @@
 
 import urlparse, json, re
 from tulip import bookmarks, directory, client, cache, control
-import streamlink.session
-session = streamlink.session.Streamlink()
+from youtube_resolver import resolve as yt_resolver
 
 
 class indexer:
@@ -484,7 +483,7 @@ class indexer:
 
             try:
                 url = re.findall('(?:youtube.com|youtu.be)/(?:embed/|.+?\?v=|.+?\&v=|v/)([\w-]+)', url)[0]
-                url = self.sl_session(url)
+                url = self.yt_session(url)
                 return url
             except:
                 pass
@@ -547,19 +546,16 @@ class indexer:
         regxpr = re.compile('(?:youtube.com|youtu.be)/(?:embed/|.+?\?v=|.+?\&v=|v/)([\w-]+)')
         vid = regxpr.findall(yt_link)[0]
 
-        stream = self.sl_session(vid)
+        stream = self.yt_session(vid)
 
         return stream
 
     @staticmethod
-    def sl_session(yt_id):
+    def yt_session(yt_id):
 
-        link = 'https://www.youtube.com/watch?v=' + yt_id
+        streams = yt_resolver(yt_id)
 
-        plugin = session.resolve_url(link)
-        streams = plugin.get_streams()
-
-        stream = streams['best'].url
+        stream = [s for s in streams if 'dash' not in s['title'].lower()][0]['url']
 
         return stream
 
