@@ -14,10 +14,9 @@
     You should have received a copy of the GNU General Public License
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 '''
-
+from __future__ import absolute_import
 
 from resources.lib import ert, action, url
-
 
 if action is None:
     ert.indexer().root()
@@ -57,9 +56,16 @@ elif action == 'radio':
 elif action == 'district':
     ert.indexer().district()
 
+elif action == 'search':
+    ert.indexer().search()
+
 elif action == 'play':
     ert.indexer().play(url)
 
 elif action == 'cache_clear':
     from tulip import cache
     cache.clear(withyes=False)
+
+elif action == 'yt_settings':
+    from tulip import control
+    control.openSettings(id='plugin.video.youtube')

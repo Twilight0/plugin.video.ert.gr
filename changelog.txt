@@ -1,3 +1,7 @@
+[B]1.6.0[/B]
+- Tweaked live streams' resolver
+- Preliminary support for Python 3
+
 [B]1.5.1[/B]
 - Reverted to utilize youtube_resolver (former behaviour, only a little different)
 

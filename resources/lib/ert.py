@@ -14,9 +14,11 @@
     You should have received a copy of the GNU General Public License
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 '''
+from __future__ import absolute_import
 
-import urlparse, json, re
+import json, re
 from tulip import bookmarks, directory, client, cache, control
+from tulip.compat import urljoin, iteritems, parse_qs, urlparse  #, quote_plus
 from youtube_resolver import resolve as yt_resolver
 
 
@@ -27,7 +29,7 @@ class indexer:
         self.list = []
         self.base_link = 'http://webtv.ert.gr'
         self.categories_link = 'http://webtv.ert.gr/programma/'
-        self.episodes_link = 'http://webtv.ert.gr/?cat=%s'
+        self.episodes_link = 'http://webtv.ert.gr/?cat={}'
         self.sports_link = 'http://webtv.ert.gr/category/athlitika/'
         self.news_link = 'http://webtv.ert.gr/category/eidiseis/'
         self.info_link = 'http://webtv.ert.gr/category/ert-enimerosi/'
@@ -45,6 +47,7 @@ class indexer:
         self.ertp2_link = 'http://webtv.ert.gr/ert-play-2-live/'
         self.radio_link = 'http://webradio.ert.gr/'
         self.district_link = 'http://webradio.ert.gr/liveradio/list.html'
+        # self.search_link = 'http://www.ert.gr/search/{}/'  # feed/rss2/'
 
     def root(self):
 
@@ -134,11 +137,19 @@ class indexer:
                 'action': 'bookmarks',
                 'icon': 'bookmarks.png'
             }
+            # Not implemented yet:
+            # ,
+            # {
+            #     'title': control.lang(32013),
+            #     'action': 'search',
+            #     'icon': 'search.png'
+            # }
         ]
 
         for item in self.list:
             cache_clear = {'title': 32036, 'query': {'action': 'cache_clear'}}
-            item.update({'cm': [cache_clear]})
+            yt_settings = {'title': 32038, 'query': {'action': 'yt_settings'}}
+            item.update({'cm': [cache_clear, yt_settings]})
 
         directory.add(self.list, content='videos')
 
@@ -208,7 +219,7 @@ class indexer:
             return
 
         for i in self.list:
-            bookmark = dict((k, v) for k, v in i.iteritems() if not k == 'next')
+            bookmark = dict((k, v) for k, v in iteritems(i) if not k == 'next')
             bookmark['delbookmark'] = i['url']
             i.update({'cm': [{'title': 32502, 'query': {'action': 'deleteBookmark', 'url': json.dumps(bookmark)}}]})
 
@@ -227,7 +238,7 @@ class indexer:
             i.update({'action': 'episodes'})
 
         for i in self.list:
-            bookmark = dict((k, v) for k, v in i.iteritems() if not k == 'next')
+            bookmark = dict((k, v) for k, v in iteritems(i) if not k == 'next')
             bookmark['bookmark'] = i['url']
             i.update({'cm': [{'title': 32501, 'query': {'action': 'addBookmark', 'url': json.dumps(bookmark)}}]})
 
@@ -261,6 +272,31 @@ class indexer:
 
         directory.add(self.list, content='videos')
 
+    # def search(self):
+    #
+    #     s = control.dialog.input(control.name())
+    #
+    #     if s:
+    #
+    #         search = quote_plus(s)
+    #         url = self.search_link.format(search)
+    #
+    #     else:
+    #
+    #         return
+    #
+    #     self.list = cache.get(self.recent_list, 6, url)
+    #
+    #     for i in self.list:
+    #         i.update({'action': 'play', 'isFolder': 'False'})
+    #
+    #     for i in self.list:
+    #         bookmark = dict((k, v) for k, v in iteritems(i) if not k == 'next')
+    #         bookmark['bookmark'] = i['url']
+    #         i.update({'cm': [{'title': 32501, 'query': {'action': 'addBookmark', 'url': json.dumps(bookmark)}}]})
+    #
+    #     directory.add(self.list, content='videos')
+
     def play(self, url):
         directory.resolve(self.resolve(url))
 
@@ -287,7 +323,11 @@ class indexer:
 
         # logo = control.addonmedia(icon)
 
-        directory.resolve(self.resolve_live(url), meta={'title': title})
+        stream = self.resolve_live(url)
+
+        dash = '.mpd' or 'dash' in stream
+
+        directory.resolve(stream, meta={'title': title}, dash=dash)
 
     def radio(self, url):
         directory.resolve(self.resolve_radio(url))
@@ -309,7 +349,7 @@ class indexer:
                 title = title.encode('utf-8')
 
                 url = client.parseDOM(item, 'option', ret='value', attrs={'class': 'level-[1-9]'})[0]
-                url = self.episodes_link % url
+                url = self.episodes_link.format(url)
                 url = client.replaceHTMLCodes(url)
                 url = url.encode('utf-8')
 
@@ -331,7 +371,7 @@ class indexer:
 
         try:
             next = client.parseDOM(result, 'a', ret='href', attrs={'rel': 'next'})[0]
-            next = urlparse.urljoin(self.base_link, next)
+            next = urljoin(self.base_link, next)
             next = client.replaceHTMLCodes(next)
             next = next.encode('utf-8')
         except:
@@ -344,12 +384,12 @@ class indexer:
                 title = title.encode('utf-8')
 
                 url = client.parseDOM(item, 'a', ret='href')[0]
-                url = urlparse.urljoin(self.base_link, url)
+                url = urljoin(self.base_link, url)
                 url = client.replaceHTMLCodes(url)
                 url = url.encode('utf-8')
 
                 image = client.parseDOM(item, 'img', ret='src')[0]
-                image = urlparse.urljoin(self.base_link, image)
+                image = urljoin(self.base_link, image)
                 image = client.replaceHTMLCodes(image)
                 image = image.encode('utf-8')
 
@@ -374,12 +414,12 @@ class indexer:
                 title = title.encode('utf-8')
 
                 url = client.parseDOM(item, 'link')[0]
-                url = urlparse.urljoin(self.base_link, url)
+                url = urljoin(self.base_link, url)
                 url = client.replaceHTMLCodes(url)
                 url = url.encode('utf-8')
 
                 image = client.parseDOM(item, 'img', ret='src')[0]
-                image = urlparse.urljoin(self.base_link, image)
+                image = urljoin(self.base_link, image)
                 image = client.replaceHTMLCodes(image)
                 image = image.encode('utf-8')
 
@@ -425,7 +465,7 @@ class indexer:
             return
 
         for i in self.list:
-            bookmark = dict((k, v) for k, v in i.iteritems() if not k == 'next')
+            bookmark = dict((k, v) for k, v in iteritems(i) if not k == 'next')
             bookmark['bookmark'] = i['url']
             i.update({'cm': [{'title': 32501, 'query': {'action': 'addBookmark', 'url': json.dumps(bookmark)}}]})
 
@@ -434,8 +474,10 @@ class indexer:
     def district_list(self):
 
         try:
-
-            result = client.request(self.district_link).decode('windows-1253')
+            try:
+                result = client.request(self.district_link).decode('windows-1253')
+            except AttributeError:
+                result = client.request(self.district_link)
             radios = client.parseDOM(result, 'td')
             radios = [foo for foo in radios if foo]
 
@@ -465,7 +507,7 @@ class indexer:
             i.update({'action': 'radio', 'isFolder': 'False'})
 
         for i in self.list:
-            bookmark = dict((k, v) for k, v in i.iteritems() if not k == 'next')
+            bookmark = dict((k, v) for k, v in iteritems(i) if not k == 'next')
             bookmark['bookmark'] = i['url']
             i.update({'cm': [{'title': 32501, 'query': {'action': 'addBookmark', 'url': json.dumps(bookmark)}}]})
 
@@ -480,6 +522,11 @@ class indexer:
 
             url = client.parseDOM(result, 'div', attrs={'class': 'play.+?'})[0]
             url = client.parseDOM(url, 'iframe', ret='src')[0]
+            if not url:
+                url = client.parseDOM(result, 'iframe', ret='src')[0]
+                url = client.request(url)
+                url = client.parseDOM(url, 'iframe', ret='src')[0]
+                url = self.yt_session(url)
 
             try:
                 url = re.findall('(?:youtube.com|youtu.be)/(?:embed/|.+?\?v=|.+?\&v=|v/)([\w-]+)', url)[0]
@@ -491,8 +538,8 @@ class indexer:
             try:
                 if not 'ert-archives.gr' in url:
                     raise Exception()
-                url = urlparse.parse_qs(urlparse.urlparse(url).query)['tid'][0]
-                url = 'http://www.ert-archives.gr/V3/media.hFLV?tid=%s' % url
+                url = parse_qs(urlparse(url).query)['tid'][0]
+                url = 'http://www.ert-archives.gr/V3/media.hFLV?tid={}'.format(url)
                 return url
             except:
                 pass
@@ -536,7 +583,14 @@ class indexer:
         result = client.request(link)
         result = client.parseDOM(result, 'iframe', ret='src')[0]
         video = client.request(result)
-        yt_links = client.parseDOM(video, 'iframe', ret='src')
+        try:
+            yt_links = client.parseDOM(video, 'iframe', ret='src')
+            if not result:
+                raise IndexError
+        except IndexError:
+            result = client.parseDOM(video, 'script', attrs={'type': 'text/javascript'})[0]
+            result = re.search(r'HLSLink = \'(.+?)\'', result).group(1)
+            return result
 
         if 'Greece' in self.geo_loc():
             yt_link = yt_links[-1]
@@ -555,7 +609,7 @@ class indexer:
 
         streams = yt_resolver(yt_id)
 
-        stream = [s for s in streams if 'dash' not in s['title'].lower()][0]['url']
+        stream = streams[0]['url']
 
         return stream
 

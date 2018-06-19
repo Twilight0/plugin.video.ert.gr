@@ -56,6 +56,10 @@ msgctxt "#32012"
 msgid "Bookmarks"
 msgstr "Σελιδοδείκτες"
 
+msgctxt "#32013"
+msgid "Search"
+msgstr "Αναζήτηση"
+
 msgctxt "#32021"
 msgid "ERT 1"
 msgstr "ΕΡΤ 1"
@@ -125,8 +129,8 @@ msgid "ERT Play 2"
 msgstr "EPT Play 2"
 
 msgctxt "#32038"
-msgid ""
-msgstr ""
+msgid "Open Youtube settings"
+msgstr "Άνοιγμα ρυθμίσεων Youtube"
 
 msgctxt "#30402"
 msgid "Success"

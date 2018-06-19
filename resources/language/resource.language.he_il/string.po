@@ -56,6 +56,10 @@ msgctxt "#32012"
 msgid "Bookmarks"
 msgstr "סימניות"
 
+msgctxt "#32013"
+msgid "Search"
+msgstr "לְחַפֵּשׂ"
+
 msgctxt "#32021"
 msgid "ERT 1"
 msgstr "ERT 1"
@@ -125,8 +129,8 @@ msgid "ERT Play 2"
 msgstr "ERT Play 2"
 
 msgctxt "#32038"
-msgid ""
-msgstr ""
+msgid "Open Youtube settings"
+msgstr "פתח את הגדרות YouTube"
 
 msgctxt "#30402"
 msgid "Success"

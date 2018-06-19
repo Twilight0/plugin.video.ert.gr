@@ -56,6 +56,10 @@ msgctxt "#32012"
 msgid "Bookmarks"
 msgstr ""
 
+msgctxt "#32013"
+msgid "Search"
+msgstr ""
+
 msgctxt "#32021"
 msgid "ERT 1"
 msgstr ""
@@ -125,7 +129,7 @@ msgid "ERT Play 2"
 msgstr ""
 
 msgctxt "#32038"
-msgid ""
+msgid "Open Youtube settings"
 msgstr ""
 
 msgctxt "#30402"

@@ -15,26 +15,25 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 '''
 
-# noinspection PyUnresolvedReferences
-import sys, urlparse, xbmc
+from __future__ import absolute_import
 
-syshandle = int(sys.argv[1])
-sysaddon = sys.argv[0]
-params = dict(urlparse.parse_qsl(sys.argv[2].replace('?','')))
+from sys import argv
+from tulip.compat import parse_qsl
+from tulip.control import infoLabel
+from resources.lib import ert
+
+syshandle = int(argv[1])
+sysaddon = argv[0]
+params = dict(parse_qsl(argv[2].replace('?','')))
 
 ########################################################################################################################
 
 action = params.get('action')
 url = params.get('url')
-content = params.get('content_type')
-image = params.get('image')
-name = params.get('name')
-title = params.get('title')
 
 ########################################################################################################################
 
-fp = xbmc.getInfoLabel('Container.FolderPath')
-
-if 'audio' in fp and action is None:
+if 'audio' in infoLabel('Container.FolderPath') and action is None:
     action = 'radios'
 
+__all__ = ["action", "url", "ert", "sysaddon", "syshandle", "params"]
