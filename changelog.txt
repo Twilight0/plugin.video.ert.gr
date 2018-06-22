@@ -1,3 +1,6 @@
+[B]1.6.1[/B]
+- A minor "just in case" fix in live resolver
+
 [B]1.6.0[/B]
 - Tweaked live streams' resolver
 - Preliminary support for Python 3

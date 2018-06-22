@@ -325,7 +325,7 @@ class indexer:
 
         stream = self.resolve_live(url)
 
-        dash = '.mpd' or 'dash' in stream
+        dash = '.mpd' in stream or 'dash' in stream
 
         directory.resolve(stream, meta={'title': title}, dash=dash)
 
