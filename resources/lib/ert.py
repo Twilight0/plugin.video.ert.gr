@@ -628,6 +628,9 @@ class indexer:
     @staticmethod
     def geo_loc():
 
-        json_obj = client.request('http://freegeoip.net/json/')
+        json_obj = client.request('http://extreme-ip-lookup.com/json/')
+
+        if not json_obj or 'error' in json_obj:
+            json_obj = client.request('http://ip-api.com/json/')
 
         return json_obj
