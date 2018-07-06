@@ -1,3 +1,9 @@
+[B]1.6.3[/B]
+- Yet another fix for live resolver
+
+[B]1.6.2[/B]
+- Fix for live resolver
+
 [B]1.6.1[/B]
 - A minor "just in case" fix in live resolver
 

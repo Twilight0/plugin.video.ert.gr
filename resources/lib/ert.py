@@ -583,19 +583,22 @@ class indexer:
         result = client.request(link)
         result = client.parseDOM(result, 'iframe', ret='src')[0]
         video = client.request(result)
+
+        iframes = client.parseDOM(video, 'iframe', ret='src')
+
         try:
-            yt_links = client.parseDOM(video, 'iframe', ret='src')
+            if 'Greece' in self.geo_loc() and 'HLSLink' in video:
+                raise IndexError
+            elif 'Greece' not in self.geo_loc():
+                yt_link = iframes[0]
+            else:
+                yt_link = iframes[-1]
             if not result:
                 raise IndexError
         except IndexError:
             result = client.parseDOM(video, 'script', attrs={'type': 'text/javascript'})[0]
             result = re.search(r'HLSLink = \'(.+?)\'', result).group(1)
             return result
-
-        if 'Greece' in self.geo_loc():
-            yt_link = yt_links[-1]
-        else:
-            yt_link = yt_links[0]
 
         regxpr = re.compile('(?:youtube.com|youtu.be)/(?:embed/|.+?\?v=|.+?\&v=|v/)([\w-]+)')
         vid = regxpr.findall(yt_link)[0]
