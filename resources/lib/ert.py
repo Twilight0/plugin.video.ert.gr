@@ -12,7 +12,7 @@
     GNU General Public License for more details.
 
     You should have received a copy of the GNU General Public License
-    along with this program.  If not, see <http://www.gnu.org/licenses/>.
+    along with this program.  If not, see <https://www.gnu.org/licenses/>.
 '''
 from __future__ import absolute_import
 
@@ -27,27 +27,27 @@ class indexer:
     def __init__(self):
 
         self.list = []
-        self.base_link = 'http://webtv.ert.gr'
-        self.categories_link = 'http://webtv.ert.gr/programma/'
-        self.episodes_link = 'http://webtv.ert.gr/?cat={}'
-        self.sports_link = 'http://webtv.ert.gr/category/athlitika/'
-        self.news_link = 'http://webtv.ert.gr/category/eidiseis/'
-        self.info_link = 'http://webtv.ert.gr/category/ert-enimerosi/'
-        self.weather_link = 'http://webtv.ert.gr/category/kairos/'
-        self.documentary_link = 'http://webtv.ert.gr/tag/ntokimanter/'
-        self.culture_link = 'http://webtv.ert.gr/tag/politismos/'
-        self.cartoons_link = 'http://webtv.ert.gr/category/paidika/'
-        self.entertainment_link = 'http://webtv.ert.gr/tag/psichagogia/'
-        self.recent_link = 'http://webtv.ert.gr/feed/'
-        self.ert1_link = 'http://webtv.ert.gr/ert1-live/'
-        self.ert2_link = 'http://webtv.ert.gr/ert2-live/'
-        self.ert3_link = 'http://webtv.ert.gr/ert3-live/'
-        self.ertw_link = 'http://webtv.ert.gr/ertworld-live/'
-        self.ertp1_link = 'http://webtv.ert.gr/ert-play-live/'
-        self.ertp2_link = 'http://webtv.ert.gr/ert-play-2-live/'
-        self.radio_link = 'http://webradio.ert.gr/'
-        self.district_link = 'http://webradio.ert.gr/liveradio/list.html'
-        # self.search_link = 'http://www.ert.gr/search/{}/'  # feed/rss2/'
+        self.base_link = 'https://webtv.ert.gr'
+        self.categories_link = 'https://webtv.ert.gr/programma/'
+        self.episodes_link = 'https://webtv.ert.gr/?cat={}'
+        self.sports_link = 'https://webtv.ert.gr/category/athlitika/'
+        self.news_link = 'https://webtv.ert.gr/category/eidiseis/'
+        self.info_link = 'https://webtv.ert.gr/category/ert-enimerosi/'
+        self.weather_link = 'https://webtv.ert.gr/category/kairos/'
+        self.documentary_link = 'https://webtv.ert.gr/tag/ntokimanter/'
+        self.culture_link = 'https://webtv.ert.gr/tag/politismos/'
+        self.cartoons_link = 'https://webtv.ert.gr/category/paidika/'
+        self.entertainment_link = 'https://webtv.ert.gr/tag/psichagogia/'
+        self.recent_link = 'https://webtv.ert.gr/feed/'
+        self.ert1_link = 'https://webtv.ert.gr/ert1-live/'
+        self.ert2_link = 'https://webtv.ert.gr/ert2-live/'
+        self.ert3_link = 'https://webtv.ert.gr/ert3-live/'
+        self.ertw_link = 'https://webtv.ert.gr/ertworld-live/'
+        self.ertp1_link = 'https://webtv.ert.gr/ert-play-live/'
+        self.ertp2_link = 'https://webtv.ert.gr/ert-play-2-live/'
+        self.radio_link = 'https://webradio.ert.gr/'
+        self.district_link = 'https://webradio.ert.gr/liveradio/list.html'
+        # self.search_link = 'https://www.ert.gr/search/{}/'  # feed/rss2/'
 
     def root(self):
 
@@ -302,6 +302,8 @@ class indexer:
 
     def live(self, url):
 
+        title = None
+
         if url == 'ert1':
             title = 'EPT 1'
             # icon = 'ert1.png'
@@ -435,8 +437,10 @@ class indexer:
 
             result = client.request(self.radio_link)
             stations = client.parseDOM(result, 'figure', attrs={'class': 'wpb_wrapper vc_figure'})[:-1]
-            names = [control.lang(32028), control.lang(32029), control.lang(32030), control.lang(32031),
-                     control.lang(32032), control.lang(32033), control.lang(32034), control.lang(32035)]
+            names = [
+                control.lang(32028), control.lang(32029), control.lang(32030), control.lang(32031), control.lang(32032),
+                control.lang(32033), control.lang(32034), control.lang(32035)
+            ]
             radios = map(lambda foo, bar: (foo, bar), names, stations)
 
         except:
@@ -450,8 +454,12 @@ class indexer:
 
             self.list.append({'title': title, 'url': link, 'image': image, 'action': 'radio', 'isFolder': 'False'})
 
-        district = [{'title': control.lang(32027), 'url': 'http://webradio.ert.gr/liveradio/list.html',
-                     'icon': 'district.png', 'action': 'district'}]
+        district = [
+            {
+                'title': control.lang(32027), 'url': 'https://webradio.ert.gr/liveradio/list.html',
+                'icon': 'district.png', 'action': 'district'
+            }
+        ]
 
         self.list.extend(district)
 
@@ -516,40 +524,65 @@ class indexer:
     def resolve(self, url):
 
         try:
+
             referer = url
 
-            result = client.request(url)
-
-            url = client.parseDOM(result, 'div', attrs={'class': 'play.+?'})[0]
-            url = client.parseDOM(url, 'iframe', ret='src')[0]
-            if not url:
-                url = client.parseDOM(result, 'iframe', ret='src')[0]
-                url = client.request(url)
-                url = client.parseDOM(url, 'iframe', ret='src')[0]
-                url = self.yt_session(url)
-
             try:
-                url = re.findall('(?:youtube.com|youtu.be)/(?:embed/|.+?\?v=|.+?\&v=|v/)([\w-]+)', url)[0]
-                url = self.yt_session(url)
-                return url
-            except:
+
+                html = client.request(url)
+
+                url = client.parseDOM(html, 'div', attrs={'class': 'play.+?'})[0]
+                url = client.parseDOM(url, 'iframe', ret='src')[0]
+
+                if self.base_link in url:
+
+                    frame = client.request(url)
+
+                    links = re.findall('(?<!//)var HLSLink = \'(.+?)\'', frame)
+
+                    if 'Greece' in self.geo_loc():
+
+                        return links[0]
+
+                    else:
+
+                        return links[-1]
+
+                elif 'youtu' in url:
+
+                    url = re.findall('(?:youtube.com|youtu.be)/(?:embed/|.+?\?v=|.+?&v=|v/)([\w-]+)', url)[0]
+
+                    url = self.yt_session(url)
+
+                else:
+
+                    raise Exception
+
+            except Exception:
+
                 pass
 
             try:
+
                 if not 'ert-archives.gr' in url:
                     raise Exception()
+
                 url = parse_qs(urlparse(url).query)['tid'][0]
-                url = 'http://www.ert-archives.gr/V3/media.hFLV?tid={}'.format(url)
+                url = 'https://www.ert-archives.gr/V3/media.hFLV?tid={}'.format(url)
+
                 return url
-            except:
+
+            except Exception:
+
                 pass
 
             try:
+
                 url = url.replace(' ', '%20')
 
                 url = client.request(url, referer=referer)
 
-                url = re.findall('(?:\"|\')(http.+?)(?:\"|\')', url)
+                url = re.findall('(?:\"|\')(https.+?)(?:\"|\')', url)
                 url = [i for i in url if '.m3u8' in i]
                 url = [i.replace(' ', '%20') for i in url]
 
@@ -558,10 +591,13 @@ class indexer:
                     u = client.request(url[1], output='geturl')
 
                 return u
-            except:
+
+            except Exception:
+
                 pass
 
         except:
+
             pass
 
     def resolve_live(self, url):
@@ -600,7 +636,7 @@ class indexer:
             result = re.search(r'HLSLink = \'(.+?)\'', result).group(1)
             return result
 
-        regxpr = re.compile('(?:youtube.com|youtu.be)/(?:embed/|.+?\?v=|.+?\&v=|v/)([\w-]+)')
+        regxpr = re.compile('(?:youtube.com|youtu.be)/(?:embed/|.+?\?v=|.+?&v=|v/)([\w-]+)')
         vid = regxpr.findall(yt_link)[0]
 
         stream = self.yt_session(vid)
@@ -631,9 +667,9 @@ class indexer:
     @staticmethod
     def geo_loc():
 
-        json_obj = client.request('http://extreme-ip-lookup.com/json/')
+        json_obj = client.request('https://extreme-ip-lookup.com/json/')
 
         if not json_obj or 'error' in json_obj:
-            json_obj = client.request('http://ip-api.com/json/')
+            json_obj = client.request('https://ip-api.com/json/')
 
         return json_obj

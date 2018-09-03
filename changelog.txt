@@ -1,3 +1,8 @@
+[B]1.7.0[/B]
+- VOD resolver overhaul
+- https everywhere by default
+- Various cosmetics
+
 [B]1.6.3[/B]
 - Yet another fix for live resolver
 
