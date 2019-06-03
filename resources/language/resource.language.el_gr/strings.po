@@ -78,7 +78,7 @@ msgstr "ΕΡΤ World"
 
 msgctxt "#32025"
 msgid "ERT Play"
-msgstr "ERT Play"
+msgstr "ΕΡΤ Play"
 
 msgctxt "#32026"
 msgid "Radio"
@@ -131,6 +131,18 @@ msgstr "EPT Play 2"
 msgctxt "#32038"
 msgid "Open Youtube settings"
 msgstr "Άνοιγμα ρυθμίσεων Youtube"
+
+msgctxt "#32039"
+msgid "ERT Play 3"
+msgstr "ΕΡΤ Play 3"
+
+msgctxt "#32040"
+msgid "ERT Play 4"
+msgstr "ΕΡΤ Play 4"
+
+msgctxt "#32041"
+msgid "ERT Sports"
+msgstr "ΕΡΤ Sports"
 
 msgctxt "#30402"
 msgid "Success"

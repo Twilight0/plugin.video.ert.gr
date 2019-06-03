@@ -16,9 +16,26 @@
 '''
 from __future__ import absolute_import
 
-from resources.lib import ert, action, url
+from sys import argv
+from tulip.compat import parse_qsl
+from tulip.control import infoLabel
+
+syshandle = int(argv[1])
+sysaddon = argv[0]
+params = dict(parse_qsl(argv[2].replace('?','')))
+
+########################################################################################################################
+
+action = params.get('action')
+url = params.get('url')
+
+########################################################################################################################
+
+if 'audio' in infoLabel('Container.FolderPath') and action is None:
+    action = 'radios'
 
 if action is None:
+    from resources.lib import ert
     ert.indexer().root()
 
 elif action == 'addBookmark':
@@ -30,36 +47,47 @@ elif action == 'deleteBookmark':
     bookmarks.delete(url)
 
 elif action == 'channels':
+    from resources.lib import ert
     ert.indexer().channels()
 
 elif action == 'bookmarks':
+    from resources.lib import ert
     ert.indexer().bookmarks()
 
 elif action == 'categories':
+    from resources.lib import ert
     ert.indexer().categories()
 
 elif action == 'episodes':
+    from resources.lib import ert
     ert.indexer().episodes(url)
 
 elif action == 'recent':
+    from resources.lib import ert
     ert.indexer().recent()
 
 elif action == 'live':
+    from resources.lib import ert
     ert.indexer().live(url)
 
 elif action == 'radios':
+    from resources.lib import ert
     ert.indexer().radios()
 
 elif action == 'radio':
+    from resources.lib import ert
     ert.indexer().radio(url)
 
 elif action == 'district':
+    from resources.lib import ert
     ert.indexer().district()
 
 elif action == 'search':
+    from resources.lib import ert
     ert.indexer().search()
 
 elif action == 'play':
+    from resources.lib import ert
     ert.indexer().play(url)
 
 elif action == 'cache_clear':

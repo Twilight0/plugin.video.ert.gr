@@ -14,26 +14,3 @@
     You should have received a copy of the GNU General Public License
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 '''
-
-from __future__ import absolute_import
-
-from sys import argv
-from tulip.compat import parse_qsl
-from tulip.control import infoLabel
-from resources.lib import ert
-
-syshandle = int(argv[1])
-sysaddon = argv[0]
-params = dict(parse_qsl(argv[2].replace('?','')))
-
-########################################################################################################################
-
-action = params.get('action')
-url = params.get('url')
-
-########################################################################################################################
-
-if 'audio' in infoLabel('Container.FolderPath') and action is None:
-    action = 'radios'
-
-__all__ = ["action", "url", "ert", "sysaddon", "syshandle", "params"]

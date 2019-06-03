@@ -45,6 +45,9 @@ class indexer:
         self.ertw_link = 'https://webtv.ert.gr/ertworld-live/'
         self.ertp1_link = 'https://webtv.ert.gr/ert-play-live/'
         self.ertp2_link = 'https://webtv.ert.gr/ert-play-2-live/'
+        self.ertp3_link = 'https://webtv.ert.gr/ertplay-3-live/'
+        self.ertp4_link = 'https://webtv.ert.gr/ertplay-4-live/'
+        self.ertsports_link = 'https://webtv.ert.gr/ert-sports-live/'
         self.radio_link = 'https://webradio.ert.gr/'
         self.district_link = 'https://webradio.ert.gr/liveradio/list.html'
         # self.search_link = 'https://www.ert.gr/search/{}/'  # feed/rss2/'
@@ -161,7 +164,7 @@ class indexer:
                 'action': 'live',
                 'url': 'ert1',
                 'isFolder': 'False',
-                'icon': 'ert1.png'
+                'icon': 'live1.png'
             },
 
             {
@@ -169,7 +172,7 @@ class indexer:
                 'action': 'live',
                 'url': 'ert2',
                 'isFolder': 'False',
-                'icon': 'ert2.png'
+                'icon': 'live2.png'
             },
 
             {
@@ -177,7 +180,7 @@ class indexer:
                 'action': 'live',
                 'url': 'ert3',
                 'isFolder': 'False',
-                'icon': 'ert3.png'
+                'icon': 'live3.png'
             },
 
             {
@@ -185,7 +188,7 @@ class indexer:
                 'action': 'live',
                 'url': 'ertw',
                 'isFolder': 'False',
-                'icon': 'ertw.png'
+                'icon': 'livew.png'
             }
             ,
             {
@@ -193,7 +196,7 @@ class indexer:
                 'action': 'live',
                 'url': 'ertp1',
                 'isFolder': 'False',
-                'icon': 'ertp1.png'
+                'icon': 'livep.png'
             }
             ,
             {
@@ -201,7 +204,31 @@ class indexer:
                 'action': 'live',
                 'url': 'ertp2',
                 'isFolder': 'False',
-                'icon': 'ertp2.png'
+                'icon': 'livep.png'
+            }
+            ,
+            {
+                'title': 32039,
+                'action': 'live',
+                'url': 'ertp3',
+                'isFolder': 'False',
+                'icon': 'livep.png'
+            }
+            ,
+            {
+                'title': 32040,
+                'action': 'live',
+                'url': 'ertp4',
+                'isFolder': 'False',
+                'icon': 'livep.png'
+            }
+            ,
+            {
+                'title': 32041,
+                'action': 'live',
+                'url': 'ertsports',
+                'isFolder': 'False',
+                'icon': 'lives.png'
             }
         ]
 
@@ -268,7 +295,8 @@ class indexer:
         if self.list is None:
             return
 
-        for i in self.list: i.update({'action': 'play', 'isFolder': 'False'})
+        for i in self.list:
+            i.update({'action': 'play', 'isFolder': 'False'})
 
         directory.add(self.list, content='videos')
 
@@ -305,25 +333,23 @@ class indexer:
         title = None
 
         if url == 'ert1':
-            title = 'EPT 1'
-            # icon = 'ert1.png'
+            title = control.lang(32021)
         elif url == 'ert2':
-            title = 'EPT 2'
-            # icon = 'ert2.png'
+            title = control.lang(32022)
         elif url == 'ert3':
-            title = 'EPT 3'
-            # icon = 'ert3.png'
+            title = control.lang(32023)
         elif url == 'ertw':
-            title = 'EPT World'
-            # icon = 'ertw.png'
+            title = control.lang(32024)
         elif url == 'ertp1':
-            title = 'EPT Play 1'
-            # icon = 'ertp1.png'
+            title = control.lang(32025)
         elif url == 'ertp2':
-            title = 'EPT Play 2'
-            # icon = 'ertp2.png'
-
-        # logo = control.addonmedia(icon)
+            title = control.lang(32037)
+        elif url == 'ertp3':
+            title = control.lang(32039)
+        elif url == 'ertp4':
+            title = control.lang(32040)
+        elif url == 'ertsports':
+            title = control.lang(32041)
 
         stream = self.resolve_live(url)
 
@@ -614,6 +640,12 @@ class indexer:
             link = self.ertp1_link
         elif url == 'ertp2':
             link = self.ertp2_link
+        elif url == 'ertp3':
+            link = self.ertp3_link
+        elif url == 'ertp4':
+            link = self.ertp4_link
+        elif url == 'ertsports':
+            link = self.ertsports_link
 
         # noinspection PyUnboundLocalVariable
         result = client.request(link)
@@ -636,19 +668,10 @@ class indexer:
             result = re.search(r'HLSLink = \'(.+?)\'', result).group(1)
             return result
 
-        regxpr = re.compile('(?:youtube.com|youtu.be)/(?:embed/|.+?\?v=|.+?&v=|v/)([\w-]+)')
+        regxpr = re.compile(r'(?:youtube.com|youtu.be)/(?:embed/|.+?\?v=|.+?&v=|v/)([\w-]+)')
         vid = regxpr.findall(yt_link)[0]
 
         stream = self.yt_session(vid)
-
-        return stream
-
-    @staticmethod
-    def yt_session(yt_id):
-
-        streams = yt_resolver(yt_id)
-
-        stream = streams[0]['url']
 
         return stream
 
@@ -661,6 +684,26 @@ class indexer:
             stream = re.compile('file: ?.(.*?).,').findall(result)[0]
         except IndexError:
             stream = re.compile('"(.+?radiostreaming.+?)"').findall(result)[0]
+
+        stream = stream.replace('https', 'http')
+
+        return stream
+
+    @staticmethod
+    def yt_session(yt_id):
+
+        streams = yt_resolver(yt_id)
+
+        try:
+            addon_enabled = control.addon_details('inputstream.adaptive').get('enabled')
+        except KeyError:
+            addon_enabled = False
+
+        if not addon_enabled:
+
+            streams = [s for s in streams if 'mpd' not in s['title']]
+
+        stream = streams[0]['url']
 
         return stream
 
