@@ -645,6 +645,8 @@ class Indexer:
 
     def resolve(self, url):
 
+        _url = url
+
         if 'radiostreaming' in url:
             return url
         elif 'youtube' in url or len(url) == 11:
@@ -653,7 +655,12 @@ class Indexer:
             html = client.request(url)
             if 'live' in url:
                 html = client.parseDOM(html, 'div', attrs={'class': 'videoWrapper'})[-1]
-            iframe = client.parseDOM(html, 'iframe', ret='src')[0]
+            if 'iframe' in html:
+                iframe = client.parseDOM(html, 'iframe', ret='src')[0]
+            else:
+                availability = client.parseDOM(html, 'strong')[-1]
+                control.okDialog(control.name(), availability)
+                return 'https://static.adman.gr/inpage/blank.mp4'
             if 'youtube' in iframe:
                 return self.resolve(iframe)
             else:
