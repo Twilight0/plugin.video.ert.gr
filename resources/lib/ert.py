@@ -120,13 +120,6 @@ class Indexer:
             }
             ,
             {
-                'title': control.lang(32038),
-                'action': 'episodes',
-                'url': self.cartoons_link,
-                'icon': 'cartoons.png'
-            }
-            ,
-            {
                 'title': control.lang(32049),
                 'action': 'episodes',
                 'icon': 'movies.png',
