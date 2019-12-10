@@ -25,7 +25,7 @@ msgid "News"
 msgstr ""
 
 msgctxt "#32005"
-msgid "Information"
+msgid "Football"
 msgstr ""
 
 msgctxt "#32006"
@@ -37,7 +37,7 @@ msgid "Documentary"
 msgstr ""
 
 msgctxt "#32008"
-msgid "Culture"
+msgid "Basket"
 msgstr ""
 
 msgctxt "#32009"
@@ -49,7 +49,7 @@ msgid "Entertainment"
 msgstr ""
 
 msgctxt "#32011"
-msgid "Categories"
+msgid "Index"
 msgstr ""
 
 msgctxt "#32012"
@@ -121,7 +121,7 @@ msgid "102FM"
 msgstr ""
 
 msgctxt "#32036"
-msgid "Clear addon's cache"
+msgid "Clear funtion cache"
 msgstr ""
 
 msgctxt "#32037"
@@ -129,7 +129,7 @@ msgid "ERT Play 2"
 msgstr ""
 
 msgctxt "#32038"
-msgid "Open Youtube settings"
+msgid "Series"
 msgstr ""
 
 msgctxt "#32039"
@@ -142,6 +142,58 @@ msgstr ""
 
 msgctxt "#32041"
 msgid "ERT Sports"
+msgstr ""
+
+msgctxt "#32042"
+msgid "ERT Play 5"
+msgstr ""
+
+msgctxt "#32043"
+msgid "Volleyball"
+msgstr ""
+
+msgctxt "#32044"
+msgid "Tennis"
+msgstr ""
+
+msgctxt "#32045"
+msgid "Polo"
+msgstr ""
+
+msgctxt "#32046"
+msgid "Water sports"
+msgstr ""
+
+msgctxt "#32047"
+msgid "Athletics"
+msgstr ""
+
+msgctxt "#32048"
+msgid "Handball"
+msgstr ""
+
+msgctxt "#32049"
+msgid "Movies"
+msgstr ""
+
+msgctxt "#32050"
+msgid "Marathon"
+msgstr ""
+
+msgctxt "#32051"
+msgid "Ice skating"
+msgstr ""
+
+msgctxt "#32052"
+msgid "Various sports"
+msgstr ""
+
+msgctxt "#32053"
+msgid "Auto-Moto"
+msgstr ""
+
+msgctxt "#32054"
+msgid ""
 msgstr ""
 
 msgctxt "#30402"

@@ -25,8 +25,8 @@ msgid "News"
 msgstr "חדשות"
 
 msgctxt "#32005"
-msgid "Information"
-msgstr "מידע"
+msgid "Football"
+msgstr "כַּדוּר-רֶגֶל"
 
 msgctxt "#32006"
 msgid "Weather"
@@ -37,8 +37,8 @@ msgid "Documentary"
 msgstr "תעודה"
 
 msgctxt "#32008"
-msgid "Culture"
-msgstr "תרבות"
+msgid "Basket"
+msgstr "טֶנֶא"
 
 msgctxt "#32009"
 msgid "Cartoons"
@@ -49,8 +49,8 @@ msgid "Entertainment"
 msgstr "בידור"
 
 msgctxt "#32011"
-msgid "Categories"
-msgstr "‎קטגוריות"
+msgid "Index"
+msgstr "אינדקס"
 
 msgctxt "#32012"
 msgid "Bookmarks"
@@ -121,12 +121,76 @@ msgid "102FM"
 msgstr "102FM"
 
 msgctxt "#32036"
-msgid "Clear addon's cache"
+msgid "Clear function cache"
 msgstr "נקה את המטמון של addon"
 
 msgctxt "#32037"
 msgid "ERT Play 2"
 msgstr "ERT Play 2"
+
+msgctxt "#32038"
+msgid "Series"
+msgstr "סדרת טלוויזיה"
+
+msgctxt "#32039"
+msgid "ERT Play 3"
+msgstr "ERT Play 3"
+
+msgctxt "#32040"
+msgid "ERT Play 4"
+msgstr "ERT Play 4"
+
+msgctxt "#32041"
+msgid "ERT Sports"
+msgstr "ERT Sports"
+
+msgctxt "#32042"
+msgid "ERT Play 5"
+msgstr "ERT Play 5"
+
+msgctxt "#32043"
+msgid "Volleyball"
+msgstr "כַּדוּר עָף"
+
+msgctxt "#32044"
+msgid "Tennis"
+msgstr "טֶנִיס"
+
+msgctxt "#32045"
+msgid "Polo"
+msgstr "פולו"
+
+msgctxt "#32046"
+msgid "Water sports"
+msgstr "ספורט מים"
+
+msgctxt "#32047"
+msgid "Athletics"
+msgstr "אַתלֵטִיקָה"
+
+msgctxt "#32048"
+msgid "Handball"
+msgstr "כַּדוּר יָד"
+
+msgctxt "#32049"
+msgid "Movies"
+msgstr "סרטים"
+
+msgctxt "#32050"
+msgid "Marathon"
+msgstr "מֵרוֹץ מָרָתוֹנִי"
+
+msgctxt "#32051"
+msgid "Ice skating"
+msgstr "החלקה על הקרח"
+
+msgctxt "#32052"
+msgid "Various sports"
+msgstr "ענפי ספורט שונים"
+
+msgctxt "#32053"
+msgid "Auto-Moto"
+msgstr "Auto-Moto"
 
 msgctxt "#32038"
 msgid "Open Youtube settings"

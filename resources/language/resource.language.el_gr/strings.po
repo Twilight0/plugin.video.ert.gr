@@ -25,8 +25,8 @@ msgid "News"
 msgstr "Ειδήσεις"
 
 msgctxt "#32005"
-msgid "Information"
-msgstr "Ενημέρωση"
+msgid "Football"
+msgstr "Ποδόσφαιρο"
 
 msgctxt "#32006"
 msgid "Weather"
@@ -37,8 +37,8 @@ msgid "Documentary"
 msgstr "Ντοκιμαντέρ"
 
 msgctxt "#32008"
-msgid "Culture"
-msgstr "Πολιτισμός"
+msgid "Basket"
+msgstr "Μπάσκετ"
 
 msgctxt "#32009"
 msgid "Cartoons"
@@ -49,8 +49,8 @@ msgid "Entertainment"
 msgstr "Ψυχαγωγία"
 
 msgctxt "#32011"
-msgid "Categories"
-msgstr "Κατηγορίες"
+msgid "Index"
+msgstr "Ευρετήριο"
 
 msgctxt "#32012"
 msgid "Bookmarks"
@@ -121,7 +121,7 @@ msgid "102FM"
 msgstr "102FM"
 
 msgctxt "#32036"
-msgid "Clear addon's cache"
+msgid "Clear function cache"
 msgstr "Καθαρισμός προσωρινής μνήμης"
 
 msgctxt "#32037"
@@ -129,20 +129,72 @@ msgid "ERT Play 2"
 msgstr "EPT Play 2"
 
 msgctxt "#32038"
-msgid "Open Youtube settings"
-msgstr "Άνοιγμα ρυθμίσεων Youtube"
+msgid "Series"
+msgstr "Σειρές"
 
 msgctxt "#32039"
 msgid "ERT Play 3"
-msgstr "ΕΡΤ Play 3"
+msgstr "ERT Play 3"
 
 msgctxt "#32040"
 msgid "ERT Play 4"
-msgstr "ΕΡΤ Play 4"
+msgstr "ERT Play 4"
 
 msgctxt "#32041"
 msgid "ERT Sports"
-msgstr "ΕΡΤ Sports"
+msgstr "ERT Sports"
+
+msgctxt "#32042"
+msgid "ERT Play 5"
+msgstr "ERT Play 5"
+
+msgctxt "#32043"
+msgid "Volleyball"
+msgstr "Βόλεϊ"
+
+msgctxt "#32044"
+msgid "Tennis"
+msgstr "Τένις"
+
+msgctxt "#32045"
+msgid "Polo"
+msgstr "Πόλο"
+
+msgctxt "#32046"
+msgid "Water sports"
+msgstr "Υγρός στίβος"
+
+msgctxt "#32047"
+msgid "Athletics"
+msgstr "Στίβος"
+
+msgctxt "#32048"
+msgid "Handball"
+msgstr "Χαντμπολ"
+
+msgctxt "#32049"
+msgid "Movies"
+msgstr "Ταινίες"
+
+msgctxt "#32050"
+msgid "Marathon"
+msgstr "Μαραθώνιος"
+
+msgctxt "#32051"
+msgid "Ice skating"
+msgstr "Καλλιτεχνικό πατινάζ"
+
+msgctxt "#32052"
+msgid "Various sports"
+msgstr "Άλλα σπορ"
+
+msgctxt "#32053"
+msgid "Auto-Moto"
+msgstr "Auto-Moto"
+
+msgctxt "#32054"
+msgid ""
+msgstr ""
 
 msgctxt "#30402"
 msgid "Success"

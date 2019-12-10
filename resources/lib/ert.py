@@ -18,39 +18,50 @@ from __future__ import absolute_import
 
 import json, re
 from tulip import bookmarks, directory, client, cache, control
-from tulip.compat import urljoin, iteritems, parse_qs, urlparse  #, quote_plus
+from tulip.compat import iteritems, urlparse, range
 from youtube_resolver import resolve as yt_resolver
+from youtube_plugin.youtube.youtube_exceptions import YouTubeException
 
 
-class indexer:
+class Indexer:
 
     def __init__(self):
 
         self.list = []
+
         self.base_link = 'https://webtv.ert.gr'
-        self.categories_link = 'https://webtv.ert.gr/programma/'
-        self.episodes_link = 'https://webtv.ert.gr/?cat={}'
-        self.sports_link = 'https://webtv.ert.gr/category/athlitika/'
-        self.news_link = 'https://webtv.ert.gr/category/eidiseis/'
-        self.info_link = 'https://webtv.ert.gr/category/ert-enimerosi/'
-        self.weather_link = 'https://webtv.ert.gr/category/kairos/'
-        self.documentary_link = 'https://webtv.ert.gr/tag/ntokimanter/'
-        self.culture_link = 'https://webtv.ert.gr/tag/politismos/'
-        self.cartoons_link = 'https://webtv.ert.gr/category/paidika/'
-        self.entertainment_link = 'https://webtv.ert.gr/tag/psichagogia/'
-        self.recent_link = 'https://webtv.ert.gr/feed/'
-        self.ert1_link = 'https://webtv.ert.gr/ert1-live/'
-        self.ert2_link = 'https://webtv.ert.gr/ert2-live/'
-        self.ert3_link = 'https://webtv.ert.gr/ert3-live/'
-        self.ertw_link = 'https://webtv.ert.gr/ertworld-live/'
-        self.ertp1_link = 'https://webtv.ert.gr/ert-play-live/'
-        self.ertp2_link = 'https://webtv.ert.gr/ert-play-2-live/'
-        self.ertp3_link = 'https://webtv.ert.gr/ertplay-3-live/'
-        self.ertp4_link = 'https://webtv.ert.gr/ertplay-4-live/'
-        self.ertsports_link = 'https://webtv.ert.gr/ert-sports-live/'
+        self.series_link = self.base_link.replace('webtv', 'series')
+
+        self.categories_link = ''.join([self.base_link, '/ekpompes/'])
+        self.recent_link = ''.join([self.base_link, '/feed/'])
+        self.shows_link = ''.join([self.base_link, '/shows'])
+
+        self.category_link = ''.join([self.base_link, '/category'])
+        self.news_link = ''.join([self.category_link, '/eidiseis/'])
+        self.weather_link = ''.join([self.category_link, '/kairos/'])
+        self.cartoons_link = ''.join([self.category_link, '/paidika/'])
+
+        self.tag_link = ''.join([self.base_link, '/tag'])
+        self.culture_link = ''.join([self.tag_link, '/politismos/'])
+        self.doc_link = ''.join([self.tag_link, '/ntokimanter/'])
+
+        self.sports_link = ''.join([self.shows_link, '/athlitika/'])
+        self.movies_link = ''.join([self.category_link, '/movies/xenes-tainies/'])
+
+        self.ert1_link = ''.join([self.base_link, '/ert1-live/'])
+        self.ert2_link = ''.join([self.base_link, '/ert2-live/'])
+        self.ert3_link = ''.join([self.base_link, '/ert3-live/'])
+        self.ertw_link = ''.join([self.base_link, '/ertworld-live/'])
+        self.ertp1_link = ''.join([self.base_link, '/ert-play-live/'])
+        self.ertp2_link = ''.join([self.base_link, '/ert-play-2-live/'])
+        self.ertp3_link = ''.join([self.base_link, '/ertplay-3-live/'])
+        self.ertp4_link = ''.join([self.base_link, '/ertplay-4-live/'])
+        self.ertp5_link = ''.join([self.base_link, '/ertplay-5-live/'])
+        self.ertsports_link = ''.join([self.base_link, '/ert-sports-live/'])
+
         self.radio_link = 'https://webradio.ert.gr/'
-        self.district_link = 'https://webradio.ert.gr/liveradio/list.html'
-        # self.search_link = 'https://www.ert.gr/search/{}/'  # feed/rss2/'
+        self.radio_stream = 'http://radiostreaming.ert.gr'
+        self.district_link = ''.join([self.radio_link, 'liveradio/list.html'])
 
     def root(self):
 
@@ -68,6 +79,12 @@ class indexer:
             }
             ,
             {
+                'title': control.lang(32011),
+                'action': 'index',
+                'icon': 'index.png'
+            }
+            ,
+            {
                 'title': control.lang(32004),
                 'action': 'episodes',
                 'url': self.news_link,
@@ -75,15 +92,8 @@ class indexer:
             }
             ,
             {
-                'title': control.lang(32005),
-                'action': 'episodes',
-                'url': self.info_link,
-                'icon': 'info.png'
-            }
-            ,
-            {
                 'title': control.lang(32003),
-                'action': 'episodes',
+                'action': 'sports',
                 'url': self.sports_link,
                 'icon': 'sports.png'
             }
@@ -98,15 +108,8 @@ class indexer:
             {
                 'title': control.lang(32007),
                 'action': 'episodes',
-                'url': self.documentary_link,
+                'url': self.doc_link,
                 'icon': 'documentary.png'
-            }
-            ,
-            {
-                'title': control.lang(32008),
-                'action': 'episodes',
-                'url': self.culture_link,
-                'icon': 'culture.png'
             }
             ,
             {
@@ -117,16 +120,23 @@ class indexer:
             }
             ,
             {
-                'title': control.lang(32010),
+                'title': control.lang(32038),
                 'action': 'episodes',
-                'url': self.entertainment_link,
-                'icon': 'entertainment.png'
+                'url': self.cartoons_link,
+                'icon': 'cartoons.png'
             }
             ,
             {
-                'title': control.lang(32011),
-                'action': 'categories',
-                'icon': 'categories.png'
+                'title': control.lang(32049),
+                'action': 'episodes',
+                'icon': 'movies.png',
+                'url': self.movies_link
+            }
+            ,
+            {
+                'title': control.lang(32038),
+                'action': 'series',
+                'icon': 'series.png'
             }
             ,
             {
@@ -140,19 +150,12 @@ class indexer:
                 'action': 'bookmarks',
                 'icon': 'bookmarks.png'
             }
-            # Not implemented yet:
-            # ,
-            # {
-            #     'title': control.lang(32013),
-            #     'action': 'search',
-            #     'icon': 'search.png'
-            # }
         ]
 
         for item in self.list:
+
             cache_clear = {'title': 32036, 'query': {'action': 'cache_clear'}}
-            yt_settings = {'title': 32038, 'query': {'action': 'yt_settings'}}
-            item.update({'cm': [cache_clear, yt_settings]})
+            item.update({'cm': [cache_clear]})
 
         directory.add(self.list, content='videos')
 
@@ -161,72 +164,80 @@ class indexer:
         self.list = [
             {
                 'title': 32021,
-                'action': 'live',
-                'url': 'ert1',
+                'action': 'play',
+                'url': self.ert1_link,
                 'isFolder': 'False',
                 'icon': 'live1.png'
             },
 
             {
                 'title': 32022,
-                'action': 'live',
-                'url': 'ert2',
+                'action': 'play',
+                'url': self.ert2_link,
                 'isFolder': 'False',
                 'icon': 'live2.png'
             },
 
             {
                 'title': 32023,
-                'action': 'live',
-                'url': 'ert3',
+                'action': 'play',
+                'url': self.ert3_link,
                 'isFolder': 'False',
                 'icon': 'live3.png'
             },
 
             {
                 'title': 32024,
-                'action': 'live',
-                'url': 'ertw',
+                'action': 'play',
+                'url': self.ertw_link,
                 'isFolder': 'False',
                 'icon': 'livew.png'
             }
             ,
             {
                 'title': 32025,
-                'action': 'live',
-                'url': 'ertp1',
+                'action': 'play',
+                'url': self.ertp1_link,
                 'isFolder': 'False',
                 'icon': 'livep.png'
             }
             ,
             {
                 'title': 32037,
-                'action': 'live',
-                'url': 'ertp2',
+                'action': 'play',
+                'url': self.ertp2_link,
                 'isFolder': 'False',
                 'icon': 'livep.png'
             }
             ,
             {
                 'title': 32039,
-                'action': 'live',
-                'url': 'ertp3',
+                'action': 'play',
+                'url': self.ertp3_link,
                 'isFolder': 'False',
                 'icon': 'livep.png'
             }
             ,
             {
                 'title': 32040,
-                'action': 'live',
-                'url': 'ertp4',
+                'action': 'play',
+                'url': self.ertp4_link,
+                'isFolder': 'False',
+                'icon': 'livep.png'
+            }
+            ,
+            {
+                'title': 32042,
+                'action': 'play',
+                'url': self.ertp5_link,
                 'isFolder': 'False',
                 'icon': 'livep.png'
             }
             ,
             {
                 'title': 32041,
-                'action': 'live',
-                'url': 'ertsports',
+                'action': 'play',
+                'url': self.ertsports_link,
                 'isFolder': 'False',
                 'icon': 'lives.png'
             }
@@ -242,7 +253,9 @@ class indexer:
 
         self.list = bookmarks.get()
 
-        if self.list is None:
+        if not self.list:
+            na = [{'title': 'N/A', 'action': None}]
+            directory.add(na)
             return
 
         for i in self.list:
@@ -250,13 +263,34 @@ class indexer:
             bookmark['delbookmark'] = i['url']
             i.update({'cm': [{'title': 32502, 'query': {'action': 'deleteBookmark', 'url': json.dumps(bookmark)}}]})
 
-        self.list = sorted(self.list, key=lambda k: str(k['title']).lower())
+        control.sortmethods('title')
 
         directory.add(self.list, content='videos')
 
-    def categories(self):
+    def index_listing(self):
 
-        self.list = cache.get(self.categories_list, 24)
+        html = client.request(self.categories_link)
+
+        div = client.parseDOM(html, 'div', attrs={'class': 'wpb_wrapper'})[0]
+
+        li = client.parseDOM(div, 'li')
+
+        li.extend(client.parseDOM(div, 'li', attrs={'class': 'hideli'}))
+
+        items = [i for i in li if 'category' in i and 'title' in i]
+
+        for item in items:
+
+            title = client.replaceHTMLCodes(client.parseDOM(item, 'a')[0])
+            url = client.parseDOM(item, 'a', ret='href')[0]
+
+            self.list.append({'title': title, 'url': url})
+
+        return self.list
+
+    def index(self):
+
+        self.list = cache.get(self.index_listing, 24)
 
         if self.list is None:
             return
@@ -275,16 +309,13 @@ class indexer:
 
     def episodes(self, url):
 
-        self.list = cache.get(self.episodes_list, 1, url)
+        self.list = cache.get(self.episodes_list, 2, url)
 
         if self.list is None:
             return
 
         for i in self.list:
-            i.update({'action': 'play', 'isFolder': 'False'})
-
-        for i in self.list:
-            i.update({'nextlabel': 32500, 'nextaction': 'episodes'})
+            i.update({'action': 'play', 'isFolder': 'False', 'nextlabel': 32500, 'nextaction': 'episodes'})
 
         directory.add(self.list, content='videos')
 
@@ -300,208 +331,282 @@ class indexer:
 
         directory.add(self.list, content='videos')
 
-    # def search(self):
-    #
-    #     s = control.dialog.input(control.name())
-    #
-    #     if s:
-    #
-    #         search = quote_plus(s)
-    #         url = self.search_link.format(search)
-    #
-    #     else:
-    #
-    #         return
-    #
-    #     self.list = cache.get(self.recent_list, 6, url)
-    #
-    #     for i in self.list:
-    #         i.update({'action': 'play', 'isFolder': 'False'})
-    #
-    #     for i in self.list:
-    #         bookmark = dict((k, v) for k, v in iteritems(i) if not k == 'next')
-    #         bookmark['bookmark'] = i['url']
-    #         i.update({'cm': [{'title': 32501, 'query': {'action': 'addBookmark', 'url': json.dumps(bookmark)}}]})
-    #
-    #     directory.add(self.list, content='videos')
-
     def play(self, url):
-        directory.resolve(self.resolve(url))
-
-    def live(self, url):
 
         title = None
 
-        if url == 'ert1':
+        if url == self.ert1_link:
             title = control.lang(32021)
-        elif url == 'ert2':
+        elif url == self.ert2_link:
             title = control.lang(32022)
-        elif url == 'ert3':
+        elif url == self.ert3_link:
             title = control.lang(32023)
-        elif url == 'ertw':
+        elif url == self.ertw_link:
             title = control.lang(32024)
-        elif url == 'ertp1':
+        elif url == self.ertp1_link:
             title = control.lang(32025)
-        elif url == 'ertp2':
+        elif url == self.ertp2_link:
             title = control.lang(32037)
-        elif url == 'ertp3':
+        elif url == self.ertp3_link:
             title = control.lang(32039)
-        elif url == 'ertp4':
+        elif url == self.ertp4_link:
             title = control.lang(32040)
-        elif url == 'ertsports':
+        elif url == self.ertsports_link:
             title = control.lang(32041)
 
-        stream = self.resolve_live(url)
+        stream = self.resolve(url)
 
         dash = '.mpd' in stream or 'dash' in stream
 
         directory.resolve(stream, meta={'title': title}, dash=dash)
 
-    def radio(self, url):
-        directory.resolve(self.resolve_radio(url))
-
-    def categories_list(self):
-
-        try:
-            result = client.request(self.categories_link)
-
-            items = re.findall('(<option\s.+?</option>)', result)
-        except:
-            return
-
-        for item in items:
-            try:
-                title = client.parseDOM(item, 'option', attrs={'class': 'level-[1-9]'})[0]
-                title = client.replaceHTMLCodes(title)
-                title = title.strip().upper()
-                title = title.encode('utf-8')
-
-                url = client.parseDOM(item, 'option', ret='value', attrs={'class': 'level-[1-9]'})[0]
-                url = self.episodes_link.format(url)
-                url = client.replaceHTMLCodes(url)
-                url = url.encode('utf-8')
-
-                self.list.append({'title': title, 'url': url})
-            except:
-                pass
-
-        return self.list
-
     def episodes_list(self, url):
 
-        try:
-            result = client.request(url)
+        if client.request(url, redirect=False, output='response')[0] == u'301':
+            url = re.sub(r'category/[\w-]+', 'tag', url)
 
-            items = client.parseDOM(result, 'div', attrs={'class': 'blog-listing-con.+?'})[0]
-            items = client.parseDOM(items, 'div', attrs={'class': 'item-thumbnail'})
-        except:
-            return
+        result = client.request(url)
+
+        items = client.parseDOM(result, 'div', attrs={'class': 'blog-listing-con.+?'})[0]
+        items = client.parseDOM(items, 'div', attrs={'class': 'item-thumbnail'})
 
         try:
-            next = client.parseDOM(result, 'a', ret='href', attrs={'rel': 'next'})[0]
-            next = urljoin(self.base_link, next)
-            next = client.replaceHTMLCodes(next)
-            next = next.encode('utf-8')
-        except:
-            next = ''
+            nexturl = client.parseDOM(result, 'a', ret='href', attrs={'rel': 'next'})[0]
+        except Exception:
+            nexturl = ''
 
         for item in items:
+
             try:
-                title = client.parseDOM(item, 'a', ret='title')[0]
-                title = client.replaceHTMLCodes(title)
-                title = title.encode('utf-8')
+                plot = client.parseDOM(item, 'p')[0]
+            except Exception:
+                plot = ''
 
-                url = client.parseDOM(item, 'a', ret='href')[0]
-                url = urljoin(self.base_link, url)
-                url = client.replaceHTMLCodes(url)
-                url = url.encode('utf-8')
+            title = client.parseDOM(item, 'a', ret='title')[0]
+            title = client.replaceHTMLCodes(title)
 
-                image = client.parseDOM(item, 'img', ret='src')[0]
-                image = urljoin(self.base_link, image)
-                image = client.replaceHTMLCodes(image)
-                image = image.encode('utf-8')
+            url = client.parseDOM(item, 'a', ret='href')[0]
 
-                self.list.append({'title': title, 'url': url, 'image': image, 'next': next})
-            except:
-                pass
+            image = client.parseDOM(item, 'img', ret='src')[0]
+
+            self.list.append({'title': title, 'url': url, 'image': image, 'next': nexturl, 'plot': plot})
 
         return self.list
 
     def recent_list(self, url):
         try:
-            result = client.request(url)
 
+            result = client.request(url)
             items = client.parseDOM(result, 'item')
-        except:
+
+        except Exception:
+
             return
 
         for item in items:
-            try:
-                title = client.parseDOM(item, 'title')[0]
-                title = client.replaceHTMLCodes(title)
-                title = title.encode('utf-8')
 
-                url = client.parseDOM(item, 'link')[0]
-                url = urljoin(self.base_link, url)
-                url = client.replaceHTMLCodes(url)
-                url = url.encode('utf-8')
+            title = client.replaceHTMLCodes(client.parseDOM(item, 'title')[0])
 
-                image = client.parseDOM(item, 'img', ret='src')[0]
-                image = urljoin(self.base_link, image)
-                image = client.replaceHTMLCodes(image)
-                image = image.encode('utf-8')
+            url = client.parseDOM(item, 'link')[0]
 
-                self.list.append({'title': title, 'url': url, 'image': image})
-            except:
-                pass
+            image = client.parseDOM(item, 'img', ret='src')[0]
+
+            self.list.append({'title': title, 'url': url, 'image': image})
 
         return self.list
 
-    def radio_list(self):
+    def sports(self):
 
-        try:
-
-            result = client.request(self.radio_link)
-            stations = client.parseDOM(result, 'figure', attrs={'class': 'wpb_wrapper vc_figure'})[:-1]
-            names = [
-                control.lang(32028), control.lang(32029), control.lang(32030), control.lang(32031), control.lang(32032),
-                control.lang(32033), control.lang(32034), control.lang(32035)
-            ]
-            radios = map(lambda foo, bar: (foo, bar), names, stations)
-
-        except:
-
-            return
-
-        for title, data in radios:
-
-            link = client.parseDOM(data, 'a', ret='href')[0]
-            image = client.parseDOM(data, 'img', ret='src')[0]
-
-            self.list.append({'title': title, 'url': link, 'image': image, 'action': 'radio', 'isFolder': 'False'})
-
-        district = [
+        self.list = [
             {
-                'title': control.lang(32027), 'url': 'https://webradio.ert.gr/liveradio/list.html',
-                'icon': 'district.png', 'action': 'district'
+                'title': 32005,
+                'url': ''.join([self.category_link, '/athlitika/athlitikoi-agwnes/football/']),
+                'image': ''.join([self.base_link, '/wp-content/uploads/2017/10/football.jpg'])
+            }
+            ,
+            {
+                'title': 32008,
+                'url': ''.join([self.category_link, '/athlitika/athlitikoi-agwnes/basketball/']),
+                'image': ''.join([self.base_link, '/wp-content/uploads/2017/10/basket-1.jpg'])
+            }
+            ,
+            {
+                'title': 32043,
+                'url': ''.join([self.category_link, '/athlitika/athlitikoi-agwnes/volley/']),
+                'image': ''.join([self.base_link, '/wp-content/uploads/2017/10/volei.jpg'])
+            }
+            ,
+            {
+                'title': 32044,
+                'url': ''.join([self.tag_link, '/tennis/']),
+                'image': ''.join([self.base_link, '/wp-content/uploads/2018/09/tennis.png'])
+            }
+            ,
+            {
+                'title': 32045,
+                'url': ''.join([self.tag_link, '/polo/']),
+                'image': ''.join([self.base_link, '/wp-content/uploads/2018/09/POlo.png'])
+            }
+            ,
+            {
+                'title': 32046,
+                'url': ''.join([self.category_link, '/athlitika/athlitikoi-agwnes/ygros-stivos/']),
+                'image': ''.join([self.base_link, '/wp-content/uploads/2018/09/YgrosStivos.png'])
+            }
+            ,
+            {
+                'title': 32047,
+                'url': ''.join([self.category_link, '/athlitika/athlitikoi-agwnes/stivos/']),
+                'image': ''.join([self.base_link, '/wp-content/uploads/2018/09/Stivos.png'])
+            }
+            ,
+            {
+                'title': 32048,
+                'url': ''.join([self.tag_link, '/chantmpol/']),
+                'image': ''.join([self.base_link, '/wp-content/uploads/2018/09/Handball.png'])
+            },
+            {
+                'title': 32053,
+                'url': ''.join([self.category_link, '/ert2/auto-moto-ert/']),
+                'image': ''.join([self.base_link, '/wp-content/uploads/2018/09/AutoMoto.png'])
+            }
+            ,
+            {
+                'title': 32050,
+                'url': ''.join([self.tag_link, '/marathonios/']),
+                'image': ''.join([self.base_link, '/wp-content/uploads/2018/09/Marathonios.png'])
+            }
+            ,
+            {
+                'title': 32051,
+                'url': ''.join([self.tag_link, '/pagkosmio-protathlima-patinaz/']),
+                'image': ''.join([self.base_link, '/wp-content/uploads/2018/09/KallitexnikoPatinaz.png'])
+            }
+            ,
+            {
+                'title': 32052,
+                'url': ''.join([self.category_link, '/athlitika/athlitikoi-agwnes/alla-spor/']),
+                'image': ''.join([self.base_link, '/wp-content/uploads/2017/10/alla-spor.jpg'])
             }
         ]
 
-        self.list.extend(district)
+        for i in self.list:
+            i.update({'action': 'episodes'})
+
+        directory.add(self.list)
+
+    def series_listing(self):
+
+        html = client.request(self.series_link)
+
+        items = client.parseDOM(html, 'figure', attrs={'class': 'wpb_wrapper vc_figure'})
+
+        for item in items:
+
+            url = client.parseDOM(item, 'a', ret='href')[0]
+            title = urlparse(url).path.strip('/').replace('-', ' ').capitalize()
+            image = client.parseDOM(item, 'img', ret='src')[0]
+
+            self.list.append({'title': title, 'image': image, 'url': url})
 
         return self.list
 
-    def radios(self):
+    def series(self):
 
-        self.list = cache.get(self.radio_list, 24)
+        self.list = cache.get(self.series_listing, 6)
 
         if self.list is None:
             return
 
         for i in self.list:
+            i.update({'action': 'series_episodes'})
             bookmark = dict((k, v) for k, v in iteritems(i) if not k == 'next')
             bookmark['bookmark'] = i['url']
             i.update({'cm': [{'title': 32501, 'query': {'action': 'addBookmark', 'url': json.dumps(bookmark)}}]})
+
+        directory.add(self.list, content='videos')
+
+    def series_episodes_listing(self, url):
+
+        def appender(html_):
+
+            _list = []
+
+            items = client.parseDOM(html_, 'div', attrs={'class': 'pt-cv-ifield'})
+
+            for _item in items:
+
+                title = client.parseDOM(_item, 'h4')[0]
+                label = client.replaceHTMLCodes(client.parseDOM(title, 'a')[0])
+                image = client.parseDOM(_item, 'img', ret='src')[0]
+                plot = client.parseDOM(_item, 'div', attrs={'class': 'pt-cv-content'})[0].partition('<br>')[0]
+                _url = client.parseDOM(title, 'a', ret='href')[0]
+
+                _list.append({'title': label, 'url': _url, 'plot': plot, 'image': image})
+
+            return _list
+
+        html = client.request(url)
+
+        if 'vc_btn3-container vc_btn3-center' in html:
+
+            inner = client.parseDOM(html, 'div', attrs={'class': 'vc_btn3-container vc_btn3-center'})
+
+            for i in inner:
+
+                inner_url = client.parseDOM(i, 'a', ret='href')[0]
+
+                inner_html = client.request(inner_url)
+
+                self.list = appender(inner_html)
+
+        else:
+
+            self.list = appender(html)
+
+        return self.list
+
+    def series_episodes(self, url):
+
+        self.list = cache.get(self.series_episodes_listing, 6, url)
+
+        if self.list is None:
+            return
+
+        for i in self.list:
+            i.update({'action': 'play', 'isFolder': 'False'})
+
+        directory.add(self.list, content='videos')
+
+    def radios(self):
+
+        images = [
+            ''.join([self.radio_link, i]) for i in [
+                'wp-content/uploads/2016/06/proto.jpg', 'wp-content/uploads/2016/06/deytero.jpg',
+                '/wp-content/uploads/2016/06/trito.jpg', 'wp-content/uploads/2016/06/kosmos.jpg',
+                'wp-content/uploads/2016/06/VoiceOgGreece.png', 'wp-content/uploads/2016/06/eraSport.jpg',
+                'wp-content/uploads/2016/06/958fm.jpg', 'wp-content/uploads/2016/06/102fm.jpg'
+            ]
+        ]
+
+        names = [control.lang(n) for n in list(range(32028, 32036))]
+
+        urls = [
+            ''.join([self.radio_stream, i]) for i in [
+                '/ert-proto', '/ert-deftero', '/ert-trito', '/ert-kosmos', '/ert-voiceofgreece', '/ert-erasport',
+                '/ert-958fm', '/ert-102fm'
+            ]
+        ]
+
+        radios = map(lambda x, y, z: (x, y, z), names, images, urls)
+
+        for title, image, link in radios:
+
+            self.list.append({'title': title, 'url': link, 'image': image, 'action': 'play', 'isFolder': 'False'})
+
+        district = {'title': control.lang(32027), 'action': 'district', 'icon': 'district.png'}
+
+        self.list.append(district)
 
         directory.add(self.list)
 
@@ -513,181 +618,63 @@ class indexer:
             except AttributeError:
                 result = client.request(self.district_link)
             radios = client.parseDOM(result, 'td')
-            radios = [foo for foo in radios if foo]
+            radios = [r for r in radios if r]
 
-        except:
+        except Exception:
 
             return
 
         for radio in radios:
+
             title = client.parseDOM(radio, 'a')[0]
             href = client.parseDOM(radio, 'a', ret='href')[0]
             html = client.request(href)
             link = client.parseDOM(html, 'iframe', ret='src')[0]
+            embed = client.request(link)
+            url = re.search(r'mp3: [\'"](.+?)[\'"]', embed).group(1).replace('https', 'http')
             image = client.parseDOM(html, 'img', ret='src')[0]
 
-            self.list.append({'title': title, 'image': image, 'url': link})
+            self.list.append({'title': title, 'image': image, 'url': url})
 
         return self.list
 
     def district(self):
 
-        self.list = cache.get(self.district_list, 24)
+        self.list = cache.get(self.district_list, 96)
 
         if self.list is None:
             return
 
         for i in self.list:
-            i.update({'action': 'radio', 'isFolder': 'False'})
-
-        for i in self.list:
-            bookmark = dict((k, v) for k, v in iteritems(i) if not k == 'next')
-            bookmark['bookmark'] = i['url']
-            i.update({'cm': [{'title': 32501, 'query': {'action': 'addBookmark', 'url': json.dumps(bookmark)}}]})
+            i.update({'action': 'play', 'isFolder': 'False'})
 
         directory.add(self.list)
 
     def resolve(self, url):
 
-        try:
-
-            referer = url
-
-            try:
-
-                html = client.request(url)
-
-                url = client.parseDOM(html, 'div', attrs={'class': 'play.+?'})[0]
-                url = client.parseDOM(url, 'iframe', ret='src')[0]
-
-                if self.base_link in url:
-
-                    frame = client.request(url)
-
-                    links = re.findall('(?<!//)var HLSLink = \'(.+?)\'', frame)
-
-                    if 'Greece' in self.geo_loc():
-
-                        return links[0]
-
-                    else:
-
-                        return links[-1]
-
-                elif 'youtu' in url:
-
-                    url = re.findall('(?:youtube.com|youtu.be)/(?:embed/|.+?\?v=|.+?&v=|v/)([\w-]+)', url)[0]
-
-                    url = self.yt_session(url)
-
-                else:
-
-                    raise Exception
-
-            except Exception:
-
-                pass
-
-            try:
-
-                if not 'ert-archives.gr' in url:
-                    raise Exception()
-
-                url = parse_qs(urlparse(url).query)['tid'][0]
-                url = 'https://www.ert-archives.gr/V3/media.hFLV?tid={}'.format(url)
-
-                return url
-
-            except Exception:
-
-                pass
-
-            try:
-
-                url = url.replace(' ', '%20')
-
-                url = client.request(url, referer=referer)
-
-                url = re.findall('(?:\"|\')(https.+?)(?:\"|\')', url)
-                url = [i for i in url if '.m3u8' in i]
-                url = [i.replace(' ', '%20') for i in url]
-
-                u = client.request(url[0], output='geturl')
-                if u is None and len(url) > 1:
-                    u = client.request(url[1], output='geturl')
-
-                return u
-
-            except Exception:
-
-                pass
-
-        except:
-
-            pass
-
-    def resolve_live(self, url):
-
-        if url == 'ert1':
-            link = self.ert1_link
-        elif url == 'ert2':
-            link = self.ert2_link
-        elif url == 'ert3':
-            link = self.ert3_link
-        elif url == 'ertw':
-            link = self.ertw_link
-        elif url == 'ertp1':
-            link = self.ertp1_link
-        elif url == 'ertp2':
-            link = self.ertp2_link
-        elif url == 'ertp3':
-            link = self.ertp3_link
-        elif url == 'ertp4':
-            link = self.ertp4_link
-        elif url == 'ertsports':
-            link = self.ertsports_link
-
-        # noinspection PyUnboundLocalVariable
-        result = client.request(link)
-        result = client.parseDOM(result, 'iframe', ret='src')[0]
-        video = client.request(result)
-
-        iframes = client.parseDOM(video, 'iframe', ret='src')
-
-        try:
-            if 'Greece' in self.geo_loc() and 'HLSLink' in video:
-                raise IndexError
-            elif 'Greece' not in self.geo_loc():
-                yt_link = iframes[0]
+        if 'radiostreaming' in url:
+            return url
+        elif 'youtube' in url or len(url) == 11:
+            return self.yt_session(url)
+        else:
+            html = client.request(url)
+            if 'live' in url:
+                html = client.parseDOM(html, 'div', attrs={'class': 'videoWrapper'})[-1]
+            iframe = client.parseDOM(html, 'iframe', ret='src')[0]
+            if 'youtube' in iframe:
+                return self.resolve(iframe)
             else:
-                yt_link = iframes[-1]
-            if not result:
-                raise IndexError
-        except IndexError:
-            result = client.parseDOM(video, 'script', attrs={'type': 'text/javascript'})[0]
-            result = re.search(r'HLSLink = \'(.+?)\'', result).group(1)
-            return result
-
-        regxpr = re.compile(r'(?:youtube.com|youtu.be)/(?:embed/|.+?\?v=|.+?&v=|v/)([\w-]+)')
-        vid = regxpr.findall(yt_link)[0]
-
-        stream = self.yt_session(vid)
-
-        return stream
-
-    @staticmethod
-    def resolve_radio(url):
-
-        result = client.request(url)
-
-        try:
-            stream = re.compile('file: ?.(.*?).,').findall(result)[0]
-        except IndexError:
-            stream = re.compile('"(.+?radiostreaming.+?)"').findall(result)[0]
-
-        stream = stream.replace('https', 'http')
-
-        return stream
+                result = client.request(iframe)
+                url = re.search(r'var (?:HLSLink|stream) = [\'"](.+?)[\'"]', result)
+                if url:
+                    url = url.group(1)
+                    return url
+                else:
+                    iframes = client.parseDOM(result, 'iframe', ret='src')
+                    try:
+                        return self.resolve(iframes[0])
+                    except YouTubeException as e:
+                        return self.resolve(iframes[1])
 
     @staticmethod
     def yt_session(yt_id):
@@ -701,18 +688,8 @@ class indexer:
 
         if not addon_enabled:
 
-            streams = [s for s in streams if 'mpd' not in s['title']]
+            streams = [s for s in streams if 'mpd' not in s['title'].lower()]
 
         stream = streams[0]['url']
 
         return stream
-
-    @staticmethod
-    def geo_loc():
-
-        json_obj = client.request('https://extreme-ip-lookup.com/json/')
-
-        if not json_obj or 'error' in json_obj:
-            json_obj = client.request('https://ip-api.com/json/')
-
-        return json_obj

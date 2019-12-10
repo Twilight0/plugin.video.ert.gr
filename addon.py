@@ -36,7 +36,7 @@ if 'audio' in infoLabel('Container.FolderPath') and action is None:
 
 if action is None:
     from resources.lib import ert
-    ert.indexer().root()
+    ert.Indexer().root()
 
 elif action == 'addBookmark':
     from tulip import bookmarks
@@ -48,52 +48,48 @@ elif action == 'deleteBookmark':
 
 elif action == 'channels':
     from resources.lib import ert
-    ert.indexer().channels()
+    ert.Indexer().channels()
 
 elif action == 'bookmarks':
     from resources.lib import ert
-    ert.indexer().bookmarks()
+    ert.Indexer().bookmarks()
 
-elif action == 'categories':
+elif action == 'index':
     from resources.lib import ert
-    ert.indexer().categories()
+    ert.Indexer().index()
+
+elif action == 'sports':
+    from resources.lib import ert
+    ert.Indexer().sports()
 
 elif action == 'episodes':
     from resources.lib import ert
-    ert.indexer().episodes(url)
+    ert.Indexer().episodes(url)
+
+elif action == 'series':
+    from resources.lib import ert
+    ert.Indexer().series()
+
+elif action == 'series_episodes':
+    from resources.lib import ert
+    ert.Indexer().series_episodes(url)
 
 elif action == 'recent':
     from resources.lib import ert
-    ert.indexer().recent()
-
-elif action == 'live':
-    from resources.lib import ert
-    ert.indexer().live(url)
+    ert.Indexer().recent()
 
 elif action == 'radios':
     from resources.lib import ert
-    ert.indexer().radios()
-
-elif action == 'radio':
-    from resources.lib import ert
-    ert.indexer().radio(url)
+    ert.Indexer().radios()
 
 elif action == 'district':
     from resources.lib import ert
-    ert.indexer().district()
-
-elif action == 'search':
-    from resources.lib import ert
-    ert.indexer().search()
+    ert.Indexer().district()
 
 elif action == 'play':
     from resources.lib import ert
-    ert.indexer().play(url)
+    ert.Indexer().play(url)
 
 elif action == 'cache_clear':
     from tulip import cache
     cache.clear(withyes=False)
-
-elif action == 'yt_settings':
-    from tulip import control
-    control.openSettings(id='plugin.video.youtube')

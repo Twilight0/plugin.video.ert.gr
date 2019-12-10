@@ -1,3 +1,10 @@
+[B]2.0.0[/B]
+- Rework of most aspects and sections of the addon
+- Revamped sports section
+- Categories list is now populated from different source (index)
+- Added movies and tv series section
+- Tweaked resolvers
+
 [B]1.8.0[/B]
 - Added ERT Play 3, 4 and Sports live channels
 - Updated icons style for live channels
