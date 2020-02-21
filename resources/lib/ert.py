@@ -645,8 +645,6 @@ class Indexer:
 
     def resolve(self, url):
 
-        _url = url
-
         if 'radiostreaming' in url:
             return url
         elif 'youtube' in url or len(url) == 11:
@@ -654,7 +652,7 @@ class Indexer:
         else:
             html = client.request(url)
             if 'live' in url:
-                html = client.parseDOM(html, 'div', attrs={'class': 'videoWrapper'})[-1]
+                html = client.parseDOM(html, 'div', attrs={'class': 'wpb_column vc_column_container vc_col-sm-12'})[0]
             if 'iframe' in html:
                 iframe = client.parseDOM(html, 'iframe', ret='src')[0]
             else:
@@ -672,9 +670,9 @@ class Indexer:
                 else:
                     iframes = client.parseDOM(result, 'iframe', ret='src')
                     try:
-                        return self.resolve(iframes[0])
-                    except YouTubeException as e:
                         return self.resolve(iframes[1])
+                    except YouTubeException:
+                        return self.resolve(iframes[0])
 
     @staticmethod
     def yt_session(yt_id):
