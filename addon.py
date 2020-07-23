@@ -1,24 +1,20 @@
 # -*- coding: utf-8 -*-
 
 '''
-    This program is free software: you can redistribute it and/or modify
-    it under the terms of the GNU General Public License as published by
-    the Free Software Foundation, either version 3 of the License, or
-    (at your option) any later version.
+    ERTFlix Addon
+    Author Twilight0
 
-    This program is distributed in the hope that it will be useful,
-    but WITHOUT ANY WARRANTY; without even the implied warranty of
-    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-    GNU General Public License for more details.
-
-    You should have received a copy of the GNU General Public License
-    along with this program.  If not, see <http://www.gnu.org/licenses/>.
+    SPDX-License-Identifier: GPL-3.0-only
+    See LICENSES/GPL-3.0-only for more information.
 '''
+
 from __future__ import absolute_import
 
 from sys import argv
 from tulip.compat import parse_qsl
 from tulip.control import infoLabel
+from tulip import bookmarks, cache
+from resources.lib import ert
 
 syshandle = int(argv[1])
 sysaddon = argv[0]
@@ -35,61 +31,52 @@ if 'audio' in infoLabel('Container.FolderPath') and action is None:
     action = 'radios'
 
 if action is None:
-    from resources.lib import ert
     ert.Indexer().root()
 
 elif action == 'addBookmark':
-    from tulip import bookmarks
     bookmarks.add(url)
 
 elif action == 'deleteBookmark':
-    from tulip import bookmarks
     bookmarks.delete(url)
 
 elif action == 'channels':
-    from resources.lib import ert
     ert.Indexer().channels()
 
 elif action == 'bookmarks':
-    from resources.lib import ert
     ert.Indexer().bookmarks()
 
 elif action == 'index':
-    from resources.lib import ert
     ert.Indexer().index()
 
 elif action == 'sports':
-    from resources.lib import ert
     ert.Indexer().sports()
 
-elif action == 'episodes':
-    from resources.lib import ert
-    ert.Indexer().episodes(url)
+elif action == 'listing':
+    ert.Indexer().listing(url)
 
 elif action == 'series':
-    from resources.lib import ert
     ert.Indexer().series()
 
-elif action == 'series_episodes':
-    from resources.lib import ert
-    ert.Indexer().series_episodes(url)
+elif action == 'shows':
+    ert.Indexer().shows()
+
+elif action == 'kids':
+    ert.Indexer().kids()
 
 elif action == 'recent':
-    from resources.lib import ert
     ert.Indexer().recent()
 
 elif action == 'radios':
-    from resources.lib import ert
     ert.Indexer().radios()
 
 elif action == 'district':
-    from resources.lib import ert
     ert.Indexer().district()
 
 elif action == 'play':
-    from resources.lib import ert
     ert.Indexer().play(url)
 
+elif action == 'youtube':
+    ert.Indexer().yt(url)
+
 elif action == 'cache_clear':
-    from tulip import cache
     cache.clear(withyes=False)

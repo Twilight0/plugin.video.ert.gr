@@ -1,213 +1,252 @@
-# Kodi Media Center language file
-# Addon Name: ERT Player
+# Addon Name: ERTFLIX
 # Addon id: plugin.video.ert.gr
-# Addon version: 1.0.0
-# Addon Provider: lambda, twilight0
+# Addon Provider: Twilight0
 
 msgid ""
 msgstr ""
 
+"Project-Id-Version: ERTFLIX\n"
+"POT-Creation-Date: 2016-06-22 11:29+0000\n"
+"PO-Revision-Date: 2020-07-16 11:29+0000\n"
+"Last-Translator: twilight0\n"
+"Language-Team: Greek (https://www.alivegr.net)\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Language: el\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
 
-msgctxt "#32001"
+msgctxt "#30001"
 msgid "Live"
 msgstr "Ζωντανά"
 
-msgctxt "#32002"
+msgctxt "#30002"
 msgid "Latest"
 msgstr "Πρόσφατα"
 
-msgctxt "#32003"
+msgctxt "#30003"
 msgid "Sports"
 msgstr "Αθλητικά"
 
-msgctxt "#32004"
+msgctxt "#30004"
 msgid "News"
 msgstr "Ειδήσεις"
 
-msgctxt "#32005"
+msgctxt "#30005"
 msgid "Football"
 msgstr "Ποδόσφαιρο"
 
-msgctxt "#32006"
+msgctxt "#30006"
 msgid "Weather"
 msgstr "Καιρός"
 
-msgctxt "#32007"
-msgid "Documentary"
+msgctxt "#30007"
+msgid "Documentaries"
 msgstr "Ντοκιμαντέρ"
 
-msgctxt "#32008"
+msgctxt "#30008"
 msgid "Basket"
 msgstr "Μπάσκετ"
 
-msgctxt "#32009"
+msgctxt "#30009"
 msgid "Cartoons"
 msgstr "Παιδικά"
 
-msgctxt "#32010"
+msgctxt "#30010"
 msgid "Entertainment"
 msgstr "Ψυχαγωγία"
 
-msgctxt "#32011"
+msgctxt "#30011"
 msgid "Index"
 msgstr "Ευρετήριο"
 
-msgctxt "#32012"
+msgctxt "#30012"
 msgid "Bookmarks"
 msgstr "Σελιδοδείκτες"
 
-msgctxt "#32013"
+msgctxt "#30013"
 msgid "Search"
 msgstr "Αναζήτηση"
 
-msgctxt "#32021"
+msgctxt "#30014"
+msgid "Inputstream addon is not enabled,[CR]do you want to enable it now?"
+msgstr "Το πρόσθετο inputstream δεν είναι ενεργοποιημένο,[CR]θέλετε να το ενεργοποιήσετε τώρα;"
+
+msgctxt "#30015"
+msgid "Youtube Channel"
+msgstr "Κανάλι Youtube"
+
+msgctxt "#30016"
+msgid "Interviews"
+msgstr "Συνεντεύξεις"
+
+msgctxt "#30017"
+msgid "Foreign"
+msgstr "Ξένα"
+
+msgctxt "#30018"
+msgid "Greek"
+msgstr "Ελληνικά"
+msgctxt "#30019"
+msgid "Learning at home"
+msgstr "Μαθαίνοντας στο σπίτι"
+
+msgctxt "#30020"
+msgid "TV Shows"
+msgstr "Εκπομπές"
+
+msgctxt "#30021"
 msgid "ERT 1"
 msgstr "ΕΡΤ 1"
 
-msgctxt "#32022"
+msgctxt "#30022"
 msgid "ERT 2"
 msgstr "ΕΡΤ 2"
 
-msgctxt "#32023"
+msgctxt "#30023"
 msgid "ERT 3"
 msgstr "ΕΡΤ 3"
 
-msgctxt "#32024"
+msgctxt "#30024"
 msgid "ERT World"
 msgstr "ΕΡΤ World"
 
-msgctxt "#32025"
+msgctxt "#30025"
 msgid "ERT Play"
 msgstr "ΕΡΤ Play"
 
-msgctxt "#32026"
+msgctxt "#30026"
 msgid "Radio"
 msgstr "Ραδιόφωνο"
 
-msgctxt "#32027"
+msgctxt "#30027"
 msgid "Districts' Stations"
 msgstr "Περιφερειακοί Σταθμοί"
 
-msgctxt "#32028"
+msgctxt "#30028"
 msgid "Proto Programma"
 msgstr "Πρώτο Πρόγραμμα"
 
-msgctxt "#32029"
+msgctxt "#30029"
 msgid "Deftero Programma"
 msgstr "Δεύτερο Πρόγραμμα"
 
-msgctxt "#32030"
+msgctxt "#30030"
 msgid "Trito Programma"
 msgstr "Τρίτο Πρόγραμμα"
 
-msgctxt "#32031"
+msgctxt "#30031"
 msgid "Kosmos"
 msgstr "Κόσμος"
 
-msgctxt "#32032"
+msgctxt "#30032"
 msgid "H Foni tis Elladas"
 msgstr "Η Φωνή της Ελλάδας"
 
-msgctxt "#32033"
+msgctxt "#30033"
 msgid "ERA Spor"
 msgstr "ΈΡΑ Σπορ"
 
-msgctxt "#32034"
+msgctxt "#30034"
 msgid "958FM"
 msgstr "958FM"
 
-msgctxt "#32035"
+msgctxt "#30035"
 msgid "102FM"
 msgstr "102FM"
 
-msgctxt "#32036"
+msgctxt "#30036"
 msgid "Clear function cache"
 msgstr "Καθαρισμός προσωρινής μνήμης"
 
-msgctxt "#32037"
+msgctxt "#30037"
 msgid "ERT Play 2"
 msgstr "EPT Play 2"
 
-msgctxt "#32038"
-msgid "Series"
+msgctxt "#30038"
+msgid "TV Series"
 msgstr "Σειρές"
 
-msgctxt "#32039"
+msgctxt "#30039"
 msgid "ERT Play 3"
 msgstr "ERT Play 3"
 
-msgctxt "#32040"
+msgctxt "#30040"
 msgid "ERT Play 4"
 msgstr "ERT Play 4"
 
-msgctxt "#32041"
+msgctxt "#30041"
 msgid "ERT Sports"
 msgstr "ERT Sports"
 
-msgctxt "#32042"
+msgctxt "#30042"
 msgid "ERT Play 5"
 msgstr "ERT Play 5"
 
-msgctxt "#32043"
+msgctxt "#30043"
 msgid "Volleyball"
 msgstr "Βόλεϊ"
 
-msgctxt "#32044"
+msgctxt "#30044"
 msgid "Tennis"
 msgstr "Τένις"
 
-msgctxt "#32045"
+msgctxt "#30045"
 msgid "Polo"
 msgstr "Πόλο"
 
-msgctxt "#32046"
+msgctxt "#30046"
 msgid "Water sports"
 msgstr "Υγρός στίβος"
 
-msgctxt "#32047"
+msgctxt "#30047"
 msgid "Athletics"
 msgstr "Στίβος"
 
-msgctxt "#32048"
+msgctxt "#30048"
 msgid "Handball"
 msgstr "Χαντμπολ"
 
-msgctxt "#32049"
+msgctxt "#30049"
 msgid "Movies"
 msgstr "Ταινίες"
 
-msgctxt "#32050"
+msgctxt "#30050"
 msgid "Marathon"
 msgstr "Μαραθώνιος"
 
-msgctxt "#32051"
+msgctxt "#30051"
 msgid "Ice skating"
 msgstr "Καλλιτεχνικό πατινάζ"
 
-msgctxt "#32052"
+msgctxt "#30052"
 msgid "Various sports"
 msgstr "Άλλα σπορ"
 
-msgctxt "#32053"
+msgctxt "#30053"
 msgid "Auto-Moto"
 msgstr "Auto-Moto"
 
-msgctxt "#32054"
-msgid ""
-msgstr ""
+msgctxt "#30054"
+msgid "Web"
+msgstr "Web"
+
+msgctxt "#30055"
+msgid "Archive"
+msgstr "Αρχείο"
 
 msgctxt "#30402"
 msgid "Success"
 msgstr "Επιτυχία"
 
-msgctxt "#32500"
+msgctxt "#30500"
 msgid "Next..."
 msgstr "Επόμενα..."
 
-msgctxt "#32501"
+msgctxt "#30501"
 msgid "Add to bookmarks"
 msgstr "Προσθήκη στους σελιδοδείκτες"
 
-msgctxt "#32502"
+msgctxt "#30502"
 msgid "Remove from bookmarks"
 msgstr "Αφαίρεση από σελιδοδείκτες"

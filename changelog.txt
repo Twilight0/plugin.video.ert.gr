@@ -1,3 +1,13 @@
+[B]3.0.0[/B]
+- Reworked addon for new website design
+- New artwork
+- Renamed to ERTFlix
+- Updated resolver
+- Reworked strings.po to be in range 30000+
+- Removed weather menu item as content is not present on the main website
+- Removed Hebrew translation (it hasn't been updated properly for long time)
+- Bumped dependencies
+
 [B]2.0.4[/B]
 - Minor tweak to prioritize Greek live stream over worldwide one
 

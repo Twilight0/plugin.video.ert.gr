@@ -1,25 +1,24 @@
 # -*- coding: utf-8 -*-
 
 '''
-    This program is free software: you can redistribute it and/or modify
-    it under the terms of the GNU General Public License as published by
-    the Free Software Foundation, either version 3 of the License, or
-    (at your option) any later version.
+    ERTFlix Addon
+    Author Twilight0
 
-    This program is distributed in the hope that it will be useful,
-    but WITHOUT ANY WARRANTY; without even the implied warranty of
-    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-    GNU General Public License for more details.
-
-    You should have received a copy of the GNU General Public License
-    along with this program.  If not, see <https://www.gnu.org/licenses/>.
+    SPDX-License-Identifier: GPL-3.0-only
+    See LICENSES/GPL-3.0-only for more information.
 '''
+
 from __future__ import absolute_import
 
 import json, re
+from os.path import exists as file_exists
+from zlib import decompress
+from base64 import b64decode
 from tulip import bookmarks, directory, client, cache, control
-from tulip.compat import iteritems, urlparse, range
+from tulip.compat import iteritems, urlparse, range, quote
+from tulip.parsers import itertags_wrapper
 from youtube_resolver import resolve as yt_resolver
+from youtube_registration import register_api_keys
 from youtube_plugin.youtube.youtube_exceptions import YouTubeException
 
 
@@ -27,127 +26,153 @@ class Indexer:
 
     def __init__(self):
 
-        self.list = []
+        self.list = []; self.data = []
 
-        self.base_link = 'https://webtv.ert.gr'
-        self.series_link = self.base_link.replace('webtv', 'series')
-
-        self.categories_link = ''.join([self.base_link, '/ekpompes/'])
-        self.recent_link = ''.join([self.base_link, '/feed/'])
-        self.shows_link = ''.join([self.base_link, '/shows'])
-
+        self.base_link = 'https://www.ertflix.gr'
+        self.old_base = 'https://webtv.ert.gr'
         self.category_link = ''.join([self.base_link, '/category'])
-        self.news_link = ''.join([self.category_link, '/eidiseis/'])
-        self.weather_link = ''.join([self.category_link, '/kairos/'])
-        self.cartoons_link = ''.join([self.category_link, '/paidika/'])
+        self.ajax = ''.join([self.base_link, '/wp-admin/admin-ajax.php'])
+        self.load_more = 'action=loadmore_post_by_cat&query={query}&page={page}'
+        self.load_search = 'action=load_search_post_info&item_id={data_id}'
 
-        self.tag_link = ''.join([self.base_link, '/tag'])
-        self.culture_link = ''.join([self.tag_link, '/politismos/'])
-        self.doc_link = ''.join([self.tag_link, '/ntokimanter/'])
+        self.index_link = ''.join([self.base_link, '/ekpompes/'])
+        self.recent_link = ''.join([self.base_link, '/feed/'])
+        self.shows_link = ''.join([self.old_base, '/shows'])
 
-        self.sports_link = ''.join([self.shows_link, '/athlitika/'])
-        self.movies_link = ''.join([self.category_link, '/movies/xenes-tainies/'])
+        self.sports_link = ''.join([self.category_link, '/athlitika/'])
+
+        self.news_link = ''.join([self.category_link, '/enimerosi-24/'])
+        self.cartoons_link = ''.join([self.category_link, '/pedika/'])
+        self.learning_link = ''.join([self.category_link, '/mathainoume-sto-spiti/'])
+        self.entertainment_link = ''.join([self.category_link, '/psichagogia/'])
+        self.interviews_link = ''.join([self.category_link, '/synentefxeis/'])
+        self.archive_link = ''.join([self.category_link, '/arxeio/'])
+
+        self.ellinika_docs = ''.join([self.category_link, '/ellhnika-docs/'])
+        self.ksena_docs = ''.join([self.category_link, '/ksena-docs/'])
+
+        self.movies_link = ''.join([self.category_link, '/tainies/'])
+        self.series_link = ''.join([self.category_link, '/ksenes-seires/'])
+        self.web_series_link = ''.join([self.category_link, '/web-series/'])
 
         self.ert1_link = ''.join([self.base_link, '/ert1-live/'])
         self.ert2_link = ''.join([self.base_link, '/ert2-live/'])
         self.ert3_link = ''.join([self.base_link, '/ert3-live/'])
         self.ertw_link = ''.join([self.base_link, '/ertworld-live/'])
-        self.ertp1_link = ''.join([self.base_link, '/ert-play-live/'])
-        self.ertp2_link = ''.join([self.base_link, '/ert-play-2-live/'])
-        self.ertp3_link = ''.join([self.base_link, '/ertplay-3-live/'])
-        self.ertp4_link = ''.join([self.base_link, '/ertplay-4-live/'])
-        self.ertp5_link = ''.join([self.base_link, '/ertplay-5-live/'])
-        self.ertsports_link = ''.join([self.base_link, '/ert-sports-live/'])
+        self.erts_link = ''.join([self.base_link, '/ert-sports-live/'])
 
-        self.radio_link = 'https://webradio.ert.gr/'
+        self.radio_link = 'https://webradio.ert.gr'
         self.radio_stream = 'http://radiostreaming.ert.gr'
-        self.district_link = ''.join([self.radio_link, 'liveradio/list.html'])
+        self.district_link = ''.join([self.radio_link, '/liveradio/list.html'])
+        self.channel_id = 'UC0jVU-mK53vDQZcSZB5mVHg'
+        self.scramble = (
+            'eJwVzMEOgiAAANBfcZzTZWBBt5xtpmsecqVdGiqQqUGAbdb69+YHvPcFbQO2DkA+XBLsBxjjjdsPiKueYKqGpuHQmuV9Z'
+            'YPuIbSs1kYTjyplPCGl6NlomK7l07Kn9Wo5gIUDqGpvHZvmdnf40NMUElLkkGdhl+gUx++xKGl1dbN92kp5hmg3K8Nqze'
+            'yMYhQmj/U+jY6V4Jv8hS7S3so4Ar8/Amw3tA=='
+        )
+
+        self.keys_registration()
+        self.check_inputstream_addon()
 
     def root(self):
 
         self.list = [
             {
-                'title': control.lang(32001),
+                'title': control.lang(30001),
                 'action': 'channels',
-                'icon': 'channels.png'
+                'icon': 'channels.jpg'
             }
             ,
             {
-                'title': control.lang(32002),
+                'title': control.lang(30002),
                 'action': 'recent',
-                'icon': 'recent.png'
+                'icon': 'recent.jpg'
             }
             ,
             {
-                'title': control.lang(32011),
+                'title': control.lang(30015),
+                'action': 'youtube',
+                'icon': 'youtube.jpg',
+                'url': ''.join(
+                    ['plugin://plugin.video.youtube/channel/', self.channel_id, '/?addon_id=', control.addonInfo('id')]
+                ),
+                'isFolder': 'False', 'isPlayable': 'False'
+            }
+            ,
+            {
+                'title': control.lang(30011),
                 'action': 'index',
-                'icon': 'index.png'
+                'icon': 'index.jpg'
             }
             ,
             {
-                'title': control.lang(32004),
-                'action': 'episodes',
+                'title': control.lang(30004),
+                'action': 'listing',
                 'url': self.news_link,
-                'icon': 'news.png'
+                'icon': 'news.jpg'
             }
             ,
             {
-                'title': control.lang(32003),
-                'action': 'sports',
-                'url': self.sports_link,
-                'icon': 'sports.png'
-            }
-            ,
-            {
-                'title': control.lang(32006),
-                'action': 'episodes',
-                'url': self.weather_link,
-                'icon': 'weather.png'
-            }
-            ,
-            {
-                'title': control.lang(32007),
-                'action': 'episodes',
-                'url': self.doc_link,
-                'icon': 'documentary.png'
-            }
-            ,
-            {
-                'title': control.lang(32009),
-                'action': 'episodes',
-                'url': self.cartoons_link,
-                'icon': 'cartoons.png'
-            }
-            ,
-            {
-                'title': control.lang(32049),
-                'action': 'episodes',
-                'icon': 'movies.png',
+                'title': control.lang(30049),
+                'action': 'listing',
+                'icon': 'movies.jpg',
                 'url': self.movies_link
             }
             ,
             {
-                'title': control.lang(32038),
+                'title': control.lang(30020),
+                'action': 'shows',
+                'icon': 'shows.jpg'
+            }
+            ,
+            {
+                'title': control.lang(30038),
                 'action': 'series',
-                'icon': 'series.png'
+                'icon': 'series.jpg'
             }
             ,
             {
-                'title': control.lang(32026),
-                'action': 'radios',
-                'icon': 'radio.png'
+                'title': control.lang(30003),
+                'action': 'listing',
+                'url': self.sports_link,
+                'icon': 'sports.jpg'
             }
             ,
             {
-                'title': control.lang(32012),
+                'title': control.lang(30009),
+                'action': 'kids',
+                'icon': 'kids.jpg'
+            }
+            ,
+            {
+                'title': control.lang(30055),
+                'action': 'listing',
+                'url': self.archive_link,
+                'icon': 'archive.jpg'
+            }
+            ,
+            {
+                'title': control.lang(30013),
+                'action': 'search',
+                'icon': 'search.jpg'
+            }
+            ,
+            {
+                'title': control.lang(30012),
                 'action': 'bookmarks',
-                'icon': 'bookmarks.png'
+                'icon': 'bookmarks.jpg'
+            }
+            ,
+            {
+                'title': control.lang(30026),
+                'action': 'radios',
+                'icon': 'radio.jpg'
             }
         ]
 
         for item in self.list:
 
-            cache_clear = {'title': 32036, 'query': {'action': 'cache_clear'}}
+            cache_clear = {'title': 30036, 'query': {'action': 'cache_clear'}}
             item.update({'cm': [cache_clear]})
 
         directory.add(self.list, content='videos')
@@ -156,89 +181,39 @@ class Indexer:
 
         self.list = [
             {
-                'title': 32021,
-                'action': 'play',
+                'title': control.lang(30021),
                 'url': self.ert1_link,
-                'isFolder': 'False',
-                'icon': 'live1.png'
-            },
-
+                'icon': 'EPT1.png'
+            }
+            ,
             {
-                'title': 32022,
-                'action': 'play',
+                'title': control.lang(30022),
                 'url': self.ert2_link,
-                'isFolder': 'False',
-                'icon': 'live2.png'
-            },
-
+                'icon': 'EPT2.png'
+            }
+            ,
             {
-                'title': 32023,
-                'action': 'play',
+                'title': control.lang(30023),
                 'url': self.ert3_link,
-                'isFolder': 'False',
-                'icon': 'live3.png'
-            },
-
+                'icon': 'EPT3.png'
+            }
+            ,
             {
-                'title': 32024,
-                'action': 'play',
+                'title': control.lang(30024),
                 'url': self.ertw_link,
-                'isFolder': 'False',
-                'icon': 'livew.png'
+                'icon': 'EPT WORLD.png'
             }
             ,
             {
-                'title': 32025,
-                'action': 'play',
-                'url': self.ertp1_link,
-                'isFolder': 'False',
-                'icon': 'livep.png'
-            }
-            ,
-            {
-                'title': 32037,
-                'action': 'play',
-                'url': self.ertp2_link,
-                'isFolder': 'False',
-                'icon': 'livep.png'
-            }
-            ,
-            {
-                'title': 32039,
-                'action': 'play',
-                'url': self.ertp3_link,
-                'isFolder': 'False',
-                'icon': 'livep.png'
-            }
-            ,
-            {
-                'title': 32040,
-                'action': 'play',
-                'url': self.ertp4_link,
-                'isFolder': 'False',
-                'icon': 'livep.png'
-            }
-            ,
-            {
-                'title': 32042,
-                'action': 'play',
-                'url': self.ertp5_link,
-                'isFolder': 'False',
-                'icon': 'livep.png'
-            }
-            ,
-            {
-                'title': 32041,
-                'action': 'play',
-                'url': self.ertsports_link,
-                'isFolder': 'False',
-                'icon': 'lives.png'
+                'title': control.lang(30041),
+                'url': self.erts_link,
+                'icon': 'EPT SPORTS.png'
             }
         ]
 
         for i in self.list:
 
-            i.update({'fanart': control.addonmedia('webtv_fanart.jpg')})
+            i.update({'action': 'play', 'isFolder': 'False', 'fanart': control.addonmedia('live_fanart.jpg')})
 
         directory.add(self.list, content='videos')
 
@@ -254,7 +229,7 @@ class Indexer:
         for i in self.list:
             bookmark = dict((k, v) for k, v in iteritems(i) if not k == 'next')
             bookmark['delbookmark'] = i['url']
-            i.update({'cm': [{'title': 32502, 'query': {'action': 'deleteBookmark', 'url': json.dumps(bookmark)}}]})
+            i.update({'cm': [{'title': 30502, 'query': {'action': 'deleteBookmark', 'url': json.dumps(bookmark)}}]})
 
         control.sortmethods('title')
 
@@ -262,7 +237,7 @@ class Indexer:
 
     def index_listing(self):
 
-        html = client.request(self.categories_link)
+        html = client.request(self.index_link)
 
         div = client.parseDOM(html, 'div', attrs={'class': 'wpb_wrapper'})[0]
 
@@ -283,110 +258,99 @@ class Indexer:
 
     def index(self):
 
-        self.list = cache.get(self.index_listing, 24)
+        self.list = cache.get(self.index_listing, 48)
 
         if self.list is None:
             return
 
         for i in self.list:
-            i.update({'action': 'episodes'})
+            i.update({'action': 'listing'})
 
         for i in self.list:
             bookmark = dict((k, v) for k, v in iteritems(i) if not k == 'next')
             bookmark['bookmark'] = i['url']
-            i.update({'cm': [{'title': 32501, 'query': {'action': 'addBookmark', 'url': json.dumps(bookmark)}}]})
+            i.update({'cm': [{'title': 30501, 'query': {'action': 'addBookmark', 'url': json.dumps(bookmark)}}]})
 
         self.list = sorted(self.list, key=lambda k: k['title'].lower())
 
         directory.add(self.list, content='videos')
 
-    def episodes(self, url):
-
-        self.list = cache.get(self.episodes_list, 2, url)
-
-        if self.list is None:
-            return
-
-        for i in self.list:
-            i.update({'action': 'play', 'isFolder': 'False', 'nextlabel': 32500, 'nextaction': 'episodes'})
-
-        directory.add(self.list, content='videos')
-
-    def recent(self):
-
-        self.list = cache.get(self.recent_list, 1, self.recent_link)
-
-        if self.list is None:
-            return
-
-        for i in self.list:
-            i.update({'action': 'play', 'isFolder': 'False'})
-
-        directory.add(self.list, content='videos')
-
-    def play(self, url):
-
-        title = None
-
-        if url == self.ert1_link:
-            title = control.lang(32021)
-        elif url == self.ert2_link:
-            title = control.lang(32022)
-        elif url == self.ert3_link:
-            title = control.lang(32023)
-        elif url == self.ertw_link:
-            title = control.lang(32024)
-        elif url == self.ertp1_link:
-            title = control.lang(32025)
-        elif url == self.ertp2_link:
-            title = control.lang(32037)
-        elif url == self.ertp3_link:
-            title = control.lang(32039)
-        elif url == self.ertp4_link:
-            title = control.lang(32040)
-        elif url == self.ertsports_link:
-            title = control.lang(32041)
-
-        stream = self.resolve(url)
-
-        dash = '.mpd' in stream or 'dash' in stream
-
-        directory.resolve(stream, meta={'title': title}, dash=dash)
-
-    def episodes_list(self, url):
-
-        if client.request(url, redirect=False, output='response')[0] == u'301':
-            url = re.sub(r'category/[\w-]+', 'tag', url)
+    def _listing(self, url):
 
         result = client.request(url)
 
-        items = client.parseDOM(result, 'div', attrs={'class': 'blog-listing-con.+?'})[0]
-        items = client.parseDOM(items, 'div', attrs={'class': 'item-thumbnail'})
+        ajaxes = [i for i in client.parseDOM(result, 'script', attrs={'type': 'text/javascript'}) if 'ajaxurl' in i]
 
-        try:
-            nexturl = client.parseDOM(result, 'a', ret='href', attrs={'rel': 'next'})[0]
-        except Exception:
-            nexturl = ''
+        ajax1 = json.loads(re.search(r'var loadmore_params = ({.+})', ajaxes[-1]).group(1))
+        ajax2 = json.loads(re.search(r'var cactus = ({.+})', ajaxes[0]).group(1))
+
+        ajax = self._ajax_merge(ajax1, ajax2)
+
+        pages = int(ajax['max_page'])
+        posts = ajax['posts']
+
+        for i in range(0, pages + 1):
+            a = client.request(self.ajax, post=self.load_more.format(query=quote(posts), page=str(i)))
+            self.data.append(a)
+
+        html = '\n'.join(self.data)
+
+        items = itertags_wrapper(html, 'div', attrs={'class': 'item item-\d+'})
 
         for item in items:
 
-            try:
-                plot = client.parseDOM(item, 'p')[0]
-            except Exception:
-                plot = ''
-
-            title = client.parseDOM(item, 'a', ret='title')[0]
+            data_id = item.attributes['data-id']
+            img = item.attributes['style']
+            image = re.search(r'url\((.+)\)', img).group(1)
+            url = client.parseDOM(item.text, 'a', ret='href')[0]
+            load = client.request(self.ajax, post=self.load_search.format(data_id=data_id))
+            title = client.parseDOM(load, 'p', {'class': 'video-title'})[0].strip()
             title = client.replaceHTMLCodes(title)
 
-            url = client.parseDOM(item, 'a', ret='href')[0]
+            if 'tainies' in url or 'seires' in url:
 
-            image = client.parseDOM(item, 'img', ret='src')[0]
+                description = client.parseDOM(load, 'div', {'class': 'video-description'})[-1]
+                paragraphs = [client.stripTags(p) for p in client.parseDOM(description, 'p')]
+                plot = client.replaceHTMLCodes('[CR]'.join([paragraphs[0], paragraphs[1], paragraphs[-2]]))
 
-            self.list.append({'title': title, 'url': url, 'image': image, 'next': nexturl, 'plot': plot})
+            else:
+
+                plot = client.replaceHTMLCodes(
+                    client.stripTags(client.parseDOM(load, 'div', {'class': 'video-description'})[-1])
+                )
+
+            f = client.parseDOM(load, 'div', attrs={'class': 'cover'}, ret='style')[0]
+            fanart = re.search(r'url\((.+)\)', f).group(1)
+
+            self.list.append({'title': title, 'image': image, 'url': url, 'plot': plot, 'fanart': fanart})
 
         return self.list
 
+    def listing(self, url):
+
+        self.list = cache.get(self._listing, 2, url)
+        # self.list = self._listing(url)
+
+        if self.list is None:
+            return
+
+        for i in self.list:
+            if 'tainies' in url or 'enimerosi-24' in url:
+                i.update({'action': 'play', 'isFolder': 'False'})
+            else:
+                i.update({'action': 'listing'})
+
+        if 'tainies' in url:
+            content = 'movies'
+        elif 'category' in url or 'arxeio' in url:
+            content = 'tvshows'
+        else:
+            content = 'videos'
+
+        directory.add(self.list, content=content)
+
     def recent_list(self, url):
+
         try:
 
             result = client.request(url)
@@ -408,160 +372,9 @@ class Indexer:
 
         return self.list
 
-    def sports(self):
+    def recent(self):
 
-        self.list = [
-            {
-                'title': 32005,
-                'url': ''.join([self.category_link, '/athlitika/athlitikoi-agwnes/football/']),
-                'image': ''.join([self.base_link, '/wp-content/uploads/2017/10/football.jpg'])
-            }
-            ,
-            {
-                'title': 32008,
-                'url': ''.join([self.category_link, '/athlitika/athlitikoi-agwnes/basketball/']),
-                'image': ''.join([self.base_link, '/wp-content/uploads/2017/10/basket-1.jpg'])
-            }
-            ,
-            {
-                'title': 32043,
-                'url': ''.join([self.category_link, '/athlitika/athlitikoi-agwnes/volley/']),
-                'image': ''.join([self.base_link, '/wp-content/uploads/2017/10/volei.jpg'])
-            }
-            ,
-            {
-                'title': 32044,
-                'url': ''.join([self.tag_link, '/tennis/']),
-                'image': ''.join([self.base_link, '/wp-content/uploads/2018/09/tennis.png'])
-            }
-            ,
-            {
-                'title': 32045,
-                'url': ''.join([self.tag_link, '/polo/']),
-                'image': ''.join([self.base_link, '/wp-content/uploads/2018/09/POlo.png'])
-            }
-            ,
-            {
-                'title': 32046,
-                'url': ''.join([self.category_link, '/athlitika/athlitikoi-agwnes/ygros-stivos/']),
-                'image': ''.join([self.base_link, '/wp-content/uploads/2018/09/YgrosStivos.png'])
-            }
-            ,
-            {
-                'title': 32047,
-                'url': ''.join([self.category_link, '/athlitika/athlitikoi-agwnes/stivos/']),
-                'image': ''.join([self.base_link, '/wp-content/uploads/2018/09/Stivos.png'])
-            }
-            ,
-            {
-                'title': 32048,
-                'url': ''.join([self.tag_link, '/chantmpol/']),
-                'image': ''.join([self.base_link, '/wp-content/uploads/2018/09/Handball.png'])
-            },
-            {
-                'title': 32053,
-                'url': ''.join([self.category_link, '/ert2/auto-moto-ert/']),
-                'image': ''.join([self.base_link, '/wp-content/uploads/2018/09/AutoMoto.png'])
-            }
-            ,
-            {
-                'title': 32050,
-                'url': ''.join([self.tag_link, '/marathonios/']),
-                'image': ''.join([self.base_link, '/wp-content/uploads/2018/09/Marathonios.png'])
-            }
-            ,
-            {
-                'title': 32051,
-                'url': ''.join([self.tag_link, '/pagkosmio-protathlima-patinaz/']),
-                'image': ''.join([self.base_link, '/wp-content/uploads/2018/09/KallitexnikoPatinaz.png'])
-            }
-            ,
-            {
-                'title': 32052,
-                'url': ''.join([self.category_link, '/athlitika/athlitikoi-agwnes/alla-spor/']),
-                'image': ''.join([self.base_link, '/wp-content/uploads/2017/10/alla-spor.jpg'])
-            }
-        ]
-
-        for i in self.list:
-            i.update({'action': 'episodes'})
-
-        directory.add(self.list)
-
-    def series_listing(self):
-
-        html = client.request(self.series_link)
-
-        items = client.parseDOM(html, 'figure', attrs={'class': 'wpb_wrapper vc_figure'})
-
-        for item in items:
-
-            url = client.parseDOM(item, 'a', ret='href')[0]
-            title = urlparse(url).path.strip('/').replace('-', ' ').capitalize()
-            image = client.parseDOM(item, 'img', ret='src')[0]
-
-            self.list.append({'title': title, 'image': image, 'url': url})
-
-        return self.list
-
-    def series(self):
-
-        self.list = cache.get(self.series_listing, 6)
-
-        if self.list is None:
-            return
-
-        for i in self.list:
-            i.update({'action': 'series_episodes'})
-            bookmark = dict((k, v) for k, v in iteritems(i) if not k == 'next')
-            bookmark['bookmark'] = i['url']
-            i.update({'cm': [{'title': 32501, 'query': {'action': 'addBookmark', 'url': json.dumps(bookmark)}}]})
-
-        directory.add(self.list, content='videos')
-
-    def series_episodes_listing(self, url):
-
-        def appender(html_):
-
-            _list = []
-
-            items = client.parseDOM(html_, 'div', attrs={'class': 'pt-cv-ifield'})
-
-            for _item in items:
-
-                title = client.parseDOM(_item, 'h4')[0]
-                label = client.replaceHTMLCodes(client.parseDOM(title, 'a')[0])
-                image = client.parseDOM(_item, 'img', ret='src')[0]
-                plot = client.parseDOM(_item, 'div', attrs={'class': 'pt-cv-content'})[0].partition('<br>')[0]
-                _url = client.parseDOM(title, 'a', ret='href')[0]
-
-                _list.append({'title': label, 'url': _url, 'plot': plot, 'image': image})
-
-            return _list
-
-        html = client.request(url)
-
-        if 'vc_btn3-container vc_btn3-center' in html:
-
-            inner = client.parseDOM(html, 'div', attrs={'class': 'vc_btn3-container vc_btn3-center'})
-
-            for i in inner:
-
-                inner_url = client.parseDOM(i, 'a', ret='href')[0]
-
-                inner_html = client.request(inner_url)
-
-                self.list = appender(inner_html)
-
-        else:
-
-            self.list = appender(html)
-
-        return self.list
-
-    def series_episodes(self, url):
-
-        self.list = cache.get(self.series_episodes_listing, 6, url)
+        self.list = cache.get(self.recent_list, 1, self.recent_link)
 
         if self.list is None:
             return
@@ -571,18 +384,104 @@ class Indexer:
 
         directory.add(self.list, content='videos')
 
+    def play(self, url):
+
+        stream = self.resolve(url)
+
+        m3u8_dash = 'm3u8' in stream and control.kodi_version() >= 18.0
+
+        directory.resolve(
+            stream, dash=any(['.mpd' in stream, m3u8_dash]), mimetype='application/vnd.apple.mpegurl' if m3u8_dash else None,
+            manifest_type='hls' if m3u8_dash else None
+        )
+
+    def kids(self):
+
+        self.list = [
+            {
+                'title': 30009,
+                'url': self.cartoons_link,
+                'icon': 'kids.jpg'
+            }
+            ,
+            {
+                'title': 30019,
+                'url': self.learning_link,
+                'icon': 'kids.jpg'
+            }
+        ]
+
+        for i in self.list:
+            i.update({'action': 'episodes'})
+
+        directory.add(self.list)
+
+    def series(self):
+
+        self.list = [
+            {
+                'title': ''.join([control.lang(30017), ' ', control.lang(30038)]),
+                'url': self.series_link,
+                'icon': 'series.jpg'
+            }
+            ,
+            {
+                'title': ''.join([control.lang(30054), ' ', control.lang(30038)]),
+                'url': self.web_series_link,
+                'icon': 'series.jpg'
+            }
+        ]
+
+        for i in self.list:
+            i.update({'action': 'listing'})
+
+        directory.add(self.list)
+
+    def shows(self):
+
+        self.list = [
+            {
+                'title': control.lang(30010),
+                'url': self.entertainment_link,
+                'icon': 'shows.jpg'
+            }
+            ,
+            {
+                'title': control.lang(30016),
+                'url': self.interviews_link,
+                'icon': 'interviews.jpg'
+            }
+            ,
+            {
+                'title': ''.join([control.lang(30017), ' ', control.lang(30007)]),
+                'url': self.ksena_docs,
+                'icon': 'documentaries.jpg'
+            }
+            ,
+            {
+                'title': ''.join([control.lang(30018), ' ', control.lang(30007)]),
+                'url': self.ellinika_docs,
+                'icon': 'documentaries.jpg'
+            }
+        ]
+
+        for i in self.list:
+            i.update({'action': 'listing'})
+
+        directory.add(self.list)
+
     def radios(self):
 
         images = [
             ''.join([self.radio_link, i]) for i in [
-                'wp-content/uploads/2016/06/proto.jpg', 'wp-content/uploads/2016/06/deytero.jpg',
-                '/wp-content/uploads/2016/06/trito.jpg', 'wp-content/uploads/2016/06/kosmos.jpg',
-                'wp-content/uploads/2016/06/VoiceOgGreece.png', 'wp-content/uploads/2016/06/eraSport.jpg',
-                'wp-content/uploads/2016/06/958fm.jpg', 'wp-content/uploads/2016/06/102fm.jpg'
+                '/wp-content/uploads/2016/06/proto.jpg', '/wp-content/uploads/2016/06/deytero.jpg',
+                '/wp-content/uploads/2016/06/trito.jpg', '/wp-content/uploads/2016/06/kosmos.jpg',
+                '/wp-content/uploads/2016/06/VoiceOgGreece.png', '/wp-content/uploads/2016/06/eraSport.jpg',
+                '/wp-content/uploads/2016/06/958fm.jpg', '/wp-content/uploads/2016/06/102fm.jpg'
             ]
         ]
 
-        names = [control.lang(n) for n in list(range(32028, 32036))]
+        names = [control.lang(n) for n in list(range(30028, 30036))]
 
         urls = [
             ''.join([self.radio_stream, i]) for i in [
@@ -597,7 +496,7 @@ class Indexer:
 
             self.list.append({'title': title, 'url': link, 'image': image, 'action': 'play', 'isFolder': 'False'})
 
-        district = {'title': control.lang(32027), 'action': 'district', 'icon': 'district.png'}
+        district = {'title': control.lang(30027), 'action': 'district', 'icon': 'district.jpg'}
 
         self.list.append(district)
 
@@ -646,33 +545,90 @@ class Indexer:
     def resolve(self, url):
 
         if 'radiostreaming' in url:
+
             return url
+
         elif 'youtube' in url or len(url) == 11:
+
             return self.yt_session(url)
+
         else:
+
             html = client.request(url)
-            if 'live' in url:
-                html = client.parseDOM(html, 'div', attrs={'class': 'wpb_column vc_column_container vc_col-sm-12'})[0]
+
             if 'iframe' in html:
+
                 iframe = client.parseDOM(html, 'iframe', ret='src')[0]
+
             else:
+
                 availability = client.parseDOM(html, 'strong')[-1]
                 control.okDialog(control.name(), availability)
+
                 return 'https://static.adman.gr/inpage/blank.mp4'
+
             if 'youtube' in iframe:
+
                 return self.resolve(iframe)
+
             else:
+
                 result = client.request(iframe)
-                url = re.search(r'var (?:HLSLink|stream) = [\'"](.+?)[\'"]', result)
+                url = re.findall(r'(?:var )?(?:HLSLink|stream)(?:ww)?\s+=\s+[\'"](.+?)[\'"]', result)
+
                 if url:
-                    url = url.group(1)
-                    return url
+
+                    if len(url) >= 2:
+
+                        url = [i for i in url if 'dvrorigingr' in i]
+
+                        if url and client.request(url[0], output='response')[0] != u'200':
+                            url = [i for i in url if 'dvrorigin' in i]
+
+                        return url[0]
+
+                    else:
+
+                        return url[0]
+
                 else:
+
                     iframes = client.parseDOM(result, 'iframe', ret='src')
+
                     try:
-                        return self.resolve(iframes[1])
+                        return self.resolve(iframes[-1])
                     except YouTubeException:
                         return self.resolve(iframes[0])
+
+    def keys_registration(self):
+
+        filepath = control.transPath(
+            control.join(control.addon('plugin.video.youtube').getAddonInfo('profile'), 'api_keys.json'))
+
+        setting = control.addon('plugin.video.youtube').getSetting('youtube.allow.dev.keys') == 'true'
+
+        if file_exists(filepath):
+
+            f = open(filepath)
+
+            jsonstore = json.load(f)
+
+            no_keys = control.addonInfo('id') not in jsonstore.get('keys', 'developer').get('developer')
+
+            if setting and no_keys:
+
+                keys = json.loads(decompress(b64decode(self.scramble)))
+                register_api_keys(control.addonInfo('id'), keys['api_key'], keys['id'], keys['secret'])
+
+            f.close()
+
+    @staticmethod
+    def _geo_detect():
+
+        _json = client.request('https://geoip.siliconweb.com/geo.json', output='json')
+
+        if 'GR' in _json['country']:
+            return True
 
     @staticmethod
     def yt_session(yt_id):
@@ -691,3 +647,45 @@ class Indexer:
         stream = streams[0]['url']
 
         return stream
+
+    @staticmethod
+    def check_inputstream_addon():
+
+        try:
+            addon_enabled = control.addon_details('inputstream.adaptive').get('enabled')
+        except KeyError:
+            addon_enabled = False
+
+        leia_plus = control.kodi_version() >= 18.0
+
+        first_time_file = control.join(control.dataPath, 'first_time')
+
+        if not addon_enabled and not file_exists(first_time_file) and leia_plus:
+
+            try:
+
+                yes = control.yesnoDialog(control.lang(30003))
+
+                if yes:
+                    control.enable_addon('inputstream.adaptive')
+                    control.infoDialog(control.lang(30402))
+
+                with open(first_time_file, 'a'):
+                    pass
+
+            except Exception:
+
+                pass
+
+    @staticmethod
+    def yt(url):
+
+        control.execute('Container.Update({},return)'.format(url))
+
+    @staticmethod
+    def _ajax_merge(d1, d2):
+
+        d = d1.copy()
+        d.update(d2)
+
+        return d

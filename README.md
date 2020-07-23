@@ -1,29 +1,15 @@
-ERT Player addon for Kodi
+ERTFLIX addon for Kodi
 ======================
 
 About
 -----
 ERT live and on-demand broadcasts
 
-Kodi Addon for http://www.ert.gr
+Kodi Addon for http://www.ertflix.gr
 
 This addon is not published nor endorsed by ert.gr
 
 This addon offers content available in Greece
-
-
-Artwork
----------------------
-Artwork sourced from public domains:
-
-http://logos.wikia.com/wiki/ERT1?file=ERT1_2015.svg
-
-http://logos.wikia.com/wiki/ERT2?file=ERT2_2015.svg
-
-http://logos.wikia.com/wiki/ERT3?file=ERT3_2015.svg
-
-http://www.iconarchive.com/show/windows-8-icons-by-icons8.html
-
 
 License
 -------
