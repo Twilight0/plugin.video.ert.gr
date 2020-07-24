@@ -78,5 +78,8 @@ elif action == 'play':
 elif action == 'youtube':
     ert.Indexer().yt(url)
 
+elif action == 'search':
+    ert.Indexer().search()
+
 elif action == 'cache_clear':
     cache.clear(withyes=False)

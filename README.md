@@ -1,11 +1,13 @@
-ERTFLIX addon for Kodi
+ERTFlix addon for Kodi
 ======================
+
+![](https://raw.githubusercontent.com/Twilight0/plugin.video.ert.gr/master/icon.png)
 
 About
 -----
 ERT live and on-demand broadcasts
 
-Kodi Addon for http://www.ertflix.gr
+Kodi Addon for https://www.ertflix.gr
 
 This addon is not published nor endorsed by ert.gr
 
@@ -13,6 +15,5 @@ This addon offers content available in Greece
 
 License
 -------
-This software is released under the [GPL 3.0 license] [1].
 
-[1]: http://www.gnu.org/licenses/gpl-3.0.html
+[GNU GPL, version 3](https://raw.githubusercontent.com/Twilight0/plugin.video.ert.gr/master/LICENCES/GPL-3.0-only "Repo ZIP")

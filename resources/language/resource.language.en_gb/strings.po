@@ -49,7 +49,7 @@ msgid "Basket"
 msgstr ""
 
 msgctxt "#30009"
-msgid "Kids"
+msgid "Cartoons"
 msgstr ""
 
 msgctxt "#30010"

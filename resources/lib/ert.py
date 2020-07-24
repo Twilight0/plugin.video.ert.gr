@@ -14,7 +14,7 @@ import json, re
 from os.path import exists as file_exists
 from zlib import decompress
 from base64 import b64decode
-from tulip import bookmarks, directory, client, cache, control
+from tulip import bookmarks, directory, client, cache, control, cleantitle
 from tulip.compat import iteritems, urlparse, range, quote
 from tulip.parsers import itertags_wrapper
 from youtube_resolver import resolve as yt_resolver
@@ -43,7 +43,6 @@ class Indexer:
 
         self.news_link = ''.join([self.category_link, '/enimerosi-24/'])
         self.cartoons_link = ''.join([self.category_link, '/pedika/'])
-        self.learning_link = ''.join([self.category_link, '/mathainoume-sto-spiti/'])
         self.entertainment_link = ''.join([self.category_link, '/psichagogia/'])
         self.interviews_link = ''.join([self.category_link, '/synentefxeis/'])
         self.archive_link = ''.join([self.category_link, '/arxeio/'])
@@ -140,8 +139,9 @@ class Indexer:
             ,
             {
                 'title': control.lang(30009),
-                'action': 'kids',
-                'icon': 'kids.jpg'
+                'action': 'listing',
+                'icon': 'kids.jpg',
+                'url': self.cartoons_link
             }
             ,
             {
@@ -154,7 +154,8 @@ class Indexer:
             {
                 'title': control.lang(30013),
                 'action': 'search',
-                'icon': 'search.jpg'
+                'icon': 'search.jpg',
+                'isFolder': 'False', 'isPlayable': 'False'
             }
             ,
             {
@@ -279,50 +280,77 @@ class Indexer:
 
         result = client.request(url)
 
-        ajaxes = [i for i in client.parseDOM(result, 'script', attrs={'type': 'text/javascript'}) if 'ajaxurl' in i]
+        header = client.parseDOM(result, 'h2')[0]
 
-        ajax1 = json.loads(re.search(r'var loadmore_params = ({.+})', ajaxes[-1]).group(1))
-        ajax2 = json.loads(re.search(r'var cactus = ({.+})', ajaxes[0]).group(1))
+        if 'enimerosi-24' not in url:
 
-        ajax = self._ajax_merge(ajax1, ajax2)
+            ajaxes = [i for i in client.parseDOM(result, 'script', attrs={'type': 'text/javascript'}) if 'ajaxurl' in i]
 
-        pages = int(ajax['max_page'])
-        posts = ajax['posts']
+            ajax1 = json.loads(re.search(r'var loadmore_params = ({.+})', ajaxes[-1]).group(1))
+            ajax2 = json.loads(re.search(r'var cactus = ({.+})', ajaxes[0]).group(1))
 
-        for i in range(0, pages + 1):
-            a = client.request(self.ajax, post=self.load_more.format(query=quote(posts), page=str(i)))
-            self.data.append(a)
+            ajax = self._ajax_merge(ajax1, ajax2)
 
-        html = '\n'.join(self.data)
+            pages = int(ajax['max_page'])
+            posts = ajax['posts']
 
-        items = itertags_wrapper(html, 'div', attrs={'class': 'item item-\d+'})
+            for i in range(0, pages + 1):
+                a = client.request(self.ajax, post=self.load_more.format(query=quote(posts), page=str(i)))
+                self.data.append(a)
 
-        for item in items:
+            html = '\n'.join(self.data)
 
-            data_id = item.attributes['data-id']
-            img = item.attributes['style']
-            image = re.search(r'url\((.+)\)', img).group(1)
-            url = client.parseDOM(item.text, 'a', ret='href')[0]
-            load = client.request(self.ajax, post=self.load_search.format(data_id=data_id))
-            title = client.parseDOM(load, 'p', {'class': 'video-title'})[0].strip()
-            title = client.replaceHTMLCodes(title)
+            items = itertags_wrapper(html, 'div', attrs={'class': 'item item-\d+'})
 
-            if 'tainies' in url or 'seires' in url:
+            for item in items:
 
-                description = client.parseDOM(load, 'div', {'class': 'video-description'})[-1]
-                paragraphs = [client.stripTags(p) for p in client.parseDOM(description, 'p')]
-                plot = client.replaceHTMLCodes('[CR]'.join([paragraphs[0], paragraphs[1], paragraphs[-2]]))
+                data_id = item.attributes['data-id']
+                img = item.attributes['style']
+                image = re.search(r'url\((.+)\)', img).group(1)
+                url = client.parseDOM(item.text, 'a', ret='href')[0]
+                load = client.request(self.ajax, post=self.load_search.format(data_id=data_id))
+                title = client.parseDOM(load, 'p', {'class': 'video-title'})[0].strip()
+                title = client.replaceHTMLCodes(title)
 
-            else:
+                if 'tainies' in url or 'seires' in url:
 
-                plot = client.replaceHTMLCodes(
-                    client.stripTags(client.parseDOM(load, 'div', {'class': 'video-description'})[-1])
-                )
+                    description = client.parseDOM(load, 'div', {'class': 'video-description'})[-1]
+                    paragraphs = [client.stripTags(p) for p in client.parseDOM(description, 'p')]
+                    plot = client.replaceHTMLCodes('[CR]'.join([paragraphs[0], paragraphs[1], paragraphs[-2]]))
 
-            f = client.parseDOM(load, 'div', attrs={'class': 'cover'}, ret='style')[0]
-            fanart = re.search(r'url\((.+)\)', f).group(1)
+                else:
 
-            self.list.append({'title': title, 'image': image, 'url': url, 'plot': plot, 'fanart': fanart})
+                    plot = client.replaceHTMLCodes(
+                        client.stripTags(client.parseDOM(load, 'div', {'class': 'video-description'})[-1])
+                    )
+
+                f = client.parseDOM(load, 'div', attrs={'class': 'cover'}, ret='style')[0]
+                fanart = re.search(r'url\((.+)\)', f).group(1)
+
+                data = {'title': title, 'image': image, 'url': url, 'plot': plot, 'fanart': fanart}
+
+                if header in [
+                    u'TV ΣΕΙΡΕΣ', u'ΨΥΧΑΓΩΓΙΑ', u'ΣΥΝΕΝΤΕΥΞΕΙΣ', u'ΕΛΛΗΝΙΚΑ ΝΤΟΚΙΜΑΝΤΕΡ', u'ΞΕΝΑ ΝΤΟΚΙΜΑΝΤΕΡ',
+                    u'ΠΑΙΔΙΚΑ', u'Η ΕΡΤ ΘΥΜΑΤΑΙ', 'ΑΘΛΗΤΙΚΑ', u'WEB ΣΕΙΡΕΣ'
+                ] and not 'archeio' in url:
+                    data.update({'playable': 'false'})
+
+                self.list.append(data)
+
+        else:
+
+            items = itertags_wrapper(result, 'div', attrs={'class': 'item item-\d+'})
+
+            for item in items:
+
+                text = item.text
+
+                img = item.attributes['style']
+                image = re.search(r'url\((.+)\)', img).group(1)
+                title = client.replaceHTMLCodes(client.parseDOM(text, 'a')[0].strip())
+                url = client.parseDOM(text, 'a', ret='href')[0]
+
+                self.list.append({'title': title, 'image': image, 'url': url})
 
         return self.list
 
@@ -335,14 +363,16 @@ class Indexer:
             return
 
         for i in self.list:
-            if 'tainies' in url or 'enimerosi-24' in url:
-                i.update({'action': 'play', 'isFolder': 'False'})
-            else:
+
+            if i.get('playable') == 'false':
+                del i['playable']
                 i.update({'action': 'listing'})
+            else:
+                i.update({'action': 'play', 'isFolder': 'False'})
 
         if 'tainies' in url:
             content = 'movies'
-        elif 'category' in url or 'arxeio' in url:
+        elif 'category' in url or 'arxeio' in url and not 'enimerosi-24' in url:
             content = 'tvshows'
         else:
             content = 'videos'
@@ -386,7 +416,11 @@ class Indexer:
 
     def play(self, url):
 
+        # stream = cache.get(self.resolve, 48, url)
         stream = self.resolve(url)
+
+        if stream is None:
+            return
 
         m3u8_dash = 'm3u8' in stream and control.kodi_version() >= 18.0
 
@@ -394,27 +428,6 @@ class Indexer:
             stream, dash=any(['.mpd' in stream, m3u8_dash]), mimetype='application/vnd.apple.mpegurl' if m3u8_dash else None,
             manifest_type='hls' if m3u8_dash else None
         )
-
-    def kids(self):
-
-        self.list = [
-            {
-                'title': 30009,
-                'url': self.cartoons_link,
-                'icon': 'kids.jpg'
-            }
-            ,
-            {
-                'title': 30019,
-                'url': self.learning_link,
-                'icon': 'kids.jpg'
-            }
-        ]
-
-        for i in self.list:
-            i.update({'action': 'episodes'})
-
-        directory.add(self.list)
 
     def series(self):
 
@@ -469,6 +482,17 @@ class Indexer:
             i.update({'action': 'listing'})
 
         directory.add(self.list)
+
+    def search(self):
+
+        input_str = control.inputDialog()
+
+        try:
+            input_str = cleantitle.strip_accents(input_str.decode('utf-8'))
+        except (UnicodeEncodeError, UnicodeDecodeError, AttributeError):
+            input_str = cleantitle.strip_accents(input_str)
+
+        input_str = quote(input_str.encode('utf-8'))
 
     def radios(self):
 
@@ -544,6 +568,8 @@ class Indexer:
 
     def resolve(self, url):
 
+        _url = url
+
         if 'radiostreaming' in url:
 
             return url
@@ -574,22 +600,38 @@ class Indexer:
             else:
 
                 result = client.request(iframe)
-                url = re.findall(r'(?:var )?(?:HLSLink|stream)(?:ww)?\s+=\s+[\'"](.+?)[\'"]', result)
+                urls = re.findall(r'(?:var )?(?:HLSLink|stream)(?:ww)?\s+=\s+[\'"](.+?)[\'"]', result)
 
-                if url:
+                if urls:
 
-                    if len(url) >= 2:
+                    geo = self._geo_detect()
 
-                        url = [i for i in url if 'dvrorigingr' in i]
+                    if len(urls) >= 2:
 
-                        if url and client.request(url[0], output='response')[0] != u'200':
-                            url = [i for i in url if 'dvrorigin' in i]
+                        if _url.endswith('-live/'):
 
-                        return url[0]
+                            if not geo:
+                                return urls[-1]
+                            else:
+                                return urls[0]
+
+                        else:
+
+                            url = [i for i in urls if 'dvrorigingr' in i][0]
+
+                            if client.request(url):
+
+                                return url
+
+                            else:
+
+                                url = [i for i in urls if 'dvrorigin' in i][0]
+
+                                return url
 
                     else:
 
-                        return url[0]
+                        return url[-1]
 
                 else:
 
