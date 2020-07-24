@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 
 '''
-    ERTFlix Addon
+    ERTflix Addon
     Author Twilight0
 
     SPDX-License-Identifier: GPL-3.0-only
@@ -290,7 +290,6 @@ class Indexer:
             ajax2 = json.loads(re.search(r'var cactus = ({.+})', ajaxes[0]).group(1))
 
             ajax = self._ajax_merge(ajax1, ajax2)
-
             pages = int(ajax['max_page'])
             posts = ajax['posts']
 
@@ -357,7 +356,6 @@ class Indexer:
     def listing(self, url):
 
         self.list = cache.get(self._listing, 2, url)
-        # self.list = self._listing(url)
 
         if self.list is None:
             return

@@ -1,4 +1,4 @@
-ERTFlix addon for Kodi
+ERTflix addon for Kodi
 ======================
 
 ![](https://raw.githubusercontent.com/Twilight0/plugin.video.ert.gr/master/icon.png)

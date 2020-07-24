@@ -1,7 +1,7 @@
 [B]3.0.0[/B]
 - Reworked addon for new website design
 - New artwork
-- Renamed to ERTFlix
+- Renamed to ERTflix
 - Updated resolver
 - Reworked strings.po to be in range 30000+
 - Removed weather menu item as content is not present on the main website

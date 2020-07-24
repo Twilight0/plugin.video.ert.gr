@@ -1,5 +1,5 @@
 ﻿<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
-<addon id="plugin.video.ert.gr" version="3.0.0~alpha2" name="ERTFlix" provider-name="Twilight0">
+<addon id="plugin.video.ert.gr" version="3.0.0~alpha2" name="ERTflix" provider-name="Twilight0">
     <requires>
         <import addon="xbmc.python" version="2.24.0" />
         <import addon="script.module.tulip" version="2.6.7" />
@@ -12,8 +12,8 @@
         <platform>all</platform>
         <reuselanguageinvoker>false</reuselanguageinvoker>
         <language>en el</language>
-        <summary lang="en_GB">ERTFlix addon for Kodi</summary>
-        <summary lang="el_GR">Πρόσθετο ERTFlix για το Kodi</summary>
+        <summary lang="en_GB">ERTflix addon for Kodi</summary>
+        <summary lang="el_GR">Πρόσθετο ERTflix για το Kodi</summary>
         <description lang="en_GB">ERT live and on-demand broadcasts</description>
         <description lang="el_GR">Ζωντανές και on demand υπηρεσίες της ΕΡΤ</description>
         <disclaimer lang="en_GB">This addon offers content available in Greece and is not published nor endorsed by ert.gr</disclaimer>
@@ -25,7 +25,7 @@
         <news>[B]3.0.0[/B]
 - Reworked addon for new website design
 - New artwork
-- Renamed to ERTFlix
+- Renamed to ERTflix
 - Updated resolver
 - Reworked strings.po to be in range 30000+
 - Removed weather menu item as content is not present on the main website
