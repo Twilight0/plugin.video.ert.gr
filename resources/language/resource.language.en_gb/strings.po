@@ -236,6 +236,10 @@ msgctxt "#30055"
 msgid "Archive"
 msgstr ""
 
+msgctxt "#30056"
+msgid "[I]Click to enter a search term[/I]"
+msgstr ""
+
 msgctxt "#30500"
 msgid "Next..."
 msgstr ""

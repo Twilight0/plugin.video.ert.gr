@@ -14,8 +14,8 @@ import json, re
 from os.path import exists as file_exists
 from zlib import decompress
 from base64 import b64decode
-from tulip import bookmarks, directory, client, cache, control, cleantitle
-from tulip.compat import iteritems, urlparse, range, quote
+from tulip import bookmarks, directory, client, cache, control
+from tulip.compat import iteritems, range, quote
 from tulip.parsers import itertags_wrapper
 from youtube_resolver import resolve as yt_resolver
 from youtube_registration import register_api_keys
@@ -150,13 +150,13 @@ class Indexer:
                 'url': self.archive_link,
                 'icon': 'archive.jpg'
             }
-            ,
-            {
-                'title': control.lang(30013),
-                'action': 'search',
-                'icon': 'search.jpg',
-                'isFolder': 'False', 'isPlayable': 'False'
-            }
+            # ,
+            # {
+            #     'title': control.lang(30013),
+            #     'action': 'search',
+            #     'icon': 'search.jpg',
+            #     'isFolder': 'False', 'isPlayable': 'False'
+            # }
             ,
             {
                 'title': control.lang(30012),
@@ -414,8 +414,7 @@ class Indexer:
 
     def play(self, url):
 
-        # stream = cache.get(self.resolve, 48, url)
-        stream = self.resolve(url)
+        stream = cache.get(self.resolve, 48, url)
 
         if stream is None:
             return
@@ -481,16 +480,24 @@ class Indexer:
 
         directory.add(self.list)
 
-    def search(self):
+    # def search(self):
+    #
+    #     self.list = [
+    #         {
+    #             'title': control.lang(30056),
+    #             'url': self.entertainment_link,
+    #             'icon': 'shows.jpg'
+    #         }
+    #     ]
 
-        input_str = control.inputDialog()
-
-        try:
-            input_str = cleantitle.strip_accents(input_str.decode('utf-8'))
-        except (UnicodeEncodeError, UnicodeDecodeError, AttributeError):
-            input_str = cleantitle.strip_accents(input_str)
-
-        input_str = quote(input_str.encode('utf-8'))
+        # input_str = control.inputDialog()
+        #
+        # try:
+        #     input_str = cleantitle.strip_accents(input_str.decode('utf-8'))
+        # except (UnicodeEncodeError, UnicodeDecodeError, AttributeError):
+        #     input_str = cleantitle.strip_accents(input_str)
+        #
+        # input_str = quote(input_str.encode('utf-8'))
 
     def radios(self):
 

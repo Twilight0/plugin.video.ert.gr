@@ -235,6 +235,10 @@ msgctxt "#30055"
 msgid "Archive"
 msgstr "Αρχείο"
 
+msgctxt "#30056"
+msgid "[I]Click to enter a search term[/I]"
+msgstr "[I]Πατήστε για να εισάγετε όρο αναζήτησης[/I]"
+
 msgctxt "#30402"
 msgid "Success"
 msgstr "Επιτυχία"

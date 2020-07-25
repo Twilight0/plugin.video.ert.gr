@@ -14,11 +14,12 @@ from sys import argv
 from tulip.compat import parse_qsl
 from tulip.control import infoLabel
 from tulip import bookmarks, cache
+# noinspection PyUnresolvedReferences
 from resources.lib import ert
 
 syshandle = int(argv[1])
 sysaddon = argv[0]
-params = dict(parse_qsl(argv[2].replace('?','')))
+params = dict(parse_qsl(argv[2][1:]))
 
 ########################################################################################################################
 
