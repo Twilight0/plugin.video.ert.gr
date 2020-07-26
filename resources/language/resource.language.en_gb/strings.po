@@ -41,7 +41,7 @@ msgid "Weather"
 msgstr ""
 
 msgctxt "#30007"
-msgid "Documentaries"
+msgid ""
 msgstr ""
 
 msgctxt "#30008"
@@ -81,11 +81,11 @@ msgid "Interviews"
 msgstr ""
 
 msgctxt "#30017"
-msgid "Foreign"
+msgid "Foreign Documentaries"
 msgstr ""
 
 msgctxt "#30018"
-msgid "Greek"
+msgid "Greek Documentaries"
 msgstr ""
 
 msgctxt "#30019"
@@ -229,7 +229,7 @@ msgid "Auto-Moto"
 msgstr ""
 
 msgctxt "#30054"
-msgid "Web"
+msgid "Web Series"
 msgstr ""
 
 msgctxt "#30055"
@@ -238,6 +238,18 @@ msgstr ""
 
 msgctxt "#30056"
 msgid "[I]Click to enter a search term[/I]"
+msgstr ""
+
+msgctxt "#30057"
+msgid "Greek Series"
+msgstr ""
+
+msgctxt "#30058"
+msgid "No bookmarks found"
+msgstr ""
+
+msgctxt "#30059"
+msgid "Clear bookmarks"
 msgstr ""
 
 msgctxt "#30500"

@@ -41,8 +41,8 @@ msgid "Weather"
 msgstr "Καιρός"
 
 msgctxt "#30007"
-msgid "Documentaries"
-msgstr "Ντοκιμαντέρ"
+msgid ""
+msgstr ""
 
 msgctxt "#30008"
 msgid "Basket"
@@ -81,12 +81,13 @@ msgid "Interviews"
 msgstr "Συνεντεύξεις"
 
 msgctxt "#30017"
-msgid "Foreign"
-msgstr "Ξένα"
+msgid "Foreign Documentaries"
+msgstr "Ξένα Ντοκυμαντέρ"
 
 msgctxt "#30018"
-msgid "Greek"
-msgstr "Ελληνικά"
+msgid "Greek Documentaries"
+msgstr "Ελληνικά Ντοκυμαντέρ"
+
 msgctxt "#30019"
 msgid "Learning at home"
 msgstr "Μαθαίνοντας στο σπίτι"
@@ -228,8 +229,8 @@ msgid "Auto-Moto"
 msgstr "Auto-Moto"
 
 msgctxt "#30054"
-msgid "Web"
-msgstr "Web"
+msgid "Web Series"
+msgstr "Web Σειρές"
 
 msgctxt "#30055"
 msgid "Archive"
@@ -238,6 +239,18 @@ msgstr "Αρχείο"
 msgctxt "#30056"
 msgid "[I]Click to enter a search term[/I]"
 msgstr "[I]Πατήστε για να εισάγετε όρο αναζήτησης[/I]"
+
+msgctxt "#30057"
+msgid "Greek Series"
+msgstr "Ελληνικές Σειρές"
+
+msgctxt "#30058"
+msgid "No bookmarks found"
+msgstr "Δεν βρέθηκαν σελιδοδείκτες"
+
+msgctxt "#30059"
+msgid "Clear bookmarks"
+msgstr "Εκκαθάριση σελιδοδεικτών"
 
 msgctxt "#30402"
 msgid "Success"

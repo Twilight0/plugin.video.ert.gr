@@ -223,7 +223,7 @@ class Indexer:
         self.list = bookmarks.get()
 
         if not self.list:
-            na = [{'title': 'N/A', 'action': None}]
+            na = [{'title': control.lang(30058), 'action': None}]
             directory.add(na)
             return
 
@@ -233,6 +233,12 @@ class Indexer:
             i.update({'cm': [{'title': 30502, 'query': {'action': 'deleteBookmark', 'url': json.dumps(bookmark)}}]})
 
         control.sortmethods('title')
+
+        clear_menu = {
+            'title': control.lang(30059), 'action': 'clear_bookmarks'
+        }
+
+        self.list.insert(0, clear_menu)
 
         directory.add(self.list, content='videos')
 
@@ -365,6 +371,9 @@ class Indexer:
             if i.get('playable') == 'false':
                 del i['playable']
                 i.update({'action': 'listing'})
+                bookmark = dict((k, v) for k, v in iteritems(i) if not k == 'next')
+                bookmark['bookmark'] = i['url']
+                i.update({'cm': [{'title': 30501, 'query': {'action': 'addBookmark', 'url': json.dumps(bookmark)}}]})
             else:
                 i.update({'action': 'play', 'isFolder': 'False'})
 
@@ -430,13 +439,13 @@ class Indexer:
 
         self.list = [
             {
-                'title': ''.join([control.lang(30017), ' ', control.lang(30038)]),
+                'title': control.lang(30057),
                 'url': self.series_link,
                 'icon': 'series.jpg'
             }
             ,
             {
-                'title': ''.join([control.lang(30054), ' ', control.lang(30038)]),
+                'title': control.lang(30054),
                 'url': self.web_series_link,
                 'icon': 'series.jpg'
             }
@@ -463,13 +472,13 @@ class Indexer:
             }
             ,
             {
-                'title': ''.join([control.lang(30017), ' ', control.lang(30007)]),
+                'title': control.lang(30017),
                 'url': self.ksena_docs,
                 'icon': 'documentaries.jpg'
             }
             ,
             {
-                'title': ''.join([control.lang(30018), ' ', control.lang(30007)]),
+                'title': control.lang(30018),
                 'url': self.ellinika_docs,
                 'icon': 'documentaries.jpg'
             }
