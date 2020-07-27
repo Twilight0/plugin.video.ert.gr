@@ -14,7 +14,7 @@ import json, re
 from os.path import exists as file_exists
 from zlib import decompress
 from base64 import b64decode
-from tulip import bookmarks, directory, client, cache, control
+from tulip import bookmarks, directory, client, cache, control, workers
 from tulip.compat import iteritems, range, quote
 from tulip.parsers import itertags_wrapper
 from youtube_resolver import resolve as yt_resolver
@@ -31,7 +31,7 @@ class Indexer:
         self.base_link = 'https://www.ertflix.gr'
         self.old_base = 'https://webtv.ert.gr'
         self.category_link = ''.join([self.base_link, '/category'])
-        self.ajax = ''.join([self.base_link, '/wp-admin/admin-ajax.php'])
+        self.ajax_url = ''.join([self.base_link, '/wp-admin/admin-ajax.php'])
         self.load_more = 'action=loadmore_post_by_cat&query={query}&page={page}'
         self.load_search = 'action=load_search_post_info&item_id={data_id}'
 
@@ -282,6 +282,48 @@ class Indexer:
 
         directory.add(self.list, content='videos')
 
+    def thread(self, url, post=None):
+
+        result = client.request(url, post=post, timeout=20)
+        self.data.append(result)
+
+    def loop(self, item, header, count):
+
+        data_id = item.attributes['data-id']
+        img = item.attributes['style']
+        image = re.search(r'url\((.+)\)', img).group(1)
+        url = client.parseDOM(item.text, 'a', ret='href')[0]
+        load = client.request(self.ajax_url, post=self.load_search.format(data_id=data_id), timeout=20)
+        title = client.parseDOM(load, 'p', {'class': 'video-title'})[0].strip()
+        title = client.replaceHTMLCodes(title)
+
+        if 'tainies' in url or 'seires' in url:
+
+            description = client.parseDOM(load, 'div', {'class': 'video-description'})[-1]
+            paragraphs = [client.stripTags(p) for p in client.parseDOM(description, 'p')]
+            plot = client.replaceHTMLCodes('[CR]'.join([paragraphs[0], paragraphs[1], paragraphs[-2]]))
+
+        else:
+
+            plot = client.replaceHTMLCodes(
+                client.stripTags(client.parseDOM(load, 'div', {'class': 'video-description'})[-1])
+            )
+
+        f = client.parseDOM(load, 'div', attrs={'class': 'cover'}, ret='style')[0]
+        fanart = re.search(r'url\((.+)\)', f).group(1)
+
+        data = {
+            'title': title, 'image': image, 'url': url, 'plot': plot, 'fanart': fanart, 'header': header, 'code': count
+        }
+
+        if header in [
+            u'TV ΣΕΙΡΕΣ', u'ΨΥΧΑΓΩΓΙΑ', u'ΣΥΝΕΝΤΕΥΞΕΙΣ', u'ΕΛΛΗΝΙΚΑ ΝΤΟΚΙΜΑΝΤΕΡ', u'ΞΕΝΑ ΝΤΟΚΙΜΑΝΤΕΡ',
+            u'ΠΑΙΔΙΚΑ', u'Η ΕΡΤ ΘΥΜΑΤΑΙ', u'ΑΘΛΗΤΙΚΑ', u'WEB ΣΕΙΡΕΣ'
+        ] and not 'archeio' in url:
+            data.update({'playable': 'false'})
+
+        self.list.append(data)
+
     def _listing(self, url):
 
         result = client.request(url)
@@ -299,48 +341,29 @@ class Indexer:
             pages = int(ajax['max_page'])
             posts = ajax['posts']
 
+            threads_1 = []
+            threads_2 = []
+
             for i in range(0, pages + 1):
-                a = client.request(self.ajax, post=self.load_more.format(query=quote(posts), page=str(i)))
-                self.data.append(a)
+                threads_1.append(
+                    workers.Thread(
+                        self.thread(self.ajax_url, post=self.load_more.format(query=quote(posts), page=str(i)))
+                    )
+                )
+
+            [i.start() for i in threads_1]
+            [i.join() for i in threads_1]
 
             html = '\n'.join(self.data)
 
             items = itertags_wrapper(html, 'div', attrs={'class': 'item item-\d+'})
 
-            for item in items:
+            for count, item in list(enumerate(items, start=1)):
 
-                data_id = item.attributes['data-id']
-                img = item.attributes['style']
-                image = re.search(r'url\((.+)\)', img).group(1)
-                url = client.parseDOM(item.text, 'a', ret='href')[0]
-                load = client.request(self.ajax, post=self.load_search.format(data_id=data_id))
-                title = client.parseDOM(load, 'p', {'class': 'video-title'})[0].strip()
-                title = client.replaceHTMLCodes(title)
+                threads_2.append(workers.Thread(self.loop(item, header, count)))
 
-                if 'tainies' in url or 'seires' in url:
-
-                    description = client.parseDOM(load, 'div', {'class': 'video-description'})[-1]
-                    paragraphs = [client.stripTags(p) for p in client.parseDOM(description, 'p')]
-                    plot = client.replaceHTMLCodes('[CR]'.join([paragraphs[0], paragraphs[1], paragraphs[-2]]))
-
-                else:
-
-                    plot = client.replaceHTMLCodes(
-                        client.stripTags(client.parseDOM(load, 'div', {'class': 'video-description'})[-1])
-                    )
-
-                f = client.parseDOM(load, 'div', attrs={'class': 'cover'}, ret='style')[0]
-                fanart = re.search(r'url\((.+)\)', f).group(1)
-
-                data = {'title': title, 'image': image, 'url': url, 'plot': plot, 'fanart': fanart}
-
-                if header in [
-                    u'TV ΣΕΙΡΕΣ', u'ΨΥΧΑΓΩΓΙΑ', u'ΣΥΝΕΝΤΕΥΞΕΙΣ', u'ΕΛΛΗΝΙΚΑ ΝΤΟΚΙΜΑΝΤΕΡ', u'ΞΕΝΑ ΝΤΟΚΙΜΑΝΤΕΡ',
-                    u'ΠΑΙΔΙΚΑ', u'Η ΕΡΤ ΘΥΜΑΤΑΙ', 'ΑΘΛΗΤΙΚΑ', u'WEB ΣΕΙΡΕΣ'
-                ] and not 'archeio' in url:
-                    data.update({'playable': 'false'})
-
-                self.list.append(data)
+            [i.start() for i in threads_2]
+            [i.join() for i in threads_2]
 
         else:
 
@@ -376,6 +399,12 @@ class Indexer:
                 i.update({'cm': [{'title': 30501, 'query': {'action': 'addBookmark', 'url': json.dumps(bookmark)}}]})
             else:
                 i.update({'action': 'play', 'isFolder': 'False'})
+
+        if 'tainies' in url or 'seires' in url or 'docs' in url or 'pedika' in url:
+
+            control.sortmethods()
+            control.sortmethods('title')
+            control.sortmethods('production_code')
 
         if 'tainies' in url:
             content = 'movies'

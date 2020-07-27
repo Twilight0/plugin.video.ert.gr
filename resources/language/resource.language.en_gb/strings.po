@@ -37,7 +37,7 @@ msgid "Football"
 msgstr ""
 
 msgctxt "#30006"
-msgid "Weather"
+msgid ""
 msgstr ""
 
 msgctxt "#30007"
@@ -45,7 +45,7 @@ msgid ""
 msgstr ""
 
 msgctxt "#30008"
-msgid "Basket"
+msgid ""
 msgstr ""
 
 msgctxt "#30009"
@@ -113,7 +113,7 @@ msgid "ERT World"
 msgstr ""
 
 msgctxt "#30025"
-msgid "ERT Play 1"
+msgid ""
 msgstr ""
 
 msgctxt "#30026"
@@ -161,7 +161,7 @@ msgid "Clear function cache"
 msgstr ""
 
 msgctxt "#30037"
-msgid "ERT Play 2"
+msgid ""
 msgstr ""
 
 msgctxt "#30038"
@@ -169,11 +169,11 @@ msgid "TV Series"
 msgstr ""
 
 msgctxt "#30039"
-msgid "ERT Play 3"
+msgid ""
 msgstr ""
 
 msgctxt "#30040"
-msgid "ERT Play 4"
+msgid ""
 msgstr ""
 
 msgctxt "#30041"
@@ -181,31 +181,31 @@ msgid "ERT Sports"
 msgstr ""
 
 msgctxt "#30042"
-msgid "ERT Play 5"
+msgid ""
 msgstr ""
 
 msgctxt "#30043"
-msgid "Volleyball"
+msgid ""
 msgstr ""
 
 msgctxt "#30044"
-msgid "Tennis"
+msgid ""
 msgstr ""
 
 msgctxt "#30045"
-msgid "Polo"
+msgid ""
 msgstr ""
 
 msgctxt "#30046"
-msgid "Water sports"
+msgid ""
 msgstr ""
 
 msgctxt "#30047"
-msgid "Athletics"
+msgid ""
 msgstr ""
 
 msgctxt "#30048"
-msgid "Handball"
+msgid ""
 msgstr ""
 
 msgctxt "#30049"
@@ -213,19 +213,19 @@ msgid "Movies"
 msgstr ""
 
 msgctxt "#30050"
-msgid "Marathon"
+msgid ""
 msgstr ""
 
 msgctxt "#30051"
-msgid "Ice skating"
+msgid ""
 msgstr ""
 
 msgctxt "#30052"
-msgid "Various sports"
+msgid ""
 msgstr ""
 
 msgctxt "#30053"
-msgid "Auto-Moto"
+msgid ""
 msgstr ""
 
 msgctxt "#30054"

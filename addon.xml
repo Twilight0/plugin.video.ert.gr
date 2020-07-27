@@ -1,8 +1,8 @@
 ﻿<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
-<addon id="plugin.video.ert.gr" version="3.0.0~beta2" name="ERTflix" provider-name="Twilight0">
+<addon id="plugin.video.ert.gr" version="3.0.0~beta3" name="ERTflix" provider-name="Twilight0">
     <requires>
         <import addon="xbmc.python" version="2.24.0" />
-        <import addon="script.module.tulip" version="2.6.8" />
+        <import addon="script.module.tulip" version="2.6.9" />
         <import addon="plugin.video.youtube" version="6.8.2"/>
     </requires>
     <extension point="xbmc.python.pluginsource" library="addon.py">
@@ -20,8 +20,8 @@
         <disclaimer lang="el_GR">Το πρόσθετο αυτό προσφέρει περιεχόμενο διαθέσιμο στην Ελλάδα και δεν έχει δημοσιευθεί ούτε εγκριθεί από το ert.gr</disclaimer>
         <license>GPL-3.0-only</license>
         <source>https://github.com/Twilight0/plugin.video.ert.gr</source>
-        <size>417205</size>
-        <website>https://www.ert.gr/</website>
+        <size>399800</size>
+        <website>https://www.ertflix.gr/</website>
         <news>[B]3.0.0[/B]
 - Reworked addon for new website design
 - New artwork
