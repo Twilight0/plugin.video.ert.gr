@@ -37,8 +37,8 @@ msgid "Football"
 msgstr "Ποδόσφαιρο"
 
 msgctxt "#30006"
-msgid ""
-msgstr ""
+msgid "Add to ERTflix's bookmarks"
+msgstr "Προσθήκη στους σελιδοδείκτες του ERTflix"
 
 msgctxt "#30007"
 msgid ""

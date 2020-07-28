@@ -619,6 +619,9 @@ class Indexer:
 
         elif 'youtube' in url or len(url) == 11:
 
+            if url.startswith('plugin://'):
+                url = url[-11:]
+
             return self.yt_session(url)
 
         else:
