@@ -12,7 +12,7 @@ from __future__ import absolute_import
 
 from sys import argv
 from tulip.compat import parse_qsl
-from tulip.control import infoLabel, bookmarksFile
+from tulip.control import infoLabel, bookmarksFile, refresh, sleep
 from tulip import bookmarks, cache
 # noinspection PyUnresolvedReferences
 from resources.lib import ert
@@ -41,7 +41,9 @@ elif action == 'deleteBookmark':
     bookmarks.delete(url)
 
 elif action == 'clear_bookmarks':
-    bookmarks.clear('bookmark', file_=bookmarksFile)
+    bookmarks.clear('bookmark', file_=bookmarksFile, notify=False)
+    sleep(200)
+    refresh()
 
 elif action == 'channels':
     ert.Indexer().channels()

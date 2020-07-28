@@ -276,7 +276,7 @@ class Indexer:
         for i in self.list:
             bookmark = dict((k, v) for k, v in iteritems(i) if not k == 'next')
             bookmark['bookmark'] = i['url']
-            i.update({'cm': [{'title': 30501, 'query': {'action': 'addBookmark', 'url': json.dumps(bookmark)}}]})
+            i.update({'cm': [{'title': 30006, 'query': {'action': 'addBookmark', 'url': json.dumps(bookmark)}}]})
 
         self.list = sorted(self.list, key=lambda k: k['title'].lower())
 
@@ -394,11 +394,11 @@ class Indexer:
             if i.get('playable') == 'false':
                 del i['playable']
                 i.update({'action': 'listing'})
-                bookmark = dict((k, v) for k, v in iteritems(i) if not k == 'next')
-                bookmark['bookmark'] = i['url']
-                i.update({'cm': [{'title': 30501, 'query': {'action': 'addBookmark', 'url': json.dumps(bookmark)}}]})
             else:
                 i.update({'action': 'play', 'isFolder': 'False'})
+            bookmark = dict((k, v) for k, v in iteritems(i) if not k == 'next')
+            bookmark['bookmark'] = i['url']
+            i.update({'cm': [{'title': 30501, 'query': {'action': 'addBookmark', 'url': json.dumps(bookmark)}}]})
 
         if 'tainies' in url or 'seires' in url or 'docs' in url or 'pedika' in url:
 
