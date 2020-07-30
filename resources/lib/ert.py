@@ -452,7 +452,7 @@ class Indexer:
 
     def play(self, url):
 
-        stream = cache.get(self.resolve, 48, url)
+        stream = cache.get(self.resolve, 96, url)
 
         if stream is None:
             return
@@ -650,7 +650,7 @@ class Indexer:
 
                 if urls:
 
-                    geo = self._geo_detect()
+                    geo = cache.get(self._geo_detect, 192)
 
                     if len(urls) >= 2:
 
@@ -665,7 +665,12 @@ class Indexer:
 
                             url = [i for i in urls if 'dvrorigingr' in i][0]
 
-                            if client.request(url):
+                            try:
+                                video_ok = client.request(url, timeout=3)
+                            except Exception:
+                                video_ok = None
+
+                            if video_ok:
 
                                 return url
 
