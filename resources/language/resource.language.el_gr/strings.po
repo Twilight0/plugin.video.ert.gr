@@ -41,12 +41,12 @@ msgid "Add to ERTflix's bookmarks"
 msgstr "Προσθήκη στους σελιδοδείκτες του ERTflix"
 
 msgctxt "#30007"
-msgid ""
-msgstr ""
+msgid "General"
+msgstr "Γενικά"
 
 msgctxt "#30008"
-msgid ""
-msgstr ""
+msgid "Enable bookmarks clear menu item"
+msgstr "Ενεργοποίηση της επιλογής εκκαθάρισης σελιδοδεικτών"
 
 msgctxt "#30009"
 msgid "Cartoons"
@@ -113,8 +113,8 @@ msgid "ERT World"
 msgstr "ΕΡΤ World"
 
 msgctxt "#30025"
-msgid ""
-msgstr ""
+msgid "Clear all ERTflix's bookmarks?"
+msgstr "Εκκαθάριση όλων των σελιδοδεικτών του ERTflix;"
 
 msgctxt "#30026"
 msgid "Radio"
@@ -161,16 +161,16 @@ msgid "Clear function cache"
 msgstr "Καθαρισμός προσωρινής μνήμης"
 
 msgctxt "#30037"
-msgid ""
-msgstr ""
+msgid "Enable threading (speedup, heavy on network load)"
+msgstr "Ενεργοποίηση παραλληλισμού (επιτάχυνση, βαρύ στο φορτίο του δικτύου)"
 
 msgctxt "#30038"
 msgid "TV Series"
 msgstr "Σειρές"
 
 msgctxt "#30039"
-msgid ""
-msgstr ""
+msgid "Settings"
+msgstr "Ρυθμίσεις"
 
 msgctxt "#30040"
 msgid ""

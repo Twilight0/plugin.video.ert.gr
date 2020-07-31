@@ -174,7 +174,8 @@ class Indexer:
         for item in self.list:
 
             cache_clear = {'title': 30036, 'query': {'action': 'cache_clear'}}
-            item.update({'cm': [cache_clear]})
+            settings = {'title': 30039, 'query': {'action': 'settings'}}
+            item.update({'cm': [cache_clear, settings]})
 
         directory.add(self.list, content='videos')
 
@@ -234,11 +235,13 @@ class Indexer:
 
         control.sortmethods('title')
 
-        clear_menu = {
-            'title': control.lang(30059), 'action': 'clear_bookmarks'
-        }
+        if control.setting('bookmarks_clear_boolean') == 'true':
 
-        self.list.insert(0, clear_menu)
+            clear_menu = {
+                'title': control.lang(30059), 'action': 'clear_bookmarks'
+            }
+
+            self.list.insert(0, clear_menu)
 
         directory.add(self.list, content='videos')
 
@@ -324,7 +327,7 @@ class Indexer:
 
         self.list.append(data)
 
-    def _listing(self, url):
+    def _listing(self, url, override=False):
 
         result = client.request(url)
 
@@ -344,26 +347,42 @@ class Indexer:
             threads_1 = []
             threads_2 = []
 
-            for i in range(0, pages + 1):
-                threads_1.append(
-                    workers.Thread(
-                        self.thread(self.ajax_url, post=self.load_more.format(query=quote(posts), page=str(i)))
-                    )
-                )
+            if control.setting('threading') == 'true' or override:
 
-            [i.start() for i in threads_1]
-            [i.join() for i in threads_1]
+                for i in range(0, pages + 1):
+                    threads_1.append(
+                        workers.Thread(
+                            self.thread(self.ajax_url, post=self.load_more.format(query=quote(posts), page=str(i)))
+                        )
+                    )
+
+                [i.start() for i in threads_1]
+                [i.join() for i in threads_1]
+
+            else:
+
+                for i in range(0, pages + 1):
+                    a = client.request(self.ajax_url, post=self.load_more.format(query=quote(posts), page=str(i)))
+                    self.data.append(a)
 
             html = '\n'.join(self.data)
 
             items = itertags_wrapper(html, 'div', attrs={'class': 'item item-\d+'})
 
-            for count, item in list(enumerate(items, start=1)):
+            if control.setting('threading') == 'true' or override:
 
-                threads_2.append(workers.Thread(self.loop(item, header, count)))
+                for count, item in list(enumerate(items, start=1)):
 
-            [i.start() for i in threads_2]
-            [i.join() for i in threads_2]
+                    threads_2.append(workers.Thread(self.loop(item, header, count)))
+
+                [i.start() for i in threads_2]
+                [i.join() for i in threads_2]
+
+            else:
+
+                for count, item in list(enumerate(items, start=1)):
+
+                    self.loop(item, header, count)
 
         else:
 

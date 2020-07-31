@@ -12,7 +12,7 @@ from __future__ import absolute_import
 
 from sys import argv
 from tulip.compat import parse_qsl
-from tulip.control import infoLabel, bookmarksFile, refresh, sleep
+from tulip.control import infoLabel, bookmarksFile, refresh, sleep, openSettings
 from tulip import bookmarks, cache
 # noinspection PyUnresolvedReferences
 from resources.lib import ert
@@ -41,7 +41,7 @@ elif action == 'deleteBookmark':
     bookmarks.delete(url)
 
 elif action == 'clear_bookmarks':
-    bookmarks.clear('bookmark', file_=bookmarksFile, notify=False)
+    bookmarks.clear('bookmark', withyes=True, file_=bookmarksFile, notify=False, label_yes_no=30025)
     sleep(200)
     refresh()
 
@@ -89,3 +89,6 @@ elif action == 'search':
 
 elif action == 'cache_clear':
     cache.clear(withyes=False)
+
+elif action == 'settings':
+    openSettings()

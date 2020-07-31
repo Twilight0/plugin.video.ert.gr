@@ -41,11 +41,11 @@ msgid "Add to ERTflix's bookmarks"
 msgstr ""
 
 msgctxt "#30007"
-msgid ""
+msgid "General"
 msgstr ""
 
 msgctxt "#30008"
-msgid ""
+msgid "Enable bookmarks clear menu item"
 msgstr ""
 
 msgctxt "#30009"
@@ -113,7 +113,7 @@ msgid "ERT World"
 msgstr ""
 
 msgctxt "#30025"
-msgid ""
+msgid "Clear all ERTflix's bookmarks?"
 msgstr ""
 
 msgctxt "#30026"
@@ -161,7 +161,7 @@ msgid "Clear function cache"
 msgstr ""
 
 msgctxt "#30037"
-msgid ""
+msgid "Enable threading (speedup, heavy on network load)"
 msgstr ""
 
 msgctxt "#30038"
@@ -169,7 +169,7 @@ msgid "TV Series"
 msgstr ""
 
 msgctxt "#30039"
-msgid ""
+msgid "Settings"
 msgstr ""
 
 msgctxt "#30040"

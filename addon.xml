@@ -1,8 +1,8 @@
 ﻿<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
-<addon id="plugin.video.ert.gr" version="3.0.0~beta6" name="ERTflix" provider-name="Twilight0">
+<addon id="plugin.video.ert.gr" version="3.0.0~beta7" name="ERTflix" provider-name="Twilight0">
     <requires>
         <import addon="xbmc.python" version="2.24.0" />
-        <import addon="script.module.tulip" version="2.6.9" />
+        <import addon="script.module.tulip" version="2.6.10" />
         <import addon="plugin.video.youtube" version="6.8.2"/>
     </requires>
     <extension point="xbmc.python.pluginsource" library="addon.py">
