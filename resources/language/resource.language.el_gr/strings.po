@@ -178,7 +178,7 @@ msgstr ""
 
 msgctxt "#30041"
 msgid "ERT Sports"
-msgstr "ERT Sports"
+msgstr "ΕΡΤ Sports"
 
 msgctxt "#30042"
 msgid ""

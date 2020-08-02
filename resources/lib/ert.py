@@ -701,7 +701,10 @@ class Indexer:
 
                     else:
 
-                        return url[-1]
+                        if 'youtube' in urls[0]:
+                            return self.resolve(urls[0])
+                        else:
+                            return urls[0]
 
                 else:
 
