@@ -296,27 +296,27 @@ class Indexer:
         img = item.attributes['style']
         image = re.search(r'url\((.+)\)', img).group(1)
         url = client.parseDOM(item.text, 'a', ret='href')[0]
-        load = client.request(self.ajax_url, post=self.load_search.format(data_id=data_id), timeout=20)
-        title = client.parseDOM(load, 'p', {'class': 'video-title'})[0].strip()
-        title = client.replaceHTMLCodes(title)
 
-        if 'tainies' in url or 'seires' in url:
+        if 'inside-page-thumb-titles' in item.text and control.setting('metadata') == 'false':
 
-            description = client.parseDOM(load, 'div', {'class': 'video-description'})[-1]
-            paragraphs = [client.stripTags(p) for p in client.parseDOM(description, 'p')]
-            plot = client.replaceHTMLCodes('[CR]'.join([paragraphs[0], paragraphs[1], paragraphs[-2]]))
+            fanart = None
+            plot = None
+            title = client.parseDOM(item.text, 'div', attrs={'class': 'inside-page-thumb-titles'})[0]
+            title = client.replaceHTMLCodes(client.parseDOM(title, 'a')[0])
 
         else:
 
-            plot = client.replaceHTMLCodes(
-                client.stripTags(client.parseDOM(load, 'div', {'class': 'video-description'})[-1])
-            )
-
-        f = client.parseDOM(load, 'div', attrs={'class': 'cover'}, ret='style')[0]
-        fanart = re.search(r'url\((.+)\)', f).group(1)
+            load = client.request(self.ajax_url, post=self.load_search.format(data_id=data_id), timeout=20)
+            title = client.parseDOM(load, 'p', {'class': 'video-title'})[0].strip()
+            title = client.replaceHTMLCodes(title)
+            description = client.parseDOM(load, 'div', {'class': 'video-description'})[-1]
+            paragraphs = [client.stripTags(p) for p in client.parseDOM(description, 'p')]
+            plot = client.replaceHTMLCodes('[CR]'.join([paragraphs[0], paragraphs[1], paragraphs[-2]]))
+            f = client.parseDOM(load, 'div', attrs={'class': 'cover'}, ret='style')[0]
+            fanart = re.search(r'url\((.+)\)', f).group(1)
 
         data = {
-            'title': title, 'image': image, 'url': url, 'plot': plot, 'fanart': fanart, 'header': header, 'code': count
+            'title': title, 'image': image, 'url': url, 'code': count
         }
 
         if header in [
@@ -324,6 +324,11 @@ class Indexer:
             u'ΠΑΙΔΙΚΑ', u'Η ΕΡΤ ΘΥΜΑΤΑΙ', u'ΑΘΛΗΤΙΚΑ', u'WEB ΣΕΙΡΕΣ'
         ] and not 'archeio' in url:
             data.update({'playable': 'false'})
+
+        if fanart:
+            data.update({'fanart': fanart})
+        if plot:
+            data.update({'plot': plot})
 
         self.list.append(data)
 
@@ -415,8 +420,10 @@ class Indexer:
                 i.update({'action': 'listing'})
             else:
                 i.update({'action': 'play', 'isFolder': 'False'})
+
             bookmark = dict((k, v) for k, v in iteritems(i) if not k == 'next')
             bookmark['bookmark'] = i['url']
+
             i.update({'cm': [{'title': 30501, 'query': {'action': 'addBookmark', 'url': json.dumps(bookmark)}}]})
 
         if 'tainies' in url or 'seires' in url or 'docs' in url or 'pedika' in url:
@@ -580,9 +587,17 @@ class Indexer:
 
         for title, image, link in radios:
 
-            self.list.append({'title': title, 'url': link, 'image': image, 'action': 'play', 'isFolder': 'False'})
+            self.list.append(
+                {
+                    'title': title, 'url': link, 'image': image, 'action': 'play', 'isFolder': 'False',
+                    'fanart': control.addonmedia('radio_fanart.jpg')
+                }
+            )
 
-        district = {'title': control.lang(30027), 'action': 'district', 'icon': 'district.jpg'}
+        district = {
+            'title': control.lang(30027), 'action': 'district', 'icon': 'district.jpg',
+            'fanart': control.addonmedia('radio_fanart.jpg')
+        }
 
         self.list.append(district)
 
@@ -612,7 +627,9 @@ class Indexer:
             url = re.search(r'mp3: [\'"](.+?)[\'"]', embed).group(1).replace('https', 'http')
             image = client.parseDOM(html, 'img', ret='src')[0]
 
-            self.list.append({'title': title, 'image': image, 'url': url})
+            self.list.append(
+                {'title': title, 'image': image, 'url': url}
+            )
 
         return self.list
 
@@ -624,7 +641,7 @@ class Indexer:
             return
 
         for i in self.list:
-            i.update({'action': 'play', 'isFolder': 'False'})
+            i.update({'action': 'play', 'isFolder': 'False', 'fanart': control.addonmedia('radio_fanart.jpg')})
 
         directory.add(self.list)
 

@@ -173,7 +173,7 @@ msgid "Settings"
 msgstr ""
 
 msgctxt "#30040"
-msgid ""
+msgid "Provide metadata for additional items"
 msgstr ""
 
 msgctxt "#30041"

@@ -173,8 +173,8 @@ msgid "Settings"
 msgstr "Ρυθμίσεις"
 
 msgctxt "#30040"
-msgid ""
-msgstr ""
+msgid "Provide metadata for additional items"
+msgstr "Παροχή μεταδεδομένων για επιπλέον αντικείμενα"
 
 msgctxt "#30041"
 msgid "ERT Sports"
