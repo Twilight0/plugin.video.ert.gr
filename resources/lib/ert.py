@@ -311,7 +311,7 @@ class Indexer:
             title = client.replaceHTMLCodes(title)
             description = client.parseDOM(load, 'div', {'class': 'video-description'})[-1]
             paragraphs = [client.stripTags(p) for p in client.parseDOM(description, 'p')]
-            plot = client.replaceHTMLCodes('[CR]'.join([paragraphs[0], paragraphs[1], paragraphs[-2]]))
+            plot = client.replaceHTMLCodes('[CR]'.join(paragraphs))
             f = client.parseDOM(load, 'div', attrs={'class': 'cover'}, ret='style')[0]
             fanart = re.search(r'url\((.+)\)', f).group(1)
 
