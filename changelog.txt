@@ -3,6 +3,9 @@
 - New artwork
 - Renamed to ERTflix
 - Updated resolver
+- Added search menu
+- Reworked pagination system
+- Added multithreading capabilities for items list formation
 - Reworked strings.po to be in range 30000+
 - Removed weather menu item as content is not present on the main website
 - Removed Hebrew translation (it hasn't been updated properly for long time)

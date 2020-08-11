@@ -181,7 +181,7 @@ msgid "ERT Sports"
 msgstr ""
 
 msgctxt "#30042"
-msgid ""
+msgid "Paginate items"
 msgstr ""
 
 msgctxt "#30043"

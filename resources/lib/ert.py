@@ -14,8 +14,8 @@ import json, re
 from os.path import exists as file_exists
 from zlib import decompress
 from base64 import b64decode
-from tulip import bookmarks, directory, client, cache, control, workers
-from tulip.compat import iteritems, range, quote
+from tulip import bookmarks, directory, client, cache, control, workers, cleantitle
+from tulip.compat import iteritems, range, quote, parse_qsl, urlencode
 from tulip.parsers import itertags_wrapper
 from youtube_resolver import resolve as yt_resolver
 from youtube_registration import register_api_keys
@@ -30,6 +30,7 @@ class Indexer:
 
         self.base_link = 'https://www.ertflix.gr'
         self.old_base = 'https://webtv.ert.gr'
+        self.search_link = ''.join([self.base_link, '/?s={}'])
         self.category_link = ''.join([self.base_link, '/category'])
         self.ajax_url = ''.join([self.base_link, '/wp-admin/admin-ajax.php'])
         self.load_more = 'action=loadmore_post_by_cat&query={query}&page={page}'
@@ -150,13 +151,13 @@ class Indexer:
                 'url': self.archive_link,
                 'icon': 'archive.jpg'
             }
-            # ,
-            # {
-            #     'title': control.lang(30013),
-            #     'action': 'search',
-            #     'icon': 'search.jpg',
-            #     'isFolder': 'False', 'isPlayable': 'False'
-            # }
+            ,
+            {
+                'title': control.lang(30013),
+                'action': 'search',
+                'icon': 'search.jpg',
+                'isFolder': 'False', 'isPlayable': 'False'
+            }
             ,
             {
                 'title': control.lang(30012),
@@ -290,7 +291,7 @@ class Indexer:
         result = client.request(url, post=post, timeout=20)
         self.data.append(result)
 
-    def loop(self, item, header, count):
+    def loop(self, item, header, count, next_url=None):
 
         data_id = item.attributes['data-id']
         img = item.attributes['style']
@@ -315,14 +316,16 @@ class Indexer:
             f = client.parseDOM(load, 'div', attrs={'class': 'cover'}, ret='style')[0]
             fanart = re.search(r'url\((.+)\)', f).group(1)
 
-        data = {
-            'title': title, 'image': image, 'url': url, 'code': count
-        }
+        data = {'title': title, 'image': image, 'url': url, 'code': count}
+
+        if next_url:
+
+            data.update({'next': next_url})
 
         if header in [
             u'TV ΣΕΙΡΕΣ', u'ΨΥΧΑΓΩΓΙΑ', u'ΣΥΝΕΝΤΕΥΞΕΙΣ', u'ΕΛΛΗΝΙΚΑ ΝΤΟΚΙΜΑΝΤΕΡ', u'ΞΕΝΑ ΝΤΟΚΙΜΑΝΤΕΡ',
             u'ΠΑΙΔΙΚΑ', u'Η ΕΡΤ ΘΥΜΑΤΑΙ', u'ΑΘΛΗΤΙΚΑ', u'WEB ΣΕΙΡΕΣ'
-        ] and not 'archeio' in url:
+        ] and not 'archeio' in url and header is not None:
             data.update({'playable': 'false'})
 
         if fanart:
@@ -332,13 +335,43 @@ class Indexer:
 
         self.list.append(data)
 
-    def _listing(self, url, override=False):
+    def _listing(self, url):
 
-        result = client.request(url)
+        if self.ajax_url in url:
+            result = client.request(url.partition('?')[0], post=url.partition('?')[2])
+        else:
+            result = client.request(url)
 
-        header = client.parseDOM(result, 'h2')[0]
+        try:
+            header = client.parseDOM(result, 'h2')[0]
+        except IndexError:
+            header = None
 
-        if 'enimerosi-24' not in url:
+        next_url = None
+        override = False
+
+        if self.base_link + '/?s=' in url:
+            override = True
+
+        # Nest the function to work on either of the two cases
+        def _exec(_items, _next_url=None):
+
+            if control.setting('threading') == 'true':
+
+                for count, _item in list(enumerate(_items, start=1)):
+
+                    threads_2.append(workers.Thread(self.loop(_item, header, count, _next_url)))
+
+                [i.start() for i in threads_2]
+                [i.join() for i in threads_2]
+
+            else:
+
+                for count, _item in list(enumerate(_items, start=1)):
+
+                    self.loop(_item, header, count, _next_url)
+
+        if 'enimerosi-24' not in url and self.ajax_url not in url:
 
             ajaxes = [i for i in client.parseDOM(result, 'script', attrs={'type': 'text/javascript'}) if 'ajaxurl' in i]
 
@@ -349,10 +382,15 @@ class Indexer:
             pages = int(ajax['max_page'])
             posts = ajax['posts']
 
+            try:
+                posts = posts.encode('utf-8')
+            except Exception:
+                pass
+
             threads_1 = []
             threads_2 = []
 
-            if control.setting('threading') == 'true' or override:
+            if control.setting('threading') == 'true' and control.setting('pagination') == 'false':
 
                 for i in range(0, pages + 1):
                     threads_1.append(
@@ -367,27 +405,37 @@ class Indexer:
             else:
 
                 for i in range(0, pages + 1):
+
                     a = client.request(self.ajax_url, post=self.load_more.format(query=quote(posts), page=str(i)))
                     self.data.append(a)
+
+                    if i == 0 and (control.setting('pagination') == 'true' or override):
+                        next_url = '?'.join([self.ajax_url, self.load_more.format(query=quote(posts), page='1')])
+                        break
 
             html = '\n'.join(self.data)
 
             items = itertags_wrapper(html, 'div', attrs={'class': 'item item-\d+'})
 
-            if control.setting('threading') == 'true' or override:
+            if len(items) < 20:
+                next_url = None
 
-                for count, item in list(enumerate(items, start=1)):
+            _exec(items, next_url)
 
-                    threads_2.append(workers.Thread(self.loop(item, header, count)))
+        elif self.ajax_url in url:
 
-                [i.start() for i in threads_2]
-                [i.join() for i in threads_2]
+            items = itertags_wrapper(result, 'div', attrs={'class': 'item item-\d+'})
 
-            else:
+            parsed = dict(parse_qsl(url.partition('?')[2]))
 
-                for count, item in list(enumerate(items, start=1)):
+            next_page = int(parsed['page']) + 1
 
-                    self.loop(item, header, count)
+            parsed['page'] = next_page
+
+            if len(items) > 20:
+                next_url = '?'.join([url.partition('?')[0], urlencode(parsed)])
+
+            _exec(items, next_url)
 
         else:
 
@@ -425,6 +473,12 @@ class Indexer:
             bookmark['bookmark'] = i['url']
 
             i.update({'cm': [{'title': 30501, 'query': {'action': 'addBookmark', 'url': json.dumps(bookmark)}}]})
+
+        if control.setting('pagination') == 'true':
+
+            for i in self.list:
+
+                i.update({'nextaction': 'listing', 'nextlabel': 30500, 'nexticon': control.addonmedia('next.jpg')})
 
         if 'tainies' in url or 'seires' in url or 'docs' in url or 'pedika' in url:
 
@@ -544,24 +598,18 @@ class Indexer:
 
         directory.add(self.list)
 
-    # def search(self):
-    #
-    #     self.list = [
-    #         {
-    #             'title': control.lang(30056),
-    #             'url': self.entertainment_link,
-    #             'icon': 'shows.jpg'
-    #         }
-    #     ]
+    def search(self):
 
-        # input_str = control.inputDialog()
-        #
-        # try:
-        #     input_str = cleantitle.strip_accents(input_str.decode('utf-8'))
-        # except (UnicodeEncodeError, UnicodeDecodeError, AttributeError):
-        #     input_str = cleantitle.strip_accents(input_str)
-        #
-        # input_str = quote(input_str.encode('utf-8'))
+        input_str = control.inputDialog()
+
+        try:
+            input_str = cleantitle.strip_accents(input_str.decode('utf-8'))
+        except (UnicodeEncodeError, UnicodeDecodeError, AttributeError):
+            input_str = cleantitle.strip_accents(input_str)
+
+        input_str = quote(input_str.encode('utf-8'))
+
+        directory.run_builtin(action='listing', url=self.search_link.format(input_str))
 
     def radios(self):
 

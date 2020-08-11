@@ -1,8 +1,9 @@
 <settings>
     <category label="30007">
         <setting id="bookmarks_clear_boolean" type="bool" label="30008" default="true"/>
-        <setting id="threading" type="bool" label="30037" default="true"/>
         <setting id="metadata" type="bool" label="30040" default="false"/>
+        <setting id="pagination" type="bool" label="30042" default="true"/>
+        <setting id="threading" type="bool" label="30037" default="false" enable="eq(-1,false)"/>
         <setting label="30059" type="action" action="RunPlugin(plugin://$ID/?action=clear_bookmarks)"/>
         <setting label="30036" type="action" action="RunPlugin(plugin://$ID/?action=cache_clear)"/>
     </category>

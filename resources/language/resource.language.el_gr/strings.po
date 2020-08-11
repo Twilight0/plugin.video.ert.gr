@@ -181,8 +181,8 @@ msgid "ERT Sports"
 msgstr "ΕΡΤ Sports"
 
 msgctxt "#30042"
-msgid ""
-msgstr ""
+msgid "Paginate items"
+msgstr "Σελιδοποίησε τα αντικείμενα"
 
 msgctxt "#30043"
 msgid ""
