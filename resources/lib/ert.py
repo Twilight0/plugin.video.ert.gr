@@ -350,7 +350,7 @@ class Indexer:
         next_url = None
         override = False
 
-        if self.base_link + '/?s=' in url:
+        if self.base_link + '/?s=' in url or control.setting('pagination') == 'true':
             override = True
 
         # Nest the function to work on either of the two cases
@@ -390,7 +390,7 @@ class Indexer:
             threads_1 = []
             threads_2 = []
 
-            if control.setting('threading') == 'true' and control.setting('pagination') == 'false':
+            if control.setting('threading') == 'true' and not override:
 
                 for i in range(0, pages + 1):
                     threads_1.append(
@@ -409,7 +409,7 @@ class Indexer:
                     a = client.request(self.ajax_url, post=self.load_more.format(query=quote(posts), page=str(i)))
                     self.data.append(a)
 
-                    if i == 0 and (control.setting('pagination') == 'true' or override):
+                    if i == 0 and override:
                         next_url = '?'.join([self.ajax_url, self.load_more.format(query=quote(posts), page='1')])
                         break
 
@@ -432,7 +432,7 @@ class Indexer:
 
             parsed['page'] = next_page
 
-            if len(items) > 20:
+            if len(items) >= 20:
                 next_url = '?'.join([url.partition('?')[0], urlencode(parsed)])
 
             _exec(items, next_url)
