@@ -22,6 +22,26 @@ from youtube_registration import register_api_keys
 from youtube_plugin.youtube.youtube_exceptions import YouTubeException
 
 
+def _plot(url):
+
+    load = client.request(url.partition('?')[0], post=url.partition('?')[2], timeout=20)
+
+    description = client.parseDOM(load, 'div', {'class': 'video-description'})[-1]
+    paragraphs = [client.stripTags(p) for p in client.parseDOM(description, 'p')]
+    plot = client.replaceHTMLCodes('[CR]'.join(paragraphs))
+
+    return plot
+
+
+def meta_viewer(url):
+
+    heading = control.infoLabel('Listitem.Label')
+
+    plot = cache.get(_plot, 96, url)
+
+    control.dialog.textviewer(heading=heading, text=plot)
+
+
 class Indexer:
 
     def __init__(self):
@@ -172,6 +192,16 @@ class Indexer:
             }
         ]
 
+        settings_menu = {
+                'title': control.lang(30044),
+                'action': 'settings',
+                'icon': 'settings.jpg',
+                'isFolder': 'False', 'isPlayable': 'False'
+            }
+
+        if control.setting('settings_boolean') == 'true':
+            self.list.append(settings_menu)
+
         for item in self.list:
 
             cache_clear = {'title': 30036, 'query': {'action': 'cache_clear'}}
@@ -297,6 +327,7 @@ class Indexer:
         img = item.attributes['style']
         image = re.search(r'url\((.+)\)', img).group(1)
         url = client.parseDOM(item.text, 'a', ret='href')[0]
+        meta_url = '?'.join([self.ajax_url, self.load_search.format(data_id=data_id)])
 
         if 'inside-page-thumb-titles' in item.text and control.setting('metadata') == 'false':
 
@@ -316,7 +347,7 @@ class Indexer:
             f = client.parseDOM(load, 'div', attrs={'class': 'cover'}, ret='style')[0]
             fanart = re.search(r'url\((.+)\)', f).group(1)
 
-        data = {'title': title, 'image': image, 'url': url, 'code': count}
+        data = {'title': title, 'image': image, 'url': url, 'code': count, 'meta_url': meta_url}
 
         if next_url:
 
@@ -456,7 +487,7 @@ class Indexer:
 
     def listing(self, url):
 
-        self.list = cache.get(self._listing, 2, url)
+        self.list = cache.get(self._listing, 6, url)
 
         if self.list is None:
             return
@@ -471,8 +502,13 @@ class Indexer:
 
             bookmark = dict((k, v) for k, v in iteritems(i) if not k == 'next')
             bookmark['bookmark'] = i['url']
+            bookmark_cm = {'title': 30501, 'query': {'action': 'addBookmark', 'url': json.dumps(bookmark)}}
 
-            i.update({'cm': [{'title': 30501, 'query': {'action': 'addBookmark', 'url': json.dumps(bookmark)}}]})
+            if 'enimerosi-24' in url or 'meta_url' not in i:
+                i.update({'cm': [bookmark_cm]})
+            else:
+                info_cm = {'title': 30043, 'query': {'action': 'info', 'url': i['meta_url']}}
+                i.update({'cm': [bookmark_cm, info_cm]})
 
         if control.setting('pagination') == 'true':
 
@@ -540,7 +576,8 @@ class Indexer:
         m3u8_dash = 'm3u8' in stream and control.kodi_version() >= 18.0
 
         directory.resolve(
-            stream, dash=any(['.mpd' in stream, m3u8_dash]), mimetype='application/vnd.apple.mpegurl' if m3u8_dash else None,
+            stream, dash=any(['.mpd' in stream, m3u8_dash]),
+            mimetype='application/vnd.apple.mpegurl' if m3u8_dash else None,
             manifest_type='hls' if m3u8_dash else None
         )
 

@@ -1,3 +1,8 @@
+[B]3.0.1[/B]
+- New info function (via context menu)
+- Increased cache timeout
+- Add settings main menu item (optional, default is enabled)
+
 [B]3.0.0[/B]
 - Reworked addon for new website design
 - New artwork

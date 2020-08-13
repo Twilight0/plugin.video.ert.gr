@@ -185,16 +185,16 @@ msgid "Paginate items"
 msgstr "Σελιδοποίησε τα αντικείμενα"
 
 msgctxt "#30043"
-msgid ""
-msgstr ""
+msgid "Info"
+msgstr "Πληροφορίες"
 
 msgctxt "#30044"
-msgid ""
-msgstr ""
+msgid "Settings"
+msgstr "Ρυθμίσεις"
 
 msgctxt "#30045"
-msgid ""
-msgstr ""
+msgid "Enable settings menu item"
+msgstr "Ενεργοποίηση αντικειμένου ρυθμίσεων στο μενού"
 
 msgctxt "#30046"
 msgid ""

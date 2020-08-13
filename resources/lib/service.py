@@ -17,7 +17,6 @@ import xbmc
 import xbmcaddon
 
 
-monitor = xbmc.Monitor
 __addon__ = xbmcaddon.Addon('plugin.video.ert.gr')
 
 

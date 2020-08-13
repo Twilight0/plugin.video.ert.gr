@@ -185,15 +185,15 @@ msgid "Paginate items"
 msgstr ""
 
 msgctxt "#30043"
-msgid ""
+msgid "Info"
 msgstr ""
 
 msgctxt "#30044"
-msgid ""
+msgid "Settings"
 msgstr ""
 
 msgctxt "#30045"
-msgid ""
+msgid "Enable settings menu item"
 msgstr ""
 
 msgctxt "#30046"

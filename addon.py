@@ -87,6 +87,9 @@ elif action == 'youtube':
 elif action == 'search':
     ert.Indexer().search()
 
+elif action == 'info':
+    ert.meta_viewer(url)
+
 elif action == 'cache_clear':
     cache.clear(withyes=False)
 
