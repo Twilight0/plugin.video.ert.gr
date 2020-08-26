@@ -16,7 +16,7 @@ from zlib import decompress
 from base64 import b64decode
 from tulip import bookmarks, directory, client, cache, control, workers, cleantitle
 from tulip.compat import iteritems, range, quote, parse_qsl, urlencode
-from tulip.parsers import itertags_wrapper
+from tulip.parsers import itertags_wrapper, parseDOM
 from youtube_resolver import resolve as yt_resolver
 from youtube_registration import register_api_keys
 from youtube_plugin.youtube.youtube_exceptions import YouTubeException
@@ -26,8 +26,8 @@ def _plot(url):
 
     load = client.request(url.partition('?')[0], post=url.partition('?')[2], timeout=20)
 
-    description = client.parseDOM(load, 'div', {'class': 'video-description'})[-1]
-    paragraphs = [client.stripTags(p) for p in client.parseDOM(description, 'p')]
+    description = parseDOM(load, 'div', {'class': 'video-description'})[-1]
+    paragraphs = [client.stripTags(p) for p in parseDOM(description, 'p')]
     plot = client.replaceHTMLCodes('[CR]'.join(paragraphs))
 
     return plot
@@ -280,18 +280,18 @@ class Indexer:
 
         html = client.request(self.index_link)
 
-        div = client.parseDOM(html, 'div', attrs={'class': 'wpb_wrapper'})[0]
+        div = parseDOM(html, 'div', attrs={'class': 'wpb_wrapper'})[0]
 
-        li = client.parseDOM(div, 'li')
+        li = parseDOM(div, 'li')
 
-        li.extend(client.parseDOM(div, 'li', attrs={'class': 'hideli'}))
+        li.extend(parseDOM(div, 'li', attrs={'class': 'hideli'}))
 
         items = [i for i in li if 'category' in i and 'title' in i]
 
         for item in items:
 
-            title = client.replaceHTMLCodes(client.parseDOM(item, 'a')[0])
-            url = client.parseDOM(item, 'a', ret='href')[0]
+            title = client.replaceHTMLCodes(parseDOM(item, 'a')[0])
+            url = parseDOM(item, 'a', ret='href')[0]
 
             self.list.append({'title': title, 'url': url})
 
@@ -326,25 +326,26 @@ class Indexer:
         data_id = item.attributes['data-id']
         img = item.attributes['style']
         image = re.search(r'url\((.+)\)', img).group(1)
-        url = client.parseDOM(item.text, 'a', ret='href')[0]
+        url = itertags_wrapper(item.text, 'a', ret='href')[0]
+        print url
         meta_url = '?'.join([self.ajax_url, self.load_search.format(data_id=data_id)])
 
         if 'inside-page-thumb-titles' in item.text and control.setting('metadata') == 'false':
 
             fanart = None
             plot = None
-            title = client.parseDOM(item.text, 'div', attrs={'class': 'inside-page-thumb-titles'})[0]
-            title = client.replaceHTMLCodes(client.parseDOM(title, 'a')[0])
+            title = parseDOM(item.text, 'div', attrs={'class': 'inside-page-thumb-titles'})[0]
+            title = client.replaceHTMLCodes(parseDOM(title, 'a')[0])
 
         else:
 
             load = client.request(self.ajax_url, post=self.load_search.format(data_id=data_id), timeout=20)
-            title = client.parseDOM(load, 'p', {'class': 'video-title'})[0].strip()
+            title = parseDOM(load, 'p', {'class': 'video-title'})[0].strip()
             title = client.replaceHTMLCodes(title)
-            description = client.parseDOM(load, 'div', {'class': 'video-description'})[-1]
-            paragraphs = [client.stripTags(p) for p in client.parseDOM(description, 'p')]
+            description = parseDOM(load, 'div', {'class': 'video-description'})[-1]
+            paragraphs = [client.stripTags(p) for p in parseDOM(description, 'p')]
             plot = client.replaceHTMLCodes('[CR]'.join(paragraphs))
-            f = client.parseDOM(load, 'div', attrs={'class': 'cover'}, ret='style')[0]
+            f = parseDOM(load, 'div', attrs={'class': 'cover'}, ret='style')[0]
             fanart = re.search(r'url\((.+)\)', f).group(1)
 
         data = {'title': title, 'image': image, 'url': url, 'code': count, 'meta_url': meta_url}
@@ -374,7 +375,7 @@ class Indexer:
             result = client.request(url)
 
         try:
-            header = client.parseDOM(result, 'h2')[0]
+            header = parseDOM(result, 'h2')[0]
         except IndexError:
             header = None
 
@@ -404,7 +405,7 @@ class Indexer:
 
         if 'enimerosi-24' not in url and self.ajax_url not in url:
 
-            ajaxes = [i for i in client.parseDOM(result, 'script', attrs={'type': 'text/javascript'}) if 'ajaxurl' in i]
+            ajaxes = [i for i in parseDOM(result, 'script', attrs={'type': 'text/javascript'}) if 'ajaxurl' in i]
 
             ajax1 = json.loads(re.search(r'var loadmore_params = ({.+})', ajaxes[-1]).group(1))
             ajax2 = json.loads(re.search(r'var cactus = ({.+})', ajaxes[0]).group(1))
@@ -478,8 +479,8 @@ class Indexer:
 
                 img = item.attributes['style']
                 image = re.search(r'url\((.+)\)', img).group(1)
-                title = client.replaceHTMLCodes(client.parseDOM(text, 'a')[0].strip())
-                url = client.parseDOM(text, 'a', ret='href')[0]
+                title = client.replaceHTMLCodes(parseDOM(text, 'a')[0].strip())
+                url = parseDOM(text, 'a', ret='href')[0]
 
                 self.list.append({'title': title, 'image': image, 'url': url})
 
@@ -536,7 +537,7 @@ class Indexer:
         try:
 
             result = client.request(url)
-            items = client.parseDOM(result, 'item')
+            items = parseDOM(result, 'item')
 
         except Exception:
 
@@ -544,11 +545,11 @@ class Indexer:
 
         for item in items:
 
-            title = client.replaceHTMLCodes(client.parseDOM(item, 'title')[0])
+            title = client.replaceHTMLCodes(parseDOM(item, 'title')[0])
 
-            url = client.parseDOM(item, 'link')[0]
+            url = parseDOM(item, 'link')[0]
 
-            image = client.parseDOM(item, 'img', ret='src')[0]
+            image = parseDOM(item, 'img', ret='src')[0]
 
             self.list.append({'title': title, 'url': url, 'image': image})
 
@@ -695,7 +696,7 @@ class Indexer:
                 result = client.request(self.district_link).decode('windows-1253')
             except AttributeError:
                 result = client.request(self.district_link)
-            radios = client.parseDOM(result, 'td')
+            radios = parseDOM(result, 'td')
             radios = [r for r in radios if r]
 
         except Exception:
@@ -704,13 +705,13 @@ class Indexer:
 
         for radio in radios:
 
-            title = client.parseDOM(radio, 'a')[0]
-            href = client.parseDOM(radio, 'a', ret='href')[0]
+            title = parseDOM(radio, 'a')[0]
+            href = parseDOM(radio, 'a', ret='href')[0]
             html = client.request(href)
-            link = client.parseDOM(html, 'iframe', ret='src')[0]
+            link = parseDOM(html, 'iframe', ret='src')[0]
             embed = client.request(link)
             url = re.search(r'mp3: [\'"](.+?)[\'"]', embed).group(1).replace('https', 'http')
-            image = client.parseDOM(html, 'img', ret='src')[0]
+            image = parseDOM(html, 'img', ret='src')[0]
 
             self.list.append(
                 {'title': title, 'image': image, 'url': url}
@@ -751,11 +752,11 @@ class Indexer:
 
             if 'iframe' in html:
 
-                iframe = client.parseDOM(html, 'iframe', ret='src')[0]
+                iframe = parseDOM(html, 'iframe', ret='src')[0]
 
             else:
 
-                availability = client.parseDOM(html, 'strong')[-1]
+                availability = parseDOM(html, 'strong')[-1]
                 control.okDialog(control.name(), availability)
 
                 return 'https://static.adman.gr/inpage/blank.mp4'
@@ -810,7 +811,7 @@ class Indexer:
 
                 else:
 
-                    iframes = client.parseDOM(result, 'iframe', ret='src')
+                    iframes = parseDOM(result, 'iframe', ret='src')
 
                     try:
                         return self.resolve(iframes[-1])
