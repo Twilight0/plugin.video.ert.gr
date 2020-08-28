@@ -326,8 +326,7 @@ class Indexer:
         data_id = item.attributes['data-id']
         img = item.attributes['style']
         image = re.search(r'url\((.+)\)', img).group(1)
-        url = itertags_wrapper(item.text, 'a', ret='href')[0]
-        print url
+        url = [i for i in itertags_wrapper(item.text, 'a', ret='href') if 'https' in i][0]
         meta_url = '?'.join([self.ajax_url, self.load_search.format(data_id=data_id)])
 
         if 'inside-page-thumb-titles' in item.text and control.setting('metadata') == 'false':

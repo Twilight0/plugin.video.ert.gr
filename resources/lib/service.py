@@ -32,7 +32,7 @@ class Daemon:
 
                 break
 
-    def _service_setup( self ):
+    def _service_setup(self):
 
         self.Monitor = WatchChanges()
         self._get_settings()
