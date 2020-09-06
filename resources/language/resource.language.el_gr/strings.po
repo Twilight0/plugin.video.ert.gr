@@ -225,8 +225,8 @@ msgid ""
 msgstr ""
 
 msgctxt "#30053"
-msgid ""
-msgstr ""
+msgid "Foreign tv series catch-up"
+msgstr "Ξένες σειρές catch-up"
 
 msgctxt "#30054"
 msgid "Web Series"
@@ -241,8 +241,8 @@ msgid "[I]Click to enter a search term[/I]"
 msgstr "[I]Πατήστε για να εισάγετε όρο αναζήτησης[/I]"
 
 msgctxt "#30057"
-msgid "Greek Series"
-msgstr "Ελληνικές Σειρές"
+msgid "Full TV series"
+msgstr "Πλήρεις σειρές"
 
 msgctxt "#30058"
 msgid "No bookmarks found"

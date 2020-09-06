@@ -225,7 +225,7 @@ msgid ""
 msgstr ""
 
 msgctxt "#30053"
-msgid ""
+msgid "Foreign tv series catch-up"
 msgstr ""
 
 msgctxt "#30054"
@@ -241,7 +241,7 @@ msgid "[I]Click to enter a search term[/I]"
 msgstr ""
 
 msgctxt "#30057"
-msgid "Greek Series"
+msgid "Full TV series"
 msgstr ""
 
 msgctxt "#30058"

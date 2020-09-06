@@ -1,4 +1,4 @@
-[B]3.0.2 & 3.0.3[/B]
+[B]3.0.2, 3.0.3 & 3.0.4[/B]
 - Fixes for indexers due to website changes
 
 [B]3.0.1[/B]

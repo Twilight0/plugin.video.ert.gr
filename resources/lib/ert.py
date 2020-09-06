@@ -73,6 +73,7 @@ class Indexer:
 
         self.movies_link = ''.join([self.category_link, '/tainies/'])
         self.series_link = ''.join([self.category_link, '/ksenes-seires/'])
+        self.catchup_link = ''.join([self.category_link, '/ksenes-seires-catchup/'])
         self.web_series_link = ''.join([self.category_link, '/web-series/'])
 
         self.ert1_link = ''.join([self.base_link, '/ert1-live/'])
@@ -354,8 +355,8 @@ class Indexer:
             data.update({'next': next_url})
 
         if header in [
-            u'TV ΣΕΙΡΕΣ', u'ΨΥΧΑΓΩΓΙΑ', u'ΣΥΝΕΝΤΕΥΞΕΙΣ', u'ΕΛΛΗΝΙΚΑ ΝΤΟΚΙΜΑΝΤΕΡ', u'ΞΕΝΑ ΝΤΟΚΙΜΑΝΤΕΡ',
-            u'ΠΑΙΔΙΚΑ', u'Η ΕΡΤ ΘΥΜΑΤΑΙ', u'ΑΘΛΗΤΙΚΑ', u'WEB ΣΕΙΡΕΣ'
+            u'ΞΕΝΕΣ ΣΕΙΡΕΣ ΠΛΗΡΕΙΣ', u'ΨΥΧΑΓΩΓΙΑ', u'ΣΥΝΕΝΤΕΥΞΕΙΣ', u'ΕΛΛΗΝΙΚΑ ΝΤΟΚΙΜΑΝΤΕΡ', u'ΞΕΝΑ ΝΤΟΚΙΜΑΝΤΕΡ',
+            u'ΠΑΙΔΙΚΑ', u'Η ΕΡΤ ΘΥΜΑΤΑΙ', u'ΑΘΛΗΤΙΚΑ', u'ΞΕΝΕΣ ΣΕΙΡΕΣ CATCH-UP', u'WEB ΣΕΙΡΕΣ'
         ] and not 'archeio' in url and header is not None:
             data.update({'playable': 'false'})
 
@@ -487,7 +488,8 @@ class Indexer:
 
     def listing(self, url):
 
-        self.list = cache.get(self._listing, 6, url)
+        # self.list = cache.get(self._listing, 6, url)
+        self.list = self._listing(url)
 
         if self.list is None:
             return
@@ -587,6 +589,12 @@ class Indexer:
             {
                 'title': control.lang(30057),
                 'url': self.series_link,
+                'icon': 'series.jpg'
+            }
+            ,
+            {
+                'title': control.lang(30053),
+                'url': self.catchup_link,
                 'icon': 'series.jpg'
             }
             ,
