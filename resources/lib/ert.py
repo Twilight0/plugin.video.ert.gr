@@ -488,8 +488,7 @@ class Indexer:
 
     def listing(self, url):
 
-        # self.list = cache.get(self._listing, 6, url)
-        self.list = self._listing(url)
+        self.list = cache.get(self._listing, 6, url)
 
         if self.list is None:
             return
@@ -889,7 +888,7 @@ class Indexer:
 
             try:
 
-                yes = control.yesnoDialog(control.lang(30003))
+                yes = control.yesnoDialog(control.lang(30014))
 
                 if yes:
                     control.enable_addon('inputstream.adaptive')
