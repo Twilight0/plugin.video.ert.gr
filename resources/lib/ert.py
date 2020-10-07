@@ -37,7 +37,10 @@ def meta_viewer(url):
 
     heading = control.infoLabel('Listitem.Label')
 
-    plot = cache.get(_plot, 96, url)
+    if control.setting('debug') == 'false':
+        plot = cache.get(_plot, 96, url)
+    else:
+        plot = _plot(url)
 
     control.dialog.textviewer(heading=heading, text=plot)
 
@@ -300,7 +303,10 @@ class Indexer:
 
     def index(self):
 
-        self.list = cache.get(self.index_listing, 48)
+        if control.setting('debug') == 'false':
+            self.list = cache.get(self.index_listing, 48)
+        else:
+            self.list = self.index_listing()
 
         if self.list is None:
             return
@@ -488,18 +494,27 @@ class Indexer:
 
     def listing(self, url):
 
-        self.list = cache.get(self._listing, 6, url)
+        if control.setting('debug') == 'false':
+            self.list = cache.get(self._listing, 6, url)
+        else:
+            self.list = self._listing(url)
 
         if self.list is None:
             return
 
         for i in self.list:
 
-            if i.get('playable') == 'false':
-                del i['playable']
+            if 'paidikes-tainies' in i['url'] or 'archeio' in i['url']:
+                i.update({'action': 'play', 'isFolder': 'False'})
+            elif i.get('playable') == 'false':
                 i.update({'action': 'listing'})
             else:
                 i.update({'action': 'play', 'isFolder': 'False'})
+
+            try:
+                del i['playable']
+            except KeyError:
+                pass
 
             bookmark = dict((k, v) for k, v in iteritems(i) if not k == 'next')
             bookmark['bookmark'] = i['url']
@@ -532,16 +547,10 @@ class Indexer:
 
         directory.add(self.list, content=content)
 
-    def recent_list(self, url):
+    def recent_list(self):
 
-        try:
-
-            result = client.request(url)
-            items = parseDOM(result, 'item')
-
-        except Exception:
-
-            return
+        result = client.request(self.recent_link)
+        items = parseDOM(result, 'item')
 
         for item in items:
 
@@ -557,7 +566,10 @@ class Indexer:
 
     def recent(self):
 
-        self.list = cache.get(self.recent_list, 1, self.recent_link)
+        if control.setting('debug') == 'false':
+            self.list = cache.get(self.recent_list, 1)
+        else:
+            self.list = self.recent_list()
 
         if self.list is None:
             return
@@ -569,7 +581,10 @@ class Indexer:
 
     def play(self, url):
 
-        stream = cache.get(self.resolve, 96, url)
+        if control.setting('debug') == 'false':
+            stream = cache.get(self.resolve, 96, url)
+        else:
+            stream = self.resolve(url)
 
         if stream is None:
             return
@@ -727,7 +742,10 @@ class Indexer:
 
     def district(self):
 
-        self.list = cache.get(self.district_list, 96)
+        if control.setting('debug') == 'false':
+            self.list = cache.get(self.district_list, 96)
+        else:
+            self.list = self.district_list()
 
         if self.list is None:
             return
@@ -778,7 +796,10 @@ class Indexer:
 
                 if urls:
 
-                    geo = cache.get(self._geo_detect, 192)
+                    if control.setting('debug') == 'false':
+                        geo = cache.get(self._geo_detect, 192)
+                    else:
+                        geo = self._geo_detect()
 
                     if len(urls) >= 2:
 
