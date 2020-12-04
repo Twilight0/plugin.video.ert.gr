@@ -14,7 +14,7 @@ from sys import argv
 from tulip.compat import parse_qsl
 from tulip.control import infoLabel, bookmarksFile, refresh, sleep, openSettings
 from tulip import bookmarks, cache
-# noinspection PyUnresolvedReferences
+# noinspection PyUnresolvedReferences,PyProtectedMember
 from resources.lib import ert
 
 syshandle = int(argv[1])

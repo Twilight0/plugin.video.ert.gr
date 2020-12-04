@@ -90,9 +90,9 @@ class Indexer:
         self.district_link = ''.join([self.radio_link, '/liveradio/list.html'])
         self.channel_id = 'UC0jVU-mK53vDQZcSZB5mVHg'
         self.scramble = (
-            'eJwVzMEOgiAAANBfcZzTZWBBt5xtpmsecqVdGiqQqUGAbdb69+YHvPcFbQO2DkA+XBLsBxjjjdsPiKueYKqGpuHQmuV9Z'
-            'YPuIbSs1kYTjyplPCGl6NlomK7l07Kn9Wo5gIUDqGpvHZvmdnf40NMUElLkkGdhl+gUx++xKGl1dbN92kp5hmg3K8Nqze'
-            'yMYhQmj/U+jY6V4Jv8hS7S3so4Ar8/Amw3tA=='
+            'eJwVy0kOgjAUANCrkK6FUJDJnVFAI4jEYNQNwfaHqaWMCzDe3bB/74sGID2MaCehwEvwzYifAkRFu1TOHxc/Lr0j2kgoa8u0hnll+/OS3e'
+            'fDR5wGl9DIuQbvxU9i1r1it2aQkagNax6uq6RrME0LW9ixNMPBslrovFBtjdodbrY5Z8yZbKuk0OnVVPFaydp2UHIhcgbTAD0RzQjNqBDB'
+            '0e8Pt/g4dw=='
         )
 
         self.keys_registration()
@@ -220,37 +220,42 @@ class Indexer:
             {
                 'title': control.lang(30021),
                 'url': self.ert1_link,
-                'icon': 'EPT1.png'
+                'icon': 'EPT1.png',
+                'fanart': control.addonmedia('EPT1_fanart.jpg')
             }
             ,
             {
                 'title': control.lang(30022),
                 'url': self.ert2_link,
-                'icon': 'EPT2.png'
+                'icon': 'EPT2.png',
+                'fanart': control.addonmedia('EPT2_fanart.jpg')
             }
             ,
             {
                 'title': control.lang(30023),
                 'url': self.ert3_link,
-                'icon': 'EPT3.png'
+                'icon': 'EPT3.png',
+                'fanart': control.addonmedia('EPT3_fanart.jpg')
             }
             ,
             {
                 'title': control.lang(30024),
                 'url': self.ertw_link,
-                'icon': 'EPT WORLD.png'
+                'icon': 'EPT_WORLD.png',
+                'fanart': control.addonmedia('EPT_WORLD_fanart.jpg')
             }
             ,
             {
                 'title': control.lang(30041),
                 'url': self.erts_link,
-                'icon': 'EPT SPORTS.png'
+                'icon': 'EPT_SPORTS.png',
+                'fanart': control.addonmedia('EPT_SPORTS_fanart.jpg')
             }
         ]
 
         for i in self.list:
 
-            i.update({'action': 'play', 'isFolder': 'False', 'fanart': control.addonmedia('live_fanart.jpg')})
+            i.update({'action': 'play', 'isFolder': 'False'})
 
         directory.add(self.list, content='videos')
 
@@ -299,6 +304,8 @@ class Indexer:
 
             self.list.append({'title': title, 'url': url})
 
+        self.list = sorted(self.list, key=lambda k: k['title'].lower())
+
         return self.list
 
     def index(self):
@@ -318,8 +325,6 @@ class Indexer:
             bookmark = dict((k, v) for k, v in iteritems(i) if not k == 'next')
             bookmark['bookmark'] = i['url']
             i.update({'cm': [{'title': 30006, 'query': {'action': 'addBookmark', 'url': json.dumps(bookmark)}}]})
-
-        self.list = sorted(self.list, key=lambda k: k['title'].lower())
 
         directory.add(self.list, content='videos')
 
@@ -858,7 +863,12 @@ class Indexer:
 
             jsonstore = json.load(f)
 
-            no_keys = control.addonInfo('id') not in jsonstore.get('keys', 'developer').get('developer')
+            try:
+                old_key_found = jsonstore['keys']['developer'][control.addonInfo('id')]['api_key'] == 'AIzaSyB99XT3fOBkJrK8HvuXYabZ-OEKiooV34A'
+            except KeyError:
+                old_key_found = False
+
+            no_keys = control.addonInfo('id') not in jsonstore.get('keys', 'developer').get('developer') or old_key_found
 
             if setting and no_keys:
 

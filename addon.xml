@@ -1,5 +1,5 @@
 ﻿<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
-<addon id="plugin.video.ert.gr" version="3.0.6" name="ERTflix" provider-name="Twilight0">
+<addon id="plugin.video.ert.gr" version="3.1.0" name="ERTflix" provider-name="Twilight0">
     <requires>
         <import addon="xbmc.python" version="2.24.0" />
         <import addon="script.module.tulip" version="2.6.20" />
@@ -35,7 +35,12 @@
         <source>https://github.com/Twilight0/plugin.video.ert.gr</source>
         <size>460600</size>
         <website>https://www.ertflix.gr/</website>
-        <news>[B]3.0.X[/B]
+        <news>[B]3.1.0[/B]
+- New artwork for live channels
+- Updated youtube api key
+- A few other minor tweaks
+
+[B]3.0.X[/B]
 - Fixes for indexers due to website changes
 
 [B]3.0.1[/B]
