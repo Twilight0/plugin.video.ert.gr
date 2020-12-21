@@ -397,6 +397,9 @@ class Indexer:
         if self.base_link + '/?s=' in url or control.setting('pagination') == 'true':
             override = True
 
+        threads_1 = []
+        threads_2 = []
+
         # Nest the function to work on either of the two cases
         def _exec(_items, _next_url=None):
 
@@ -430,9 +433,6 @@ class Indexer:
                 posts = posts.encode('utf-8')
             except Exception:
                 pass
-
-            threads_1 = []
-            threads_2 = []
 
             if control.setting('threading') == 'true' and not override:
 

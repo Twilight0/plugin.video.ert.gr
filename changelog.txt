@@ -1,3 +1,6 @@
+[B]3.1.2[/B]
+- Apply threads lists higher in the execution order
+
 [B]3.1.1[/B]
 - Added greek tv series menu item for quicker access
 
