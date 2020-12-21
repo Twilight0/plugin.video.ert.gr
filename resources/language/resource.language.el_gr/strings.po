@@ -201,8 +201,8 @@ msgid "Debug (do not enable unless you've been told by the developer)"
 msgstr "Αποσφαλμάτωση (μην ενεργοποιείτε εκτός και αν σας πει ο δημιουργός)"
 
 msgctxt "#30047"
-msgid ""
-msgstr ""
+msgid "New greek tv series"
+msgstr "Νέες ελληνικές σειρές"
 
 msgctxt "#30048"
 msgid ""

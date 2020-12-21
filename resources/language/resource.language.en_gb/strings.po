@@ -201,7 +201,7 @@ msgid "Debug (do not enable unless you've been told by the developer)"
 msgstr ""
 
 msgctxt "#30047"
-msgid ""
+msgid "New greek tv series"
 msgstr ""
 
 msgctxt "#30048"

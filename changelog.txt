@@ -1,3 +1,6 @@
+[B]3.1.1[/B]
+- Added greek tv series menu item for quicker access
+
 [B]3.1.0[/B]
 - New artwork for live channels
 - Updated youtube api key
