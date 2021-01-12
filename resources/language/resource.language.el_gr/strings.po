@@ -49,8 +49,8 @@ msgid "Enable bookmarks clear menu item"
 msgstr "Ενεργοποίηση της επιλογής εκκαθάρισης σελιδοδεικτών"
 
 msgctxt "#30009"
-msgid "Cartoons"
-msgstr "Παιδικά"
+msgid ""
+msgstr ""
 
 msgctxt "#30010"
 msgid "Entertainment"
@@ -205,16 +205,16 @@ msgid "New greek tv series"
 msgstr "Νέες ελληνικές σειρές"
 
 msgctxt "#30048"
-msgid ""
-msgstr ""
+msgid "Exit"
+msgstr "Έξοδος"
 
 msgctxt "#30049"
 msgid "Movies"
 msgstr "Ταινίες"
 
 msgctxt "#30050"
-msgid ""
-msgstr ""
+msgid "Show exit button"
+msgstr "Δείξε το κουμπί εξόδου"
 
 msgctxt "#30051"
 msgid ""
@@ -251,6 +251,18 @@ msgstr "Δεν βρέθηκαν σελιδοδείκτες"
 msgctxt "#30059"
 msgid "Clear bookmarks"
 msgstr "Εκκαθάριση σελιδοδεικτών"
+
+msgctxt "#30060"
+msgid "Kids content"
+msgstr "Παιδικό περιεχόμενο"
+
+msgctxt "#30061"
+msgid "Learning at home"
+msgstr "Μαθαίνοντας στο σπίτι"
+
+msgctxt "#30062"
+msgid "Entertainment for kids"
+msgstr "Ψυχαγωγικά παιδικά"
 
 msgctxt "#30402"
 msgid "Success"

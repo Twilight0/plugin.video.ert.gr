@@ -12,7 +12,7 @@ from __future__ import absolute_import
 
 from sys import argv
 from tulip.compat import parse_qsl
-from tulip.control import infoLabel, bookmarksFile, refresh, sleep, openSettings
+from tulip.control import infoLabel, bookmarksFile, refresh, sleep, openSettings, quit_kodi
 from tulip import bookmarks, cache
 # noinspection PyUnresolvedReferences,PyProtectedMember
 from resources.lib import ert
@@ -95,3 +95,6 @@ elif action == 'cache_clear':
 
 elif action == 'settings':
     openSettings()
+
+elif action == 'exit':
+    quit_kodi()

@@ -164,10 +164,9 @@ class Indexer:
             }
             ,
             {
-                'title': control.lang(30009),
-                'action': 'listing',
-                'icon': 'kids.jpg',
-                'url': self.cartoons_link
+                'title': control.lang(30060),
+                'action': 'kids',
+                'icon': 'kids.jpg'
             }
             ,
             {
@@ -204,8 +203,18 @@ class Indexer:
                 'isFolder': 'False', 'isPlayable': 'False'
             }
 
+        exit_button = {
+            'title': control.lang(30048),
+            'action': 'exit',
+            'icon': 'exit.jpg',
+            'isFolder': 'False', 'isPlayable': 'False'
+        }
+
         if control.setting('settings_boolean') == 'true':
             self.list.append(settings_menu)
+
+        if control.setting('show_exit') == 'true':
+            self.list.append(exit_button)
 
         for item in self.list:
 
@@ -570,6 +579,29 @@ class Indexer:
 
         return self.list
 
+    def kids(self):
+
+        pl_id = 'PLgeq7ezNgWe94VavlcE6HC0k8RVanZWPe'
+
+        self.list = [
+            {
+                'title': control.lang(30062),
+                'url': self.cartoons_link,
+                'action': 'listing',
+                'icon': 'kids.jpg'
+            }
+            ,
+            {
+                'title': control.lang(30061),
+                'url': 'plugin://plugin.video.youtube/channel/UC0jVU-mK53vDQZcSZB5mVHg/playlist/{0}/'.format(pl_id),
+                'action': 'youtube',
+                'icon': 'interviews.jpg',
+                'isFolder': 'False', 'isPlayable': 'False'
+            }
+        ]
+
+        directory.add(self.list)
+
     def recent(self):
 
         if control.setting('debug') == 'false':
@@ -859,8 +891,7 @@ class Indexer:
 
     def keys_registration(self):
 
-        filepath = control.transPath(
-            control.join(control.addon('plugin.video.youtube').getAddonInfo('profile'), 'api_keys.json'))
+        filepath = control.transPath(control.join(control.addon('plugin.video.youtube').getAddonInfo('profile'), 'api_keys.json'))
 
         setting = control.addon('plugin.video.youtube').getSetting('youtube.allow.dev.keys') == 'true'
 

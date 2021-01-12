@@ -49,7 +49,7 @@ msgid "Enable bookmarks clear menu item"
 msgstr ""
 
 msgctxt "#30009"
-msgid "Cartoons"
+msgid ""
 msgstr ""
 
 msgctxt "#30010"
@@ -205,7 +205,7 @@ msgid "New greek tv series"
 msgstr ""
 
 msgctxt "#30048"
-msgid ""
+msgid "Exit"
 msgstr ""
 
 msgctxt "#30049"
@@ -213,7 +213,7 @@ msgid "Movies"
 msgstr ""
 
 msgctxt "#30050"
-msgid ""
+msgid "Show exit button"
 msgstr ""
 
 msgctxt "#30051"
@@ -250,6 +250,18 @@ msgstr ""
 
 msgctxt "#30059"
 msgid "Clear bookmarks"
+msgstr ""
+
+msgctxt "#30060"
+msgid "Kids content"
+msgstr ""
+
+msgctxt "#30061"
+msgid "Learning at home"
+msgstr ""
+
+msgctxt "#30062"
+msgid "Entertainment for kids"
 msgstr ""
 
 msgctxt "#30500"
