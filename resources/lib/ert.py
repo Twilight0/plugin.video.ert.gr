@@ -97,7 +97,6 @@ class Indexer:
         )
 
         self.keys_registration()
-        self.check_inputstream_addon()
 
     def root(self):
 
@@ -377,7 +376,8 @@ class Indexer:
 
         if header in [
             u'ΞΕΝΕΣ ΣΕΙΡΕΣ ΠΛΗΡΕΙΣ', u'ΨΥΧΑΓΩΓΙΑ', u'ΣΥΝΕΝΤΕΥΞΕΙΣ', u'ΕΛΛΗΝΙΚΑ ΝΤΟΚΙΜΑΝΤΕΡ', u'ΞΕΝΑ ΝΤΟΚΙΜΑΝΤΕΡ',
-            u'ΠΑΙΔΙΚΑ', u'Η ΕΡΤ ΘΥΜΑΤΑΙ', u'ΑΘΛΗΤΙΚΑ', u'ΞΕΝΕΣ ΣΕΙΡΕΣ CATCH-UP', u'WEB ΣΕΙΡΕΣ', u'ΝΕΕΣ ΕΛΛΗΝΙΚΕΣ ΣΕΙΡΕΣ'
+            u'ΠΑΙΔΙΚΗ ΔΙΑΣΚΕΔΑΣΗ', u'Η ΕΡΤ ΘΥΜΑΤΑΙ', u'ΑΘΛΗΤΙΚΑ', u'ΞΕΝΕΣ ΣΕΙΡΕΣ CATCH-UP', u'WEB ΣΕΙΡΕΣ',
+            u'ΝΕΕΣ ΕΛΛΗΝΙΚΕΣ ΣΕΙΡΕΣ'
         ] and not 'archeio' in url and header is not None:
             data.update({'playable': 'false'})
 
@@ -940,35 +940,6 @@ class Indexer:
         stream = streams[0]['url']
 
         return stream
-
-    @staticmethod
-    def check_inputstream_addon():
-
-        try:
-            addon_enabled = control.addon_details('inputstream.adaptive').get('enabled')
-        except KeyError:
-            addon_enabled = False
-
-        leia_plus = control.kodi_version() >= 18.0
-
-        first_time_file = control.join(control.dataPath, 'first_time')
-
-        if not addon_enabled and not file_exists(first_time_file) and leia_plus:
-
-            try:
-
-                yes = control.yesnoDialog(control.lang(30014))
-
-                if yes:
-                    control.enable_addon('inputstream.adaptive')
-                    control.infoDialog(control.lang(30402))
-
-                with open(first_time_file, 'a'):
-                    pass
-
-            except Exception:
-
-                pass
 
     @staticmethod
     def yt(url):
