@@ -1,3 +1,6 @@
+[B]3.2.2[/B]
+- Fix for some tv series indexers
+
 [B]3.2.1[/B]
 - Minor fix for kids section
 - Removed prompt for inputstream addon
