@@ -518,7 +518,15 @@ class Indexer:
             return
 
         for i in self.list:
-
+            
+            if 'ksena-docs' in i['url']:
+                i['url'] = i['url'].replace('/ksena-docs/', '/category/xena-docs/')
+            if 'xena' in i['url'] or 'ksena' in i['url']:
+                if 'category' in i['url']:
+                    i.update({'playable': 'false'})
+                else:
+                    i.update({'playable': 'true'})
+                    
             if 'paidikes-tainies' in i['url'] or 'archeio' in i['url']:
                 i.update({'action': 'play', 'isFolder': 'False'})
             elif i.get('playable') == 'false':
