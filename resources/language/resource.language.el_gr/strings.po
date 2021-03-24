@@ -82,11 +82,11 @@ msgstr "Συνεντεύξεις"
 
 msgctxt "#30017"
 msgid "Foreign Documentaries"
-msgstr "Ξένα Ντοκυμαντέρ"
+msgstr "Ξένα Ντοκιμαντέρ"
 
 msgctxt "#30018"
 msgid "Greek Documentaries"
-msgstr "Ελληνικά Ντοκυμαντέρ"
+msgstr "Ελληνικά Ντοκιμαντέρ"
 
 msgctxt "#30019"
 msgid "Learning at home"
