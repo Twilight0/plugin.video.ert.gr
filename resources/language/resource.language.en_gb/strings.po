@@ -197,7 +197,7 @@ msgid "Enable settings menu item"
 msgstr ""
 
 msgctxt "#30046"
-msgid "Debug (do not enable unless you've been told by the developer)"
+msgid ""
 msgstr ""
 
 msgctxt "#30047"

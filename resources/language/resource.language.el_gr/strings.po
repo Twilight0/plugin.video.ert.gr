@@ -197,8 +197,8 @@ msgid "Enable settings menu item"
 msgstr "Ενεργοποίηση αντικειμένου ρυθμίσεων στο μενού"
 
 msgctxt "#30046"
-msgid "Debug (do not enable unless you've been told by the developer)"
-msgstr "Αποσφαλμάτωση (μην ενεργοποιείτε εκτός και αν σας πει ο δημιουργός)"
+msgid ""
+msgstr ""
 
 msgctxt "#30047"
 msgid "New greek tv series"

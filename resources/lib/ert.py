@@ -22,6 +22,11 @@ from youtube_registration import register_api_keys
 from youtube_plugin.youtube.youtube_exceptions import YouTubeException
 
 
+cache_method = cache.FunctionCache().cache_method
+cache_function = cache.FunctionCache().cache_function
+
+
+@cache_function(5760)
 def _plot(url):
 
     load = client.request(url.partition('?')[0], post=url.partition('?')[2], timeout=20)
@@ -37,12 +42,7 @@ def meta_viewer(url):
 
     heading = control.infoLabel('Listitem.Label')
 
-    if control.setting('debug') == 'false':
-        plot = cache.get(_plot, 96, url)
-    else:
-        plot = _plot(url)
-
-    control.dialog.textviewer(heading=heading, text=plot)
+    control.dialog.textviewer(heading=heading, text=_plot(url))
 
 
 class Indexer:
@@ -294,6 +294,7 @@ class Indexer:
 
         directory.add(self.list, content='videos')
 
+    @cache_function(2880)
     def index_listing(self):
 
         html = client.request(self.index_link)
@@ -319,12 +320,9 @@ class Indexer:
 
     def index(self):
 
-        if control.setting('debug') == 'false':
-            self.list = cache.get(self.index_listing, 48)
-        else:
+        try:
             self.list = self.index_listing()
-
-        if self.list is None:
+        except Exception:
             return
 
         for i in self.list:
@@ -388,6 +386,7 @@ class Indexer:
 
         self.list.append(data)
 
+    @cache_function(360)
     def _listing(self, url):
 
         if self.ajax_url in url:
@@ -509,12 +508,9 @@ class Indexer:
 
     def listing(self, url):
 
-        if control.setting('debug') == 'false':
-            self.list = cache.get(self._listing, 6, url)
-        else:
+        try:
             self.list = self._listing(url)
-
-        if self.list is None:
+        except Exception:
             return
 
         for i in self.list:
@@ -562,6 +558,7 @@ class Indexer:
 
         directory.add(self.list, content=content)
 
+    @cache_function(10)
     def recent_list(self):
 
         result = client.request(self.recent_link)
@@ -604,12 +601,9 @@ class Indexer:
 
     def recent(self):
 
-        if control.setting('debug') == 'false':
-            self.list = cache.get(self.recent_list, 1)
-        else:
+        try:
             self.list = self.recent_list()
-
-        if self.list is None:
+        except Exception:
             return
 
         for i in self.list:
@@ -619,10 +613,7 @@ class Indexer:
 
     def play(self, url):
 
-        if control.setting('debug') == 'false':
-            stream = cache.get(self.resolve, 96, url)
-        else:
-            stream = self.resolve(url)
+        stream = self.resolve(url)
 
         if stream is None:
             return
@@ -754,6 +745,7 @@ class Indexer:
 
         directory.add(self.list)
 
+    @cache_function(5760)
     def district_list(self):
 
         try:
@@ -786,12 +778,9 @@ class Indexer:
 
     def district(self):
 
-        if control.setting('debug') == 'false':
-            self.list = cache.get(self.district_list, 96)
-        else:
+        try:
             self.list = self.district_list()
-
-        if self.list is None:
+        except Exception:
             return
 
         for i in self.list:
@@ -799,6 +788,7 @@ class Indexer:
 
         directory.add(self.list)
 
+    @cache_function(5760)
     def resolve(self, url):
 
         _url = url
@@ -840,10 +830,7 @@ class Indexer:
 
                 if urls:
 
-                    if control.setting('debug') == 'false':
-                        geo = cache.get(self._geo_detect, 192)
-                    else:
-                        geo = self._geo_detect()
+                    geo = self._geo_detect()
 
                     if len(urls) >= 2:
 
@@ -916,6 +903,7 @@ class Indexer:
             f.close()
 
     @staticmethod
+    @cache_function(11520)
     def _geo_detect():
 
         _json = client.request('https://geoip.siliconweb.com/geo.json', output='json')
