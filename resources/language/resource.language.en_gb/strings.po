@@ -264,6 +264,10 @@ msgctxt "#30062"
 msgid "Entertainment for kids"
 msgstr ""
 
+msgctxt "#30402"
+msgid "Success"
+msgstr ""
+
 msgctxt "#30500"
 msgid "Next..."
 msgstr ""
@@ -274,8 +278,4 @@ msgstr ""
 
 msgctxt "#30502"
 msgid "Remove from bookmarks"
-msgstr ""
-
-msgctxt "#30402"
-msgid "Success"
 msgstr ""

@@ -17,8 +17,6 @@ from tulip import bookmarks, cache
 # noinspection PyUnresolvedReferences,PyProtectedMember
 from resources.lib import ert
 
-syshandle = int(argv[1])
-sysaddon = argv[0]
 params = dict(parse_qsl(argv[2][1:]))
 
 ########################################################################################################################
@@ -32,7 +30,7 @@ if 'audio' in infoLabel('Container.FolderPath') and action is None:
     action = 'radios'
 
 if action is None:
-    ert.Indexer().root()
+    ert.Indexer(argv).root()
 
 elif action == 'addBookmark':
     bookmarks.add(url)
@@ -46,52 +44,52 @@ elif action == 'clear_bookmarks':
     refresh()
 
 elif action == 'channels':
-    ert.Indexer().channels()
+    ert.Indexer(argv).channels()
 
 elif action == 'bookmarks':
-    ert.Indexer().bookmarks()
+    ert.Indexer(argv).bookmarks()
 
 elif action == 'index':
-    ert.Indexer().index()
+    ert.Indexer(argv).index()
 
 elif action == 'sports':
-    ert.Indexer().sports()
+    ert.Indexer(argv).sports()
 
 elif action == 'listing':
-    ert.Indexer().listing(url)
+    ert.Indexer(argv).listing(url)
 
 elif action == 'series':
-    ert.Indexer().series()
+    ert.Indexer(argv).series()
 
 elif action == 'shows':
-    ert.Indexer().shows()
+    ert.Indexer(argv).shows()
 
 elif action == 'kids':
-    ert.Indexer().kids()
+    ert.Indexer(argv).kids()
 
 elif action == 'recent':
-    ert.Indexer().recent()
+    ert.Indexer(argv).recent()
 
 elif action == 'radios':
-    ert.Indexer().radios()
+    ert.Indexer(argv).radios()
 
 elif action == 'district':
-    ert.Indexer().district()
+    ert.Indexer(argv).district()
 
 elif action == 'play':
-    ert.Indexer().play(url)
+    ert.Indexer(argv).play(url)
 
 elif action == 'youtube':
-    ert.Indexer().yt(url)
+    ert.Indexer(argv).yt(url)
 
 elif action == 'search':
-    ert.Indexer().search()
+    ert.Indexer(argv).search()
 
 elif action == 'info':
     ert.meta_viewer(url)
 
 elif action == 'cache_clear':
-    cache.clear(withyes=False)
+    cache.FunctionCache().reset_cache(notify=True)
 
 elif action == 'settings':
     openSettings()

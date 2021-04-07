@@ -47,10 +47,11 @@ def meta_viewer(url):
 
 class Indexer:
 
-    def __init__(self):
+    def __init__(self, argv):
 
         self.list = []; self.data = []
 
+        self.argv = argv
         self.base_link = 'https://www.ertflix.gr'
         self.old_base = 'https://webtv.ert.gr'
         self.search_link = ''.join([self.base_link, '/?s={}'])
@@ -221,7 +222,7 @@ class Indexer:
             settings = {'title': 30039, 'query': {'action': 'settings'}}
             item.update({'cm': [cache_clear, settings]})
 
-        directory.add(self.list, content='videos')
+        directory.add(self.list, argv=self.argv, content='videos')
 
     def channels(self):
 
@@ -266,7 +267,7 @@ class Indexer:
 
             i.update({'action': 'play', 'isFolder': 'False'})
 
-        directory.add(self.list, content='videos')
+        directory.add(self.list, argv=self.argv, content='videos')
 
     def bookmarks(self):
 
@@ -274,7 +275,7 @@ class Indexer:
 
         if not self.list:
             na = [{'title': control.lang(30058), 'action': None}]
-            directory.add(na)
+            directory.add(na, argv=self.argv)
             return
 
         for i in self.list:
@@ -292,9 +293,9 @@ class Indexer:
 
             self.list.insert(0, clear_menu)
 
-        directory.add(self.list, content='videos')
+        directory.add(self.list, argv=self.argv, content='videos')
 
-    @cache_function(2880)
+    @cache_method(2880)
     def index_listing(self):
 
         html = client.request(self.index_link)
@@ -333,7 +334,7 @@ class Indexer:
             bookmark['bookmark'] = i['url']
             i.update({'cm': [{'title': 30006, 'query': {'action': 'addBookmark', 'url': json.dumps(bookmark)}}]})
 
-        directory.add(self.list, content='videos')
+        directory.add(self.list, argv=self.argv, content='videos')
 
     def thread(self, url, post=None):
 
@@ -386,7 +387,7 @@ class Indexer:
 
         self.list.append(data)
 
-    @cache_function(360)
+    @cache_method(360)
     def _listing(self, url):
 
         if self.ajax_url in url:
@@ -556,9 +557,9 @@ class Indexer:
         else:
             content = 'videos'
 
-        directory.add(self.list, content=content)
+        directory.add(self.list, argv=self.argv, content=content)
 
-    @cache_function(10)
+    @cache_method(360)
     def recent_list(self):
 
         result = client.request(self.recent_link)
@@ -597,7 +598,7 @@ class Indexer:
             }
         ]
 
-        directory.add(self.list)
+        directory.add(self.list, argv=self.argv)
 
     def recent(self):
 
@@ -609,7 +610,7 @@ class Indexer:
         for i in self.list:
             i.update({'action': 'play', 'isFolder': 'False'})
 
-        directory.add(self.list, content='videos')
+        directory.add(self.list, argv=self.argv, content='videos')
 
     def play(self, url):
 
@@ -657,7 +658,7 @@ class Indexer:
         for i in self.list:
             i.update({'action': 'listing'})
 
-        directory.add(self.list)
+        directory.add(self.list, argv=self.argv)
 
     def shows(self):
 
@@ -690,7 +691,7 @@ class Indexer:
         for i in self.list:
             i.update({'action': 'listing'})
 
-        directory.add(self.list)
+        directory.add(self.list, argv=self.argv)
 
     def search(self):
 
@@ -743,9 +744,9 @@ class Indexer:
 
         self.list.append(district)
 
-        directory.add(self.list)
+        directory.add(self.list, argv=self.argv)
 
-    @cache_function(5760)
+    @cache_method(5760)
     def district_list(self):
 
         try:
@@ -786,9 +787,9 @@ class Indexer:
         for i in self.list:
             i.update({'action': 'play', 'isFolder': 'False', 'fanart': control.addonmedia('radio_fanart.jpg')})
 
-        directory.add(self.list)
+        directory.add(self.list, argv=self.argv)
 
-    @cache_function(5760)
+    @cache_method(5760)
     def resolve(self, url):
 
         _url = url
@@ -903,7 +904,7 @@ class Indexer:
             f.close()
 
     @staticmethod
-    @cache_function(11520)
+    @cache_method(11520)
     def _geo_detect():
 
         _json = client.request('https://geoip.siliconweb.com/geo.json', output='json')

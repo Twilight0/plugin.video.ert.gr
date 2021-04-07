@@ -1,3 +1,7 @@
+[B]3.3.1[/B]
+- Bug fixes for caching
+- Tweak routing
+
 [B]3.3.0[/B]
 - Change caching method
 - Remove debugging option
