@@ -14,8 +14,8 @@ import json, re
 from os.path import exists as file_exists
 from zlib import decompress
 from base64 import b64decode
-from tulip import bookmarks, directory, client, cache, control, workers, cleantitle
-from tulip.compat import iteritems, range, quote, parse_qsl, urlencode
+from tulip import bookmarks, directory, client, cache, control, cleantitle
+from tulip.compat import iteritems, range, quote, parse_qsl, urlencode, concurrent_futures, is_py2, py3_dec
 from tulip.parsers import itertags_wrapper, parseDOM
 from youtube_resolver import resolve as yt_resolver
 from youtube_registration import register_api_keys
@@ -249,17 +249,31 @@ class Indexer:
             }
             ,
             {
-                'title': control.lang(30024),
-                'url': self.ertw_link,
-                'icon': 'EPT_WORLD.png',
-                'fanart': control.addonmedia('EPT_WORLD_fanart.jpg')
-            }
-            ,
-            {
                 'title': control.lang(30041),
                 'url': self.erts_link,
                 'icon': 'EPT_SPORTS.png',
                 'fanart': control.addonmedia('EPT_SPORTS_fanart.jpg')
+            }
+            ,
+            {
+                'title': control.lang(30041) + ' 2',
+                'url': self.erts_link.replace('ert-sports-live', 'ert-sports-2-live'),
+                'icon': 'EPT_SPORTS.png',
+                'fanart': control.addonmedia('EPT_SPORTS_fanart.jpg')
+            }
+            ,
+            {
+                'title': control.lang(30041) + ' 3',
+                'url': self.erts_link.replace('ert-sports-live', 'ert-sports-3-live'),
+                'icon': 'EPT_SPORTS.png',
+                'fanart': control.addonmedia('EPT_SPORTS_fanart.jpg')
+            }
+            ,
+            {
+                'title': control.lang(30024),
+                'url': self.ertw_link,
+                'icon': 'EPT_WORLD.png',
+                'fanart': control.addonmedia('EPT_WORLD_fanart.jpg')
             }
         ]
 
@@ -283,15 +297,16 @@ class Indexer:
             bookmark['delbookmark'] = i['url']
             i.update({'cm': [{'title': 30502, 'query': {'action': 'deleteBookmark', 'url': json.dumps(bookmark)}}]})
 
-        control.sortmethods('title')
-
         if control.setting('bookmarks_clear_boolean') == 'true':
 
             clear_menu = {
-                'title': control.lang(30059), 'action': 'clear_bookmarks'
+                'title': control.lang(30059), 'action': 'clear_bookmarks', 'isFolder': 'False', 'isPlayable': 'False'
             }
 
             self.list.insert(0, clear_menu)
+
+        control.sortmethods()
+        control.sortmethods('title')
 
         directory.add(self.list, argv=self.argv, content='videos')
 
@@ -341,7 +356,7 @@ class Indexer:
         result = client.request(url, post=post, timeout=20)
         self.data.append(result)
 
-    def loop(self, item, header, count, next_url=None):
+    def _loop(self, item, header, count, next_url=None):
 
         data_id = item.attributes['data-id']
         img = item.attributes['style']
@@ -385,7 +400,32 @@ class Indexer:
         if plot:
             data.update({'plot': plot})
 
-        self.list.append(data)
+        return data
+
+    def _exec(self, _items, header, _next_url=None):
+
+        threads = []
+
+        if control.setting('threading') == 'true':
+
+            with concurrent_futures.ThreadPoolExecutor(5) as executor:
+
+                for count, _item in list(enumerate(_items, start=1)):
+                    threads.append(executor.submit(self._loop, _item, header, count, _next_url))
+
+                for future in concurrent_futures.as_completed(threads):
+
+                    item = future.result()
+
+                    if not item:
+                        continue
+
+                    self.list.append(item)
+
+        else:
+
+            for count, _item in list(enumerate(_items, start=1)):
+                self.list.append(self._loop(_item, header, count, _next_url))
 
     @cache_method(360)
     def _listing(self, url):
@@ -406,26 +446,7 @@ class Indexer:
         if self.base_link + '/?s=' in url or control.setting('pagination') == 'true':
             override = True
 
-        threads_1 = []
-        threads_2 = []
-
-        # Nest the function to work on either of the two cases
-        def _exec(_items, _next_url=None):
-
-            if control.setting('threading') == 'true':
-
-                for count, _item in list(enumerate(_items, start=1)):
-
-                    threads_2.append(workers.Thread(self.loop(_item, header, count, _next_url)))
-
-                [i.start() for i in threads_2]
-                [i.join() for i in threads_2]
-
-            else:
-
-                for count, _item in list(enumerate(_items, start=1)):
-
-                    self.loop(_item, header, count, _next_url)
+        threads = []
 
         if 'enimerosi-24' not in url and self.ajax_url not in url:
 
@@ -445,15 +466,22 @@ class Indexer:
 
             if control.setting('threading') == 'true' and not override:
 
-                for i in range(0, pages + 1):
-                    threads_1.append(
-                        workers.Thread(
-                            self.thread(self.ajax_url, post=self.load_more.format(query=quote(posts), page=str(i)))
-                        )
-                    )
+                with concurrent_futures.ThreadPoolExecutor(5) as executor:
 
-                [i.start() for i in threads_1]
-                [i.join() for i in threads_1]
+                    for i in range(0, pages + 1):
+                        threads.append(
+                            executor.submit(
+                                self.thread, self.ajax_url, post=self.load_more.format(query=quote(posts), page=str(i)))
+                            )
+
+                    for future in concurrent_futures.as_completed(threads):
+
+                        item = future.result()
+
+                        if not item:
+                            continue
+
+                        self.list.append(item)
 
             else:
 
@@ -473,7 +501,7 @@ class Indexer:
             if len(items) < 20:
                 next_url = None
 
-            _exec(items, next_url)
+            self._exec(items, header, next_url)
 
         elif self.ajax_url in url:
 
@@ -488,7 +516,7 @@ class Indexer:
             if len(items) >= 20:
                 next_url = '?'.join([url.partition('?')[0], urlencode(parsed)])
 
-            _exec(items, next_url)
+            self._exec(items, header, next_url)
 
         else:
 
@@ -746,43 +774,50 @@ class Indexer:
 
         directory.add(self.list, argv=self.argv)
 
+    def _radio_loop(self, station):
+
+        title = parseDOM(station, 'a')[0]
+        href = parseDOM(station, 'a', ret='href')[0]
+        html = client.request(href, as_bytes=True)
+        html = html.decode('windows-1253')
+        link = parseDOM(html, 'iframe', ret='src')[0]
+        embed = client.request(link)
+        url = re.search(r'mp3: [\'"](.+?)[\'"]', embed).group(1).replace('https', 'http')
+        image = parseDOM(html, 'img', ret='src')[0]
+
+        data = {'title': title, 'image': image, 'url': url}
+
+        return data
+
     @cache_method(5760)
     def district_list(self):
 
-        try:
-            try:
-                result = client.request(self.district_link).decode('windows-1253')
-            except AttributeError:
-                result = client.request(self.district_link)
-            radios = parseDOM(result, 'td')
-            radios = [r for r in radios if r]
+        result = client.request(self.district_link, as_bytes=True)
+        result = result.decode('windows-1253')
+        radios = parseDOM(result, 'td')
+        stations = [r for r in radios if r]
 
-        except Exception:
+        with concurrent_futures.ThreadPoolExecutor(5) as executor:
 
-            return
+            threads = [executor.submit(self._radio_loop, station) for station in stations]
 
-        for radio in radios:
+            for future in concurrent_futures.as_completed(threads):
 
-            title = parseDOM(radio, 'a')[0]
-            href = parseDOM(radio, 'a', ret='href')[0]
-            html = client.request(href)
-            link = parseDOM(html, 'iframe', ret='src')[0]
-            embed = client.request(link)
-            url = re.search(r'mp3: [\'"](.+?)[\'"]', embed).group(1).replace('https', 'http')
-            image = parseDOM(html, 'img', ret='src')[0]
+                item = future.result()
 
-            self.list.append(
-                {'title': title, 'image': image, 'url': url}
-            )
+                if not item:
+                    continue
+
+                self.list.append(item)
 
         return self.list
 
     def district(self):
 
-        try:
-            self.list = self.district_list()
-        except Exception:
-            return
+        self.list = self.district_list()
+
+        # if self.list is None:
+        #     return
 
         for i in self.list:
             i.update({'action': 'play', 'isFolder': 'False', 'fanart': control.addonmedia('radio_fanart.jpg')})
@@ -942,3 +977,9 @@ class Indexer:
         d.update(d2)
 
         return d
+
+def clear_bookmarks():
+
+    bookmarks.clear('bookmark', withyes=True, file_=control.bookmarksFile, notify=False, label_yes_no=30025)
+    control.sleep(200)
+    control.refresh()

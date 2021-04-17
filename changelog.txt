@@ -1,3 +1,8 @@
+[B]3.3.2[/B]
+- Some minor bug fixes
+- Add more live channels as per ERTflix webpage
+- Replace workers with concurrent futures
+
 [B]3.3.1[/B]
 - Bug fixes for caching
 - Tweak routing
