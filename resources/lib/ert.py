@@ -15,7 +15,7 @@ from os.path import exists as file_exists
 from zlib import decompress
 from base64 import b64decode
 from tulip import bookmarks, directory, client, cache, control, cleantitle
-from tulip.compat import iteritems, range, quote, parse_qsl, urlencode, concurrent_futures, is_py2, py3_dec
+from tulip.compat import iteritems, range, quote, parse_qsl, urlencode, concurrent_futures
 from tulip.parsers import itertags_wrapper, parseDOM
 from youtube_resolver import resolve as yt_resolver
 from youtube_registration import register_api_keys
@@ -861,8 +861,10 @@ class Indexer:
 
             else:
 
-                result = client.request(iframe)
+                result = client.request(iframe.replace(' ', '%20'))
                 urls = re.findall(r'(?:var )?(?:HLSLink|stream)(?:ww)?\s+=\s+[\'"](.+?)[\'"]', result)
+
+                urls = [u.replace(' ', '%20') for u in urls]
 
                 if urls:
 
@@ -924,12 +926,7 @@ class Indexer:
 
             jsonstore = json.load(f)
 
-            try:
-                old_key_found = jsonstore['keys']['developer'][control.addonInfo('id')]['api_key'] == 'AIzaSyB99XT3fOBkJrK8HvuXYabZ-OEKiooV34A'
-            except KeyError:
-                old_key_found = False
-
-            no_keys = control.addonInfo('id') not in jsonstore.get('keys', 'developer').get('developer') or old_key_found
+            no_keys = control.addonInfo('id') not in jsonstore.get('keys', 'developer').get('developer')
 
             if setting and no_keys:
 
@@ -977,6 +974,7 @@ class Indexer:
         d.update(d2)
 
         return d
+
 
 def clear_bookmarks():
 
