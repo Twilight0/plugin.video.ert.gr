@@ -1,3 +1,6 @@
+[B]3.3.4[/B]
+- Fix regarding some kids content indexers
+
 [B]3.3.3[/B]
 - Minor fix for the iframe resolver
 - Remove old api key check

@@ -546,7 +546,7 @@ class Indexer:
 
             if 'paidikes-tainies' in i['url'] or 'archeio' in i['url']:
                 i.update({'action': 'play', 'isFolder': 'False'})
-            elif i.get('playable') == 'false':
+            elif i.get('playable') == 'false' or 'pedika' in i['url']:
                 i.update({'action': 'listing'})
             else:
                 i.update({'action': 'play', 'isFolder': 'False'})
