@@ -75,17 +75,21 @@ class Indexer:
         self.ellinika_docs = ''.join([self.category_link, '/ellhnika-docs/'])
         self.ksena_docs = ''.join([self.category_link, '/ksena-docs/'])
 
+        self.music_box_link = ''.join([self.category_link, '/moysiko-koyti/'])
+        self.contemporary_music_link = ''.join([self.category_link, '/sygchroni-moysiki/'])
+        self.classical_music_link = ''.join([self.category_link, '/klasiki-moysiki/'])
+
         self.movies_link = ''.join([self.category_link, '/tainies/'])
         self.series_link = ''.join([self.category_link, '/ksenes-seires/'])
         self.catchup_link = ''.join([self.category_link, '/ksenes-seires-catchup/'])
         self.greek_series_link = ''.join([self.category_link, '/ellinikes-seires/'])
         self.web_series_link = ''.join([self.category_link, '/web-series/'])
 
-        self.ert1_link = ''.join([self.base_link, '/ert1-live/'])
-        self.ert2_link = ''.join([self.base_link, '/ert2-live/'])
-        self.ert3_link = ''.join([self.base_link, '/ert3-live/'])
-        self.ertw_link = ''.join([self.base_link, '/ertworld-live/'])
-        self.erts_link = ''.join([self.base_link, '/ert-sports-live/'])
+        # self.ert1_link = ''.join([self.base_link, '/ert1-live/'])
+        # self.ert2_link = ''.join([self.base_link, '/ert2-live/'])
+        # self.ert3_link = ''.join([self.base_link, '/ert3-live/'])
+        # self.ertw_link = ''.join([self.base_link, '/ertworld-live/'])
+        # self.erts_link = ''.join([self.base_link, '/ert-sports-live/'])
 
         self.radio_link = 'https://webradio.ert.gr'
         self.radio_stream = 'http://radiostreaming.ert.gr'
@@ -164,6 +168,12 @@ class Indexer:
             }
             ,
             {
+                'title': control.lang(30009),
+                'action': 'music',
+                'icon': 'music.jpg'
+            }
+            ,
+            {
                 'title': control.lang(30060),
                 'action': 'kids',
                 'icon': 'kids.jpg'
@@ -224,62 +234,49 @@ class Indexer:
 
         directory.add(self.list, argv=self.argv, content='videos')
 
+    @cache_method(86400)
+    def get_live_links(self):
+
+        html = client.request(self.base_link)
+
+        list_items = client.parseDOM(html, 'li', attrs={'id': 'nav-menu-item-230432'})[0]
+
+        pattern = r'<a href="(http.+)" class="menu-link  sub-menu-link">(.+) LIVE </a>'
+
+        matches = re.findall(pattern, list_items)
+
+        return matches
+
     def channels(self):
 
-        self.list = [
-            {
-                'title': control.lang(30021),
-                'url': self.ert1_link,
-                'icon': 'EPT1.png',
-                'fanart': control.addonmedia('EPT1_fanart.jpg')
-            }
-            ,
-            {
-                'title': control.lang(30022),
-                'url': self.ert2_link,
-                'icon': 'EPT2.png',
-                'fanart': control.addonmedia('EPT2_fanart.jpg')
-            }
-            ,
-            {
-                'title': control.lang(30023),
-                'url': self.ert3_link,
-                'icon': 'EPT3.png',
-                'fanart': control.addonmedia('EPT3_fanart.jpg')
-            }
-            ,
-            {
-                'title': control.lang(30041),
-                'url': self.erts_link,
-                'icon': 'EPT_SPORTS.png',
-                'fanart': control.addonmedia('EPT_SPORTS_fanart.jpg')
-            }
-            ,
-            {
-                'title': control.lang(30041) + ' 2',
-                'url': self.erts_link.replace('ert-sports-live', 'ert-sports-2-live'),
-                'icon': 'EPT_SPORTS.png',
-                'fanart': control.addonmedia('EPT_SPORTS_fanart.jpg')
-            }
-            ,
-            {
-                'title': control.lang(30041) + ' 3',
-                'url': self.erts_link.replace('ert-sports-live', 'ert-sports-3-live'),
-                'icon': 'EPT_SPORTS.png',
-                'fanart': control.addonmedia('EPT_SPORTS_fanart.jpg')
-            }
-            ,
-            {
-                'title': control.lang(30024),
-                'url': self.ertw_link,
-                'icon': 'EPT_WORLD.png',
-                'fanart': control.addonmedia('EPT_WORLD_fanart.jpg')
-            }
-        ]
+        try:
+            get_items = self.get_live_links()
+        except Exception:
+            return
 
-        for i in self.list:
+        for url, title in get_items:
 
-            i.update({'action': 'play', 'isFolder': 'False'})
+            fanart = None
+            icon = None
+
+            if 'sports' in url:
+                fanart = control.addonmedia('EPT_SPORTS_fanart.jpg')
+                icon = 'EPT_SPORTS.png'
+            elif 'ert1-live' in url:
+                fanart = control.addonmedia('EPT1_fanart.jpg')
+                icon = 'EPT1.png'
+            elif 'ert2-live' in url:
+                fanart = control.addonmedia('EPT2_fanart.jpg')
+                icon = 'EPT2.png'
+            elif 'ert3-live' in url:
+                fanart = control.addonmedia('EPT3_fanart.jpg')
+                icon = 'EPT3.png'
+            elif 'ertworld' in url:
+                fanart = control.addonmedia('EPT_WORLD_fanart.jpg')
+                icon = 'EPT_WORLD.png'
+
+            data = {'title': title, 'fanart': fanart, 'icon': icon, 'url': url, 'action': 'play', 'isFolder': 'False'}
+            self.list.append(data)
 
         directory.add(self.list, argv=self.argv, content='videos')
 
@@ -623,6 +620,33 @@ class Indexer:
                 'action': 'youtube',
                 'icon': 'interviews.jpg',
                 'isFolder': 'False', 'isPlayable': 'False'
+            }
+        ]
+
+        directory.add(self.list, argv=self.argv)
+
+    def music(self):
+
+        self.list = [
+            {
+                'title': control.lang(30052),
+                'url': self.music_box_link,
+                'action': 'listing',
+                'icon': 'music.jpg'
+            }
+            ,
+            {
+                'title': control.lang(30046),
+                'url': self.contemporary_music_link,
+                'action': 'listing',
+                'icon': 'music.jpg'
+            }
+            ,
+            {
+                'title': control.lang(30051),
+                'url': self.classical_music_link,
+                'action': 'listing',
+                'icon': 'music.jpg'
             }
         ]
 

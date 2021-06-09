@@ -1,3 +1,7 @@
+[B]3.4.0[/B]
+- Populate live channels according to main webpage
+- Add music content
+
 [B]3.3.4[/B]
 - Fix regarding some kids content indexers
 

@@ -65,6 +65,9 @@ elif action == 'shows':
 elif action == 'kids':
     ert.Indexer(argv).kids()
 
+elif action == 'music':
+    ert.Indexer(argv).music()
+
 elif action == 'recent':
     ert.Indexer(argv).recent()
 

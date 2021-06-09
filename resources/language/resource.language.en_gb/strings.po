@@ -49,7 +49,7 @@ msgid "Enable bookmarks clear menu item"
 msgstr ""
 
 msgctxt "#30009"
-msgid ""
+msgid "Music"
 msgstr ""
 
 msgctxt "#30010"
@@ -197,7 +197,7 @@ msgid "Enable settings menu item"
 msgstr ""
 
 msgctxt "#30046"
-msgid ""
+msgid "Contemporary music"
 msgstr ""
 
 msgctxt "#30047"
@@ -217,11 +217,11 @@ msgid "Show exit button"
 msgstr ""
 
 msgctxt "#30051"
-msgid ""
+msgid "Classical music"
 msgstr ""
 
 msgctxt "#30052"
-msgid ""
+msgid "Musical box"
 msgstr ""
 
 msgctxt "#30053"

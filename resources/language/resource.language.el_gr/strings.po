@@ -49,8 +49,8 @@ msgid "Enable bookmarks clear menu item"
 msgstr "Ενεργοποίηση της επιλογής εκκαθάρισης σελιδοδεικτών"
 
 msgctxt "#30009"
-msgid ""
-msgstr ""
+msgid "Music"
+msgstr "Μουσική"
 
 msgctxt "#30010"
 msgid "Entertainment"
@@ -197,8 +197,8 @@ msgid "Enable settings menu item"
 msgstr "Ενεργοποίηση αντικειμένου ρυθμίσεων στο μενού"
 
 msgctxt "#30046"
-msgid ""
-msgstr ""
+msgid "Contemporary music"
+msgstr "Σύγχρονη μουσική"
 
 msgctxt "#30047"
 msgid "New greek tv series"
@@ -217,12 +217,12 @@ msgid "Show exit button"
 msgstr "Δείξε το κουμπί εξόδου"
 
 msgctxt "#30051"
-msgid ""
-msgstr ""
+msgid "Classical music"
+msgstr "Κλασσική μουσική"
 
 msgctxt "#30052"
-msgid ""
-msgstr ""
+msgid "Musical box"
+msgstr "Μουσικό κουτί"
 
 msgctxt "#30053"
 msgid "Foreign tv series catch-up"
