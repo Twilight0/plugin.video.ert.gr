@@ -14,7 +14,7 @@ import json, re
 from os.path import exists as file_exists
 from zlib import decompress
 from base64 import b64decode
-from tulip import bookmarks, directory, client, cache, control, cleantitle
+from tulip import bookmarks, directory, client, cache, control, cleantitle, user_agents
 from tulip.compat import iteritems, range, quote, parse_qsl, urlencode, concurrent_futures
 from tulip.parsers import itertags_wrapper, parseDOM
 from youtube_resolver import resolve as yt_resolver
@@ -96,9 +96,9 @@ class Indexer:
         self.district_link = ''.join([self.radio_link, '/liveradio/list.html'])
         self.channel_id = 'UC0jVU-mK53vDQZcSZB5mVHg'
         self.scramble = (
-            'eJwVy0kOgjAUANCrkK6FUJDJnVFAI4jEYNQNwfaHqaWMCzDe3bB/74sGID2MaCehwEvwzYifAkRFu1TOHxc/Lr0j2kgoa8u0hnll+/OS3e'
-            'fDR5wGl9DIuQbvxU9i1r1it2aQkagNax6uq6RrME0LW9ixNMPBslrovFBtjdodbrY5Z8yZbKuk0OnVVPFaydp2UHIhcgbTAD0RzQjNqBDB'
-            '0e8Pt/g4dw=='
+            'eJwVzM0OQzAAAOBXkZ43oRh2Y7KNZScmm4sUVc1K/bRNbNm7Lx7g+76ANuCoAcuF0LMN0/MdY484aislYS/9VpomplBROAytyzjroJh0NI'
+            '6LTjgnDMsFzzUfBB6EXvMe7DSARlq+8bq1QfxB6XqCJItcZYXnqCCclGPcJahw7k3g5g91uL42teB6xmJDIRZRm7EiDtekeVY3O+Xd1OUX'
+            '8PsDJ7A4qQ=='
         )
 
         self.keys_registration()
@@ -668,9 +668,6 @@ class Indexer:
 
         stream = self.resolve(url)
 
-        if stream is None:
-            return
-
         m3u8_dash = 'm3u8' in stream and control.kodi_version() >= 18.0
 
         directory.resolve(
@@ -840,9 +837,6 @@ class Indexer:
 
         self.list = self.district_list()
 
-        # if self.list is None:
-        #     return
-
         for i in self.list:
             i.update({'action': 'play', 'isFolder': 'False', 'fanart': control.addonmedia('radio_fanart.jpg')})
 
@@ -899,9 +893,9 @@ class Indexer:
                         if _url.endswith('-live/'):
 
                             if not geo:
-                                return urls[-1]
+                                return urls[-1] + user_agents.spoofer(age_str=user_agents.CHROME, referer=True, ref_str='https://www.ertflix.gr/')
                             else:
-                                return urls[0]
+                                return urls[0] + user_agents.spoofer(age_str=user_agents.CHROME, referer=True, ref_str='https://www.ertflix.gr/')
 
                         else:
 
@@ -914,20 +908,20 @@ class Indexer:
 
                             if video_ok:
 
-                                return url
+                                return url + user_agents.spoofer(age_str=user_agents.CHROME, referer=True, ref_str='https://www.ertflix.gr/')
 
                             else:
 
                                 url = [i for i in urls if 'dvrorigin' in i][0]
 
-                                return url
+                                return url + user_agents.spoofer(age_str=user_agents.CHROME, referer=True, ref_str='https://www.ertflix.gr/')
 
                     else:
 
                         if 'youtube' in urls[0]:
                             return self.resolve(urls[0])
                         else:
-                            return urls[0]
+                            return urls[0] + user_agents.spoofer(age_str=user_agents.CHROME, referer=True, ref_str='https://www.ertflix.gr/')
 
                 else:
 

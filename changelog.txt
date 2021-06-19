@@ -1,3 +1,7 @@
+[B]3.5.0[/B]
+- Mitigate live resolver
+- New YT API key
+
 [B]3.4.0[/B]
 - Populate live channels according to main webpage
 - Add music content
