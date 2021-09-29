@@ -14,7 +14,7 @@ import json, re
 from os.path import exists as file_exists
 from zlib import decompress
 from base64 import b64decode
-from tulip import bookmarks, directory, client, cache, control, cleantitle, user_agents
+from tulip import bookmarks, directory, client, cache, control, cleantitle, user_agents, net
 from tulip.compat import iteritems, range, quote, parse_qsl, urlencode, concurrent_futures
 from tulip.parsers import itertags_wrapper, parseDOM
 from youtube_resolver import resolve as yt_resolver
@@ -541,7 +541,7 @@ class Indexer:
 
         for i in self.list:
 
-            if 'paidikes-tainies' in i['url'] or 'archeio' in i['url']:
+            if 'paidikes-tainies' in i['url'] or 'archeio' in i['url'] or 'giannis-exarchos' in i['url']:
                 i.update({'action': 'play', 'isFolder': 'False'})
             elif i.get('playable') == 'false' or 'pedika' in i['url']:
                 i.update({'action': 'listing'})
@@ -880,9 +880,8 @@ class Indexer:
             else:
 
                 result = client.request(iframe.replace(' ', '%20'))
-                urls = re.findall(r'(?:var )?(?:HLSLink|stream)(?:ww)?\s+=\s+[\'"](.+?)[\'"]', result)
 
-                urls = [u.replace(' ', '%20') for u in urls]
+                urls = re.findall(r'(?:var )?(?:HLSLink|stream)(?:ww)?\s+=\s+[\'"](.+?)[\'"]', result)
 
                 if urls:
 
@@ -899,22 +898,23 @@ class Indexer:
 
                         else:
 
-                            url = [i for i in urls if 'dvrorigingr' in i][0]
+                            resolved_urls = [u for u in list(set(urls)) if 'copyright-alert.mp4' not in u]
 
-                            try:
-                                video_ok = client.request(url, timeout=3)
-                            except Exception:
-                                video_ok = None
+                            for url in resolved_urls:
 
-                            if video_ok:
+                                if not geo:
+                                    if 'dvrorigingr' in url:
+                                        continue
 
-                                return url + user_agents.spoofer(age_str=user_agents.CHROME, referer=True, ref_str='https://www.ertflix.gr/')
+                                try:
+                                    video_ok = net.Net().http_HEAD(url)
+                                except Exception:
+                                    video_ok = None
 
-                            else:
-
-                                url = [i for i in urls if 'dvrorigin' in i][0]
-
-                                return url + user_agents.spoofer(age_str=user_agents.CHROME, referer=True, ref_str='https://www.ertflix.gr/')
+                                if video_ok:
+                                    return url + user_agents.spoofer(age_str=user_agents.CHROME, referer=True, ref_str='https://www.ertflix.gr/')
+                                else:
+                                    continue
 
                     else:
 

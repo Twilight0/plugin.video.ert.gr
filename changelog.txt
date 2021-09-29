@@ -1,3 +1,6 @@
+[B]3.5.1[/B]
+- Various fixes
+
 [B]3.5.0[/B]
 - Mitigate live resolver
 - New YT API key
