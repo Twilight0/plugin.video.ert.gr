@@ -1,3 +1,9 @@
+[B]4.0.0[/B]
+- Reworked addon for new website design
+- Rework routing scheme with url dispatcher
+- Remove service module, no longer needed
+- Bug fixes
+
 [B]3.5.1[/B]
 - Various fixes
 
