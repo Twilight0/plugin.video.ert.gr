@@ -24,19 +24,6 @@ from youtube_resolver import resolve as yt_resolver
 cache_function = cache.FunctionCache().cache_function
 
 
-# @cache_function(5760)
-# def _plot(url):
-#
-#     pass
-#
-#
-# def meta_viewer(url):
-#
-#     heading = control.infoLabel('Listitem.Label')
-#
-#     control.dialog.textviewer(heading=heading, text=_plot(url))
-
-
 @urldispatcher.register('root')
 def root():
 
@@ -357,7 +344,10 @@ def list_items(url):
                 try:
                     image = [i['url'] for i in images if i['role'] == 'hbbtv-icon'][0]
                 except IndexError:
-                    image = [i['url'] for i in images if i['role'] == 'photo'][0]
+                    try:
+                        image = [i['url'] for i in images if i['role'] == 'photo'][0]
+                    except IndexError:
+                        image = [i['url'] for i in images if i['role'] == 'hbbtv-background'][0]
             try:
                 fanart = [i['url'] for i in images if i['role'] == 'photo-details'][0]
             except IndexError:
