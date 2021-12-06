@@ -13,6 +13,16 @@ OLD_LINK = 'https://webtv.ert.gr'
 DEVICE_KEY = '5ac9136c63fb4e682c94e13128540e43'
 BASE_API_LINK = 'https://api.app.ertflix.gr/'
 VOD_LINK = ''.join([BASE_LINK, '/vod/{0}'])
+LIST_OF_LISTS_LINK = ''.join([BASE_LINK, '/list?imageRole=photo&title={title}&pageCodename={pagecodename}&backUrl=/show/{backurl}&sectionCodename={sectioncodename}'])
+NEWS_LINK = ''.join([BASE_LINK, '/list?imageRole=photo&title=%CE%95%CE%B9%CE%B4%CE%AE%CF%83%CE%B5%CE%B9%CF%82&pageCodename=news&backUrl=/show/news&sectionCodename=eideseis'])
+ENTERTAINMENT_LINK = ''.join([BASE_LINK, '/list?imageRole=poster&title=%CE%A8%CF%85%CF%87%CE%B1%CE%B3%CF%89%CE%B3%CE%AF%CE%B1&backUrl=/show/&sectionCodename=psukhagogia-2'])
+INFO_LINK = ''.join([BASE_LINK, '/show/news'])
+MOVIES_LINK = ''.join([BASE_LINK, '/show/movies'])
+SERIES_LINK = ''.join([BASE_LINK, '/show/series'])
+SHOWS_LINK = ''.join([BASE_LINK, '/show/ekpompes'])
+SPORTS_LINK = ''.join([BASE_LINK, '/show/sport'])
+ARCHIVE_LINK = ''.join([BASE_LINK, '/show/archives'])
+KIDS_LINK = ''.join([BASE_LINK, '/show/children'])
 
 # to get codenames and ids for channels - GET METHOD
 FILTER_NOW_ON_TV_TILES = ''.join(
@@ -44,6 +54,22 @@ GET_REGIONS = ''.join(
     [
         BASE_API_LINK,
         'v1/IpRegion/GetRegionsForIpAddress?platformCodename=www&$headers=%7B%22X-Api-Date-Format%22:%22iso%22,%22X-Api-Camel-Case%22:true%7D'
+    ]
+)
+
+# to get selected content from a category - GET METHOD
+GET_SECTION = ''.join(
+    [
+        BASE_API_LINK,
+        'v1/InsysGoPage/GetSectionContent?platformCodename=www&page={0}&limit=50&sectionCodename={1}&$headers=%7B%22X-Api-Date-Format%22:%22iso%22,%22X-Api-Camel-Case%22:true%7D'
+    ]
+)
+
+# to get details from a tv series - GET METHOD
+GET_SERIES_DETAILS = ''.join(
+    [
+        BASE_API_LINK,
+        'v1/Tile/GetSeriesDetails?platformCodename=www&id={0}&$headers=%7B%22X-Api-Date-Format%22:%22iso%22,%22X-Api-Camel-Case%22:true%7D'
     ]
 )
 

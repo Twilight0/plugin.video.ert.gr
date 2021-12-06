@@ -15,7 +15,7 @@ from os.path import split
 from .constants import *
 from .utils import geo_detect, collection_post, tiles_post, live_post
 from tulip import bookmarks as bms, directory, client, cache, control
-from tulip.compat import iteritems, range, concurrent_futures
+from tulip.compat import iteritems, range, concurrent_futures, quote
 from tulip.parsers import parseDOM
 from tulip.url_dispatcher import urldispatcher
 from youtube_resolver import resolve as yt_resolver
@@ -63,64 +63,63 @@ def root():
             ),
             'isFolder': 'False', 'isPlayable': 'False'
         }
-        # ,
-        # {
-        #     'title': control.lang(30011),
-        #     'action': 'index',
-        #     'icon': 'index.jpg'
-        # }
-        # ,
-        # {
-        #     'title': control.lang(30004),
-        #     'action': 'listing',
-        #     'url': NEWS_LINK,
-        #     'icon': 'news.jpg'
-        # }
-        # ,
-        # {
-        #     'title': control.lang(30049),
-        #     'action': 'listing',
-        #     'icon': 'movies.jpg',
-        #     'url': MOVIES_LINK
-        # }
-        # ,
-        # {
-        #     'title': control.lang(30020),
-        #     'action': 'shows',
-        #     'icon': 'shows.jpg'
-        # }
-        # ,
-        # {
-        #     'title': control.lang(30038),
-        #     'action': 'series',
-        #     'icon': 'series.jpg'
-        # }
-        # ,
-        # {
-        #     'title': control.lang(30003),
-        #     'action': 'listing',
-        #     'url': SPORTS_LINK,
-        #     'icon': 'sports.jpg'
-        # }
-        # ,
-        # {
-        #     'title': control.lang(30009),
-        #     'action': 'music',
-        #     'icon': 'music.jpg'
-        # }
-        # ,
-        # {
-        #     'title': control.lang(30060),
-        #     'action': 'kids',
-        #     'icon': 'kids.jpg'
-        # }
-        # ,
-        # {
-        #     'title': control.lang(30055),
-        #     'action': 'listing',
-        #     'url': ARCHIVE_LINK,
-        #     'icon': 'archive.jpg'
-        # }
+        ,
+        {
+            'title': control.lang(30004),
+            'action': 'listing',
+            'url': NEWS_LINK,
+            'icon': 'news.jpg'
+        }
+        ,
+        {
+            'title': control.lang(30049),
+            # 'action': 'listing' if control.setting('nest_movies') == 'false' else 'categories',
+            'action': 'listing',
+            'icon': 'movies.jpg',
+            'url': MOVIES_LINK
+        }
+        ,
+        {
+            'title': control.lang(30020),
+            'action': 'categories',
+            'url': SHOWS_LINK,
+            'icon': 'shows.jpg'
+        }
+        ,
+        {
+            'title': control.lang(30038),
+            'action': 'categories',
+            'url': SERIES_LINK,
+            'icon': 'series.jpg'
+        }
+        ,
+        {
+            'title': control.lang(30003),
+            'action': 'categories',
+            'url': SPORTS_LINK,
+            'icon': 'sports.jpg'
+        }
+        ,
+        {
+            'title': control.lang(30005),
+            'action': 'categories',
+            'url': INFO_LINK,
+            'icon': 'interviews.jpg'
+        }
+        ,
+        {
+            'title': control.lang(30055),
+            'action': 'categories',
+            'url': ARCHIVE_LINK,
+            'icon': 'archive.jpg'
+        }
+        ,
+        {
+            'title': control.lang(30062),
+            'action': 'categories',
+            'url': KIDS_LINK,
+            'icon': 'kids.jpg'
+        }
         # ,
         # {
         #     'title': control.lang(30013),
@@ -256,14 +255,59 @@ def list_items(url):
 
     page = 1
 
-    if url.startswith('{"platformCodename":"www"'):
-        collection_json = json.loads(url)
-        url = collection_json['orCollectionCodenames']
-        page = collection_json['page']
+    if url.startswith('https'):
 
-    filter_tiles = client.request(FILTER_TILES, post=collection_post(url, page), output='json')
-    total_pages = filter_tiles['pagination']['totalPages']
-    page = filter_tiles['pagination']['page']
+        if BASE_API_LINK not in url:
+            html = client.request(url)
+            script = client.parseDOM(html, 'script')[0]
+            _json = json.loads(script.replace('var ___INITIAL_STATE__ = ', '')[:-1])
+        else:
+            _json = client.request(url, output='json')
+
+        if '/list' in url:
+
+            codename = split(url)[1].partition('=')[2]
+            total_pages = _json['pages']['sectionsByCodename'][codename]['totalPages']
+            page = _json['pages']['sectionsByCodename'][codename]['fetchedPage']
+            tiles = _json['pages']['sectionsByCodename'][codename]['tilesIds']
+            tiles_post_list = [{'id': i} for i in tiles]
+
+        else:
+
+            tiles = []
+            if 'GetSeriesDetails' in url:
+
+                episode_groups = _json['episodeGroups']
+
+                for group in episode_groups:
+                    episodes = group['episodes']
+                    for episode in episodes:
+                        codename = episode['id']
+                        tiles.append(codename)
+
+                tiles_post_list = [{'id': i} for i in tiles]
+                total_pages = 1
+
+            else:
+                codenames = list(_json['pages']['sectionsByCodename'].keys())
+                for codename in codenames:
+                    tiles_list = _json['pages']['sectionsByCodename'][codename]['tilesIds']
+                    tiles.extend(tiles_list)
+                tiles_post_list = [{'id': i} for i in tiles]
+                total_pages = 1
+
+    else:
+
+        if url.startswith('{"platformCodename":"www"'):
+            collection_json = json.loads(url)
+            url = collection_json['orCollectionCodenames']
+            page = collection_json['page']
+
+        filter_tiles = client.request(FILTER_TILES, post=collection_post(url, page), output='json')
+        total_pages = filter_tiles['pagination']['totalPages']
+        page = filter_tiles['pagination']['page']
+        tiles = filter_tiles['tiles']
+        tiles_post_list = [{'id': i['id']} for i in tiles]
 
     if total_pages > 1 and page < total_pages:
         page = page + 1
@@ -271,8 +315,6 @@ def list_items(url):
     else:
         next_post = None
 
-    tiles = filter_tiles['tiles']
-    tiles_post_list = [{'id': i['id']} for i in tiles]
     get_tiles = client.request(GET_TILES, post=tiles_post(tiles_post_list), output='json')
     tiles_list = get_tiles['tiles']
 
@@ -288,12 +330,19 @@ def list_items(url):
             title = ' - '.join([title, tile['subtitle']])
         try:
             if tile.get('isEpisode'):
-                subtitle = ''.join(
-                    [
-                        control.lang(30063), ' ', str(tile['season']['seasonNumber']), ', ', control.lang(30064),
-                        ' ', str(tile['episodeNumber'])
-                    ]
-                )
+                try:
+                    season = ' '.join([control.lang(30063), str(tile['season']['seasonNumber'])])
+                except KeyError:
+                    season = None
+                if not season:
+                    subtitle = ''.join([control.lang(30064), ' ', str(tile['episodeNumber'])])
+                else:
+                    subtitle = ''.join(
+                        [
+                            season, ', ', control.lang(30064),
+                            ' ', str(tile['episodeNumber'])
+                        ]
+                    )
                 title = '[CR]'.join([title, subtitle])
         except KeyError:
             pass
@@ -326,7 +375,10 @@ def list_items(url):
         if not year:
             year = 2021
 
-        url = VOD_LINK.format('-'.join([vid, codename]))
+        if tile.get('hasPlayableStream'):
+            url = VOD_LINK.format('-'.join([vid, codename]))
+        else:
+            url = GET_SERIES_DETAILS.format(vid)
 
         data = {
             'title': title, 'image': image, 'fanart': fanart, 'url': url, 'plot': plot,
@@ -341,6 +393,11 @@ def list_items(url):
                 }
             )
 
+        if tile.get('hasPlayableStream'):
+            data.update({'action': 'play', 'isFolder': 'False'})
+        else:
+            data.update({'action': 'listing'})
+
         self_list.append(data)
 
     return self_list
@@ -352,12 +409,43 @@ def listing(url):
     self_list = list_items(url)
 
     for i in self_list:
-        i.update({'action': 'play', 'isFolder': 'False'})
         bookmark = dict((k, v) for k, v in iteritems(i) if not k == 'next')
-        bookmark['bookmark'] = i['query']
+        bookmark['bookmark'] = i['url']
         i.update({'cm': [{'title': 30501, 'query': {'action': 'addBookmark', 'url': json.dumps(bookmark)}}]})
 
     directory.add(self_list, content='videos')
+
+
+@cache_function(1800)
+def category_list(url):
+
+    html = client.request(url)
+    script = client.parseDOM(html, 'script')[0].partition('</script>')[0].replace('var ___INITIAL_STATE__ = ', '')[:-1]
+    _json = json.loads(script)
+    pages = _json['pages']
+    list_of_lists = [i for i in list(pages['sectionsByCodename'].values()) if 'adman' not in i['sectionContentCodename']]
+
+    self_list = []
+
+    for list_ in list_of_lists:
+        title = list_['portalName']
+        section_codename = list_['sectionContentCodename']
+        url = LIST_OF_LISTS_LINK.format(title=quote(section_codename), pagecodename=list_['pageCodename'], backurl=list_['pageCodename'], sectioncodename=list_['sectionContentCodename'])
+        data = {'title': title, 'url': url}
+        self_list.append(data)
+
+    return self_list
+
+
+@urldispatcher.register('categories', ['url'])
+def categories(url):
+
+    self_list = category_list(url)
+
+    for i in self_list:
+        i.update({'action': 'listing'})
+
+    directory.add(self_list)
 
 
 @urldispatcher.register('radios')

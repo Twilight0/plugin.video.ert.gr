@@ -33,7 +33,7 @@ msgid "News"
 msgstr ""
 
 msgctxt "#30005"
-msgid "Football"
+msgid "Information"
 msgstr ""
 
 msgctxt "#30006"
@@ -57,7 +57,7 @@ msgid "Entertainment"
 msgstr ""
 
 msgctxt "#30011"
-msgid "Index"
+msgid "Categorise movies"
 msgstr ""
 
 msgctxt "#30012"
