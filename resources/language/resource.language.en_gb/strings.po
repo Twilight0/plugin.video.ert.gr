@@ -181,7 +181,7 @@ msgid "ERT Sports"
 msgstr ""
 
 msgctxt "#30042"
-msgid "Paginate items"
+msgid "Prefer MPD over M3U8 (Kodi 18+ only)"
 msgstr ""
 
 msgctxt "#30043"
@@ -262,6 +262,14 @@ msgstr ""
 
 msgctxt "#30062"
 msgid "Entertainment for kids"
+msgstr ""
+
+msgctxt "#30063"
+msgid "Season"
+msgstr ""
+
+msgctxt "#30064"
+msgid "Episode"
 msgstr ""
 
 msgctxt "#30402"

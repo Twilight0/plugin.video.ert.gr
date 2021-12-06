@@ -56,18 +56,6 @@ def clear_bookmarks():
     control.refresh()
 
 
-@urldispatcher.register('play', ['url'])
-def play(url):
-
-    m3u8_dash = 'm3u8' in url and control.kodi_version() >= 18.0
-
-    directory.resolve(
-        url, dash=any(['.mpd' in url, m3u8_dash]),
-        mimetype='application/vnd.apple.mpegurl' if m3u8_dash else None,
-        manifest_type='hls' if m3u8_dash else None
-    )
-
-
 def keys_registration():
 
     setting = control.addon('plugin.video.youtube').getSetting('youtube.allow.dev.keys') == 'true'
@@ -79,6 +67,32 @@ def keys_registration():
         register_api_keys(control.addonInfo('id'), keys['api_key'], keys['id'], keys['secret'])
 
 
+def collection_post(collection, page=None, limit=48):
+
+    if isinstance(collection, str):
+        collection = [collection]
+
+    if not page:
+        page = 1
+
+    return json.dumps({
+        "platformCodename": "www", "page": page, "limit": limit, "orCollectionCodenames": collection,
+        "orProductCodenames": [], "sort": [{"field": "PublishDate", "direction": 1}], "tileTypes": None,
+        "productType": "", "andCategoryCodenames": [], "advancedFilters": [], "isPurchased": False
+    }).replace(' ', '')
+
+
+def tiles_post(tiles):
+
+    return json.dumps({"platformCodename": "www", "requestedTiles": tiles}).replace(' ', '')
+
+
+def live_post(channel_list):
+
+    return '{"platformCodename":"www","requestedTiles":%s}' % json.dumps(channel_list).replace(' ', '')
+
+
+@cache_function(11520)
 def get_regions():
 
     _json = client.request(GET_REGIONS, output='json')

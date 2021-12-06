@@ -181,8 +181,8 @@ msgid "ERT Sports"
 msgstr "ΕΡΤ Sports"
 
 msgctxt "#30042"
-msgid "Paginate items"
-msgstr "Σελιδοποίησε τα αντικείμενα"
+msgid "Prefer MPD over M3U8 (Kodi 18+ only)"
+msgstr "Προτίμησε την μορφη MPD από το M3U8 (Από Kodi 18+)"
 
 msgctxt "#30043"
 msgid "Info"
@@ -263,6 +263,14 @@ msgstr "Μαθαίνοντας στο σπίτι"
 msgctxt "#30062"
 msgid "Entertainment for kids"
 msgstr "Ψυχαγωγικά παιδικά"
+
+msgctxt "#30063"
+msgid "Season"
+msgstr "Κύκλος"
+
+msgctxt "#30064"
+msgid "Episode"
+msgstr "Επεισόδιο"
 
 msgctxt "#30402"
 msgid "Success"

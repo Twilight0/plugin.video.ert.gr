@@ -11,8 +11,9 @@
 from __future__ import absolute_import
 
 import json, re
+from os.path import split
 from .constants import *
-from .utils import geo_detect
+from .utils import geo_detect, collection_post, tiles_post, live_post
 from tulip import bookmarks as bms, directory, client, cache, control
 from tulip.compat import iteritems, range, concurrent_futures
 from tulip.parsers import parseDOM
@@ -46,12 +47,13 @@ def root():
             'icon': 'channels.jpg'
         }
         ,
-        # {
-        #     'title': control.lang(30002),
-        #     'action': 'recent',
-        #     'icon': 'recent.jpg'
-        # }
-        # ,
+        {
+            'title': control.lang(30002),
+            'action': 'listing',
+            'url': 'vods',
+            'icon': 'recent.jpg'
+        }
+        ,
         {
             'title': control.lang(30015),
             'action': 'enter_yt_channel',
@@ -212,15 +214,16 @@ def get_live():
         c = {'id': channel['Id']}
         fnotvtiles_channel_list.append(c)
 
-    post = '{"platformCodename":"www","requestedTiles":%s}' % json.dumps(fnotvtiles_channel_list).replace(' ', '')
-
-    GetTiles = client.request(GET_TILES, post=post, output='json')
+    GetTiles = client.request(GET_TILES, post=live_post(fnotvtiles_channel_list), output='json')
 
     stations = GetTiles['tiles']
 
     self_list = []
 
     for station in stations:
+
+        if station['isRegionRestrictionEnabled'] and not geo_detect:
+            continue
 
         title = station['title']
         image = station['images'][0]['url']
@@ -231,9 +234,7 @@ def get_live():
             codename = station['codename']
         acquire_content = client.request(ACQUIRE_CONTENT.format(DEVICE_KEY, codename), output='json')
         url = acquire_content['MediaFiles'][0]['Formats'][0]['Url']
-
         data = {'title': title.replace(' LIVE', ''), 'image': image, 'fanart': fanart, 'url': url}
-
         self_list.append(data)
 
     return self_list
@@ -248,6 +249,115 @@ def live():
         i.update({'action': 'play', 'isFolder': 'false'})
 
     directory.add(self_list)
+
+
+@cache_function(1800)
+def list_items(url):
+
+    page = 1
+
+    if url.startswith('{"platformCodename":"www"'):
+        collection_json = json.loads(url)
+        url = collection_json['orCollectionCodenames']
+        page = collection_json['page']
+
+    filter_tiles = client.request(FILTER_TILES, post=collection_post(url, page), output='json')
+    total_pages = filter_tiles['pagination']['totalPages']
+    page = filter_tiles['pagination']['page']
+
+    if total_pages > 1 and page < total_pages:
+        page = page + 1
+        next_post = collection_post(url, page)
+    else:
+        next_post = None
+
+    tiles = filter_tiles['tiles']
+    tiles_post_list = [{'id': i['id']} for i in tiles]
+    get_tiles = client.request(GET_TILES, post=tiles_post(tiles_post_list), output='json')
+    tiles_list = get_tiles['tiles']
+
+    self_list = []
+
+    for tile in tiles_list:
+
+        if tile['isRegionRestrictionEnabled'] and not geo_detect:
+            continue
+
+        title = tile['title']
+        if 'subtitle' in tile:
+            title = ' - '.join([title, tile['subtitle']])
+        try:
+            if tile.get('isEpisode'):
+                subtitle = ''.join(
+                    [
+                        control.lang(30063), ' ', str(tile['season']['seasonNumber']), ', ', control.lang(30064),
+                        ' ', str(tile['episodeNumber'])
+                    ]
+                )
+                title = '[CR]'.join([title, subtitle])
+        except KeyError:
+            pass
+        images = tile['images']
+        if len(images) == 1:
+            image = images[0]['url']
+            fanart = control.fanart()
+        else:
+            try:
+                image = [i['url'] for i in images if i['isMain']][0]
+            except IndexError:
+                try:
+                    image = [i['url'] for i in images if i['role'] == 'hbbtv-icon'][0]
+                except IndexError:
+                    image = [i['url'] for i in images if i['role'] == 'photo'][0]
+            try:
+                fanart = [i['url'] for i in images if i['role'] == 'photo-details'][0]
+            except IndexError:
+                try:
+                    fanart = [i['url'] for i in images if i['role'] == 'hbbtv-background'][1]
+                except IndexError:
+                    try:
+                        fanart = [i['url'] for i in images if i['role'] == 'hbbtv-background'][0]
+                    except IndexError:
+                        fanart = [i['url'] for i in images if i['role'] == 'photo' and 'ertflix-background' in i['url']][0]
+        codename = tile['codename']
+        vid = tile['id']
+        plot = tile['shortDescription']
+        year = tile.get('year')
+        if not year:
+            year = 2021
+
+        url = VOD_LINK.format('-'.join([vid, codename]))
+
+        data = {
+            'title': title, 'image': image, 'fanart': fanart, 'url': url, 'plot': plot,
+            'duration': tile.get('durationSeconds', 600), 'year': year
+        }
+
+        if next_post:
+            data.update(
+                {
+                    'next': next_post, 'nextaction': 'listing', 'nextlabel': 30500,
+                    'nexticon': control.addonmedia('next.jpg')
+                }
+            )
+
+        self_list.append(data)
+
+    return self_list
+
+
+@urldispatcher.register('listing', ['url'])
+def listing(url):
+
+    self_list = list_items(url)
+
+    for i in self_list:
+        i.update({'action': 'play', 'isFolder': 'False'})
+        bookmark = dict((k, v) for k, v in iteritems(i) if not k == 'next')
+        bookmark['bookmark'] = i['query']
+        i.update({'cm': [{'title': 30501, 'query': {'action': 'addBookmark', 'url': json.dumps(bookmark)}}]})
+
+    directory.add(self_list, content='videos')
 
 
 @urldispatcher.register('radios')
@@ -363,6 +473,41 @@ def yt_session(yt_id):
     stream = streams[0]['url']
 
     return stream
+
+
+@cache_function(259200)
+def resolve(url):
+
+    codename = split(url)[1].partition('-')[2]
+
+    _json = client.request(ACQUIRE_CONTENT.format(DEVICE_KEY, codename), output='json')
+
+    if len(_json['MediaFiles'][0]['Formats']) == 1:
+
+        return _json['MediaFiles'][0]['Formats'][0]['Url']
+
+    else:
+
+        for result in _json['MediaFiles'][0]['Formats']:
+            if '.mpd' in result['Url'] and control.setting('prefer_mpd') == 'true':
+                return result['Url']
+            elif '.m3u8' in result['Url']:
+                return result['Url']
+
+
+@urldispatcher.register('play', ['url'])
+def play(url):
+
+    if ('m3u8' not in url or 'mpd' not in url) and not 'radiostreaming' in url:
+        url = resolve(url)
+
+    dash = ('.m3u8' in url or '.mpd' in url) and control.kodi_version() >= 18.0
+
+    directory.resolve(
+        url, dash=dash,
+        mimetype='application/vnd.apple.mpegurl' if 'm3u8' in url else None,
+        manifest_type='hls' if 'm3u8' in url else None
+    )
 
 
 @urldispatcher.register('enter_yt_channel', ['url'])
