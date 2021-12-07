@@ -15,7 +15,7 @@ from os.path import split
 from .constants import *
 from .utils import geo_detect, collection_post, tiles_post, live_post
 from tulip import bookmarks as bms, directory, client, cache, control
-from tulip.compat import iteritems, range, concurrent_futures, quote
+from tulip.compat import iteritems, range, concurrent_futures, quote, parse_qs
 from tulip.parsers import parseDOM
 from tulip.url_dispatcher import urldispatcher
 from youtube_resolver import resolve as yt_resolver
@@ -60,8 +60,7 @@ def root():
         ,
         {
             'title': control.lang(30049),
-            # 'action': 'listing' if control.setting('nest_movies') == 'false' else 'categories',
-            'action': 'listing',
+            'action': 'listing' if control.setting('nest_movies') == 'false' else 'categories',
             'icon': 'movies.jpg',
             'url': MOVIES_LINK
         }
@@ -276,6 +275,7 @@ def list_items(url):
                 total_pages = 1
 
             else:
+
                 codenames = list(_json['pages']['sectionsByCodename'].keys())
                 for codename in codenames:
                     tiles_list = _json['pages']['sectionsByCodename'][codename]['tilesIds']
@@ -372,8 +372,11 @@ def list_items(url):
 
         data = {
             'title': title, 'image': image, 'fanart': fanart, 'url': url, 'plot': plot,
-            'duration': tile.get('durationSeconds', 600), 'year': year
+            'year': year
         }
+
+        if tile.get('durationSeconds'):
+            data.update({'duration': tile.get('durationSeconds')})
 
         if next_post:
             data.update(
@@ -409,19 +412,41 @@ def listing(url):
 @cache_function(1800)
 def category_list(url):
 
-    html = client.request(url)
-    script = client.parseDOM(html, 'script')[0].partition('</script>')[0].replace('var ___INITIAL_STATE__ = ', '')[:-1]
-    _json = json.loads(script)
-    pages = _json['pages']
-    list_of_lists = [i for i in list(pages['sectionsByCodename'].values()) if 'adman' not in i['sectionContentCodename']]
+    if BASE_API_LINK in url:
+
+        _json = client.request(url, output='json')
+        list_of_lists = _json['sectionContents']
+        codename = parse_qs(split(url)[1])['pageCodename'][0]
+        page = _json['pagination']['page']
+        total_pages = _json['pagination']['totalPages']
+
+    else:
+
+        html = client.request(url)
+        script = client.parseDOM(html, 'script')[0].partition('</script>')[0].replace('var ___INITIAL_STATE__ = ', '')[:-1]
+        _json = json.loads(script)
+        pages = _json['pages']
+        list_of_lists = [i for i in list(pages['sectionsByCodename'].values()) if 'adman' not in i['sectionContentCodename']]
+        codename = list(pages.keys())[-1]
+        page = 1
+        total_pages = pages[codename]['totalPages']
+
+    next_url = GET_PAGE_CONTENT.format(page + 1, codename)
 
     self_list = []
 
     for list_ in list_of_lists:
         title = list_['portalName']
         section_codename = list_['sectionContentCodename']
-        url = LIST_OF_LISTS_LINK.format(title=quote(section_codename), pagecodename=list_['pageCodename'], backurl=list_['pageCodename'], sectioncodename=list_['sectionContentCodename'])
-        data = {'title': title, 'url': url}
+        if not list_['tilesIds']:
+            continue
+        url = LIST_OF_LISTS_LINK.format(
+            title=quote(section_codename), pagecodename=codename, backurl=codename,
+            sectioncodename=list_['sectionContentCodename']
+        )
+        data = {'title': title, 'url': url, 'nextaction': 'categories'}
+        if page < total_pages:
+            data.update({'nextlabel': 30500, 'nexticon': control.addonmedia('next.jpg'), 'next': next_url})
         self_list.append(data)
 
     return self_list
@@ -436,6 +461,14 @@ def categories(url):
         i.update({'action': 'listing'})
 
     directory.add(self_list)
+
+
+# @urldispatcher.register('search')
+# def search():
+#
+#     input_str = control.inputDialog()
+
+
 
 
 @urldispatcher.register('radios')
@@ -576,7 +609,7 @@ def resolve(url):
 @urldispatcher.register('play', ['url'])
 def play(url):
 
-    if ('m3u8' not in url or 'mpd' not in url) and not 'radiostreaming' in url:
+    if ('m3u8' not in url or 'mpd' not in url) and 'radiostreaming' not in url:
         url = resolve(url)
 
     dash = ('.m3u8' in url or '.mpd' in url) and control.kodi_version() >= 18.0

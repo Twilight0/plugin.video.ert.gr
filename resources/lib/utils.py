@@ -16,7 +16,7 @@ from zlib import decompress
 from .constants import SCRAMBLE, GET_REGIONS
 from tulip.control import openSettings, quit_kodi
 from tulip.url_dispatcher import urldispatcher
-from tulip import bookmarks, cache, control, client, directory
+from tulip import bookmarks, cache, control, client
 from youtube_registration import register_api_keys
 
 
@@ -90,6 +90,13 @@ def tiles_post(tiles):
 def live_post(channel_list):
 
     return '{"platformCodename":"www","requestedTiles":%s}' % json.dumps(channel_list).replace(' ', '')
+
+
+# def search_post(query):
+#
+#     post = '{"platformCodename":"www","tokenValue":null,"query":"%s","queryFilters":{},"applicationTag":null}' % query
+#
+#     return post
 
 
 @cache_function(11520)

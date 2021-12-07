@@ -3,7 +3,7 @@
         <setting id="bookmarks_clear_boolean" type="bool" label="30008" default="true"/>
         <setting id="settings_boolean" type="bool" label="30045" default="true"/>
         <setting id="prefer_mpd" type="bool" label="30042" default="false"/>
-<!--        <setting id="nest_movies" type="bool" label="30011" default="false"/>-->
+        <setting id="nest_movies" type="bool" label="30011" default="false"/>
         <setting id="show_exit" type="bool" label="30050" default="false"/>
         <setting label="30059" type="action" action="RunPlugin(plugin://$ID/?action=clear_bookmarks)"/>
         <setting label="30036" type="action" action="RunPlugin(plugin://$ID/?action=clear_cache)"/>
