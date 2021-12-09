@@ -81,12 +81,12 @@ msgid "Interviews"
 msgstr "Συνεντεύξεις"
 
 msgctxt "#30017"
-msgid "Foreign Documentaries"
-msgstr "Ξένα Ντοκιμαντέρ"
+msgid "Documentaries"
+msgstr "Ντοκυμαντέρ"
 
 msgctxt "#30018"
-msgid "Greek Documentaries"
-msgstr "Ελληνικά Ντοκιμαντέρ"
+msgid ""
+msgstr ""
 
 msgctxt "#30019"
 msgid "Index"

@@ -81,11 +81,11 @@ msgid "Interviews"
 msgstr ""
 
 msgctxt "#30017"
-msgid "Foreign Documentaries"
+msgid "Documentaries"
 msgstr ""
 
 msgctxt "#30018"
-msgid "Greek Documentaries"
+msgid ""
 msgstr ""
 
 msgctxt "#30019"

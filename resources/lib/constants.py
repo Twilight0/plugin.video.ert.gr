@@ -18,6 +18,7 @@ NEWS_LINK = '/'.join([BASE_LINK, 'list?imageRole=photo&title=%CE%95%CE%B9%CE%B4%
 ENTERTAINMENT_LINK = '/'.join([BASE_LINK, 'list?imageRole=poster&title=%CE%A8%CF%85%CF%87%CE%B1%CE%B3%CF%89%CE%B3%CE%AF%CE%B1&backUrl=/show/&sectionCodename=psukhagogia-2'])
 INFO_LINK = '/'.join([BASE_LINK, 'show/news'])
 MOVIES_LINK = '/'.join([BASE_LINK, 'show/movies'])
+DOCUMENTARIES_LINK = '/'.join([BASE_LINK, 'show/documentary'])
 SERIES_LINK = '/'.join([BASE_LINK, 'show/series'])
 SHOWS_LINK = '/'.join([BASE_LINK, 'show/ekpompes'])
 SPORTS_LINK = '/'.join([BASE_LINK, 'show/sport'])

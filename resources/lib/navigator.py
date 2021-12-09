@@ -80,6 +80,13 @@ def root():
         }
         ,
         {
+            'title': control.lang(30017),
+            'action': 'listing' if control.setting('nest_movies') == 'false' else 'categories',
+            'icon': 'documentaries.jpg',
+            'url': DOCUMENTARIES_LINK
+        }
+        ,
+        {
             'title': control.lang(30003),
             'action': 'categories',
             'url': SPORTS_LINK,
@@ -142,7 +149,7 @@ def root():
 
     exit_button = {
         'title': control.lang(30048),
-        'action': 'exit',
+        'action': 'exit_kodi',
         'icon': 'exit.jpg',
         'isFolder': 'False', 'isPlayable': 'False'
     }
@@ -323,8 +330,8 @@ def sub_index_listing(url):
         description = client.stripTags(description)
 
     image_div = [i for i in list(itertags(html, 'div')) if 'sizes' in i.text]
-    image = re.search(r'(http.+?\.(?:jpg|png))', image_div[0].text).group(1)
-    fanart = re.search(r'w, (http.+?\.(?:jpg|png)) 300w', image_div[0].text).group(1)
+    image = re.search(r'w, (http.+?\.(?:jpg|png)) 300w', image_div[0].text).group(1)
+    fanart = re.search(r'(http.+?\.(?:jpg|png))', image_div[0].text).group(1)
 
     self_list = []
 

@@ -1,4 +1,4 @@
-[B]4.0.0[/B]
+[B]4.0.X[/B]
 - Reworked addon for new website design, with API usage (when necessary)
 - Reworked index from another source
 - Rework routing scheme with url dispatcher
