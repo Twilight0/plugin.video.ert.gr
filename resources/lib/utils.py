@@ -84,7 +84,11 @@ def collection_post(collection, page=None, limit=48):
 
 def tiles_post(tiles):
 
-    return json.dumps({"platformCodename": "www", "requestedTiles": tiles}).replace(' ', '')
+    return json.dumps(
+        {
+            "platformCodename": "www", "requestedTiles": tiles
+        }
+    ).replace(' ', '')
 
 
 def live_post(channel_list):
@@ -92,11 +96,13 @@ def live_post(channel_list):
     return '{"platformCodename":"www","requestedTiles":%s}' % json.dumps(channel_list).replace(' ', '')
 
 
-# def search_post(query):
-#
-#     post = '{"platformCodename":"www","tokenValue":null,"query":"%s","queryFilters":{},"applicationTag":null}' % query
-#
-#     return post
+def search_post(query):
+
+    return json.dumps(
+        {
+            "platformCodename": "www", "tokenValue": None, "query": query, "queryFilters": {}, "applicationTag": None
+        }
+    )
 
 
 @cache_function(11520)

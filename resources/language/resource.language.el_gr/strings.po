@@ -89,28 +89,28 @@ msgid "Greek Documentaries"
 msgstr "Ελληνικά Ντοκιμαντέρ"
 
 msgctxt "#30019"
-msgid "Learning at home"
-msgstr "Μαθαίνοντας στο σπίτι"
+msgid "Index"
+msgstr "Ευρετήριο"
 
 msgctxt "#30020"
 msgid "TV Shows"
 msgstr "Εκπομπές"
 
 msgctxt "#30021"
-msgid "ERT 1"
-msgstr "ΕΡΤ 1"
+msgid "Description"
+msgstr "Περιγραφή"
 
 msgctxt "#30022"
-msgid "ERT 2"
-msgstr "ΕΡΤ 2"
+msgid "No videos available"
+msgstr "Δεν βρεθήκανε βίντεο"
 
 msgctxt "#30023"
-msgid "ERT 3"
-msgstr "ΕΡΤ 3"
+msgid ""
+msgstr ""
 
 msgctxt "#30024"
-msgid "ERT World"
-msgstr "ΕΡΤ World"
+msgid ""
+msgstr ""
 
 msgctxt "#30025"
 msgid "Clear all ERTflix's bookmarks?"
@@ -182,7 +182,7 @@ msgstr "ΕΡΤ Sports"
 
 msgctxt "#30042"
 msgid "Prefer MPD over M3U8 (Kodi 18+ only)"
-msgstr "Προτίμησε την μορφη MPD από το M3U8 (Από Kodi 18+)"
+msgstr "Προτίμησε την μορφή MPD από το M3U8 (Από Kodi 18+)"
 
 msgctxt "#30043"
 msgid "Info"
@@ -253,8 +253,8 @@ msgid "Clear bookmarks"
 msgstr "Εκκαθάριση σελιδοδεικτών"
 
 msgctxt "#30060"
-msgid "Kids content"
-msgstr "Παιδικό περιεχόμενο"
+msgid "For kids"
+msgstr "Για τα παιδιά"
 
 msgctxt "#30061"
 msgid "Learning at home"

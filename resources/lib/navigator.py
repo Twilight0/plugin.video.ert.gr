@@ -13,10 +13,10 @@ from __future__ import absolute_import
 import json, re
 from os.path import split
 from .constants import *
-from .utils import geo_detect, collection_post, tiles_post, live_post
+from .utils import geo_detect, collection_post, tiles_post, live_post, search_post
 from tulip import bookmarks as bms, directory, client, cache, control
 from tulip.compat import iteritems, range, concurrent_futures, quote, parse_qs
-from tulip.parsers import parseDOM
+from tulip.parsers import parseDOM, itertags
 from tulip.url_dispatcher import urldispatcher
 from youtube_resolver import resolve as yt_resolver
 
@@ -101,19 +101,25 @@ def root():
         }
         ,
         {
-            'title': control.lang(30062),
+            'title': control.lang(30060),
             'action': 'categories',
             'url': KIDS_LINK,
             'icon': 'kids.jpg'
         }
-        # ,
+        ,
+        {
+            'title': control.lang(30019),
+            'action': 'index',
+            'icon': 'index.jpg'
+        }
+        ,
         # {
         #     'title': control.lang(30013),
         #     'action': 'search',
         #     'icon': 'search.jpg',
         #     'isFolder': 'False', 'isPlayable': 'False'
         # }
-        ,
+        # ,
         {
             'title': control.lang(30012),
             'action': 'bookmarks',
@@ -236,6 +242,137 @@ def live():
     directory.add(self_list)
 
 
+@cache_function(2880)
+def index_listing():
+
+    html = client.request(INDEX_LINK)
+
+    li = parseDOM(html, 'li')
+
+    li.extend(parseDOM(html, 'li', attrs={'class': 'hideli'}))
+
+    items = [i for i in li if 'title' in i]
+
+    self_list = []
+
+    for item in items:
+
+        title = client.replaceHTMLCodes(parseDOM(item, 'a')[0])
+        url = parseDOM(item, 'a', ret='href')[0]
+
+        self_list.append({'title': title, 'url': url})
+
+    self_list.sort(key=lambda k: k['title'].lower())
+
+    return self_list
+
+
+@urldispatcher.register('index')
+def index():
+
+    try:
+        self_list = index_listing()
+    except Exception:
+        return
+
+    for i in self_list:
+        i.update({'action': 'sub_index'})
+
+    for i in self_list:
+        bookmark = dict((k, v) for k, v in iteritems(i) if not k == 'next')
+        bookmark['bookmark'] = i['url']
+        i.update({'cm': [{'title': 30006, 'query': {'action': 'addBookmark', 'url': json.dumps(bookmark)}}]})
+
+    directory.add(self_list, content='videos')
+
+
+@urldispatcher.register('sub_index', ['url'])
+def sub_index(url):
+
+    self_list = sub_index_listing(url)
+
+    for i in self_list:
+        try:
+            bookmark = dict((k, v) for k, v in iteritems(i) if not k == 'next')
+            bookmark['bookmark'] = i['url']
+            bookmark['title'] = i['title'].rpartition(' - ')[0]
+            i.update({'cm': [{'title': 30501, 'query': {'action': 'addBookmark', 'url': json.dumps(bookmark)}}]})
+        except KeyError:
+            pass
+
+    directory.add(self_list, content='videos')
+
+
+@cache_function(3600)
+def sub_index_listing(url):
+
+    html = client.request(url)
+
+    name = client.parseDOM(html, 'h1', attrs={'class': 'tdb-title-text'})[0]
+
+    links = [l for l in list(itertags(html, 'a')) if 'su-button' in l.attributes.get('class', '')]
+
+    if not links:
+        links = [l for l in list(itertags(html, 'a')) if l.text and u'Επεισόδια' in l.text]
+
+    description = client.replaceHTMLCodes(client.stripTags(client.parseDOM(html, 'div', attrs={'class': 'tdb-block-inner td-fix-index'})[-2]))
+
+    if '</div>' in description:
+        description = client.stripTags(description.partition('</div>')[2])
+    else:
+        description = client.stripTags(description)
+
+    image_div = [i for i in list(itertags(html, 'div')) if 'sizes' in i.text]
+    image = re.search(r'(http.+?\.(?:jpg|png))', image_div[0].text).group(1)
+    fanart = re.search(r'w, (http.+?\.(?:jpg|png)) 300w', image_div[0].text).group(1)
+
+    self_list = []
+
+    for link in links:
+
+        title = ' - '.join([name, client.stripTags(link.text).strip()])
+        url = client.replaceHTMLCodes(link.attributes['href'])
+
+        action = 'listing'
+
+        if 'series' in link.attributes['href']:
+            url = split(url)[1].split('-')[0]
+            url = GET_SERIES_DETAILS.format(url)
+        elif 'vod' in link.attributes['href']:
+            action = 'play'
+
+        data = {'title': title, 'url': url, 'image': image, 'fanart': fanart, 'plot': description, 'action': action}
+
+        if data['action'] == 'play':
+            data.update({'title': name, 'label': title, 'isFolder': 'False'})
+
+        self_list.append(data)
+
+    if not self_list:
+        self_list.append({
+        'title': ''.join([name, ' - ', control.lang(30022)]), 'action': 'read_plot', 'isFolder': 'False',
+        'isPlayable': 'False', 'plot': description, 'image': image, 'fanart': fanart
+    })
+
+    plot_item = {
+        'title': ''.join(['[B]', name, ' - ', control.lang(30021), '[/B]']), 'action': 'read_plot', 'isFolder': 'False',
+        'isPlayable': 'False', 'plot': description, 'image': image, 'fanart': fanart
+    }
+
+    self_list.append(plot_item)
+
+    return self_list
+
+
+@urldispatcher.register('read_plot')
+def read_plot():
+
+    heading = control.infoLabel('Listitem.Title')
+    plot = control.infoLabel('Listitem.Plot')
+
+    control.dialog.textviewer(heading=heading, text=plot)
+
+
 @cache_function(1800)
 def list_items(url):
 
@@ -322,16 +459,20 @@ def list_items(url):
                 except KeyError:
                     season = None
                 if not season:
-                    subtitle = ''.join([control.lang(30064), ' ', str(tile['episodeNumber'])])
+                    subtitle = ' '.join([control.lang(30064), str(tile['episodeNumber'])])
                 else:
-                    subtitle = ''.join(
-                        [
-                            season, ', ', control.lang(30064),
-                            ' ', str(tile['episodeNumber'])
-                        ]
-                    )
+                    try:
+                        subtitle = ''.join(
+                            [
+                                season, ', ', control.lang(30064),
+                                ' ', str(tile['episodeNumber'])
+                            ]
+                        )
+                    except KeyError:
+                        subtitle = tile['publishDate'].partition('T')[0]
+                        subtitle = '/'.join(subtitle.split('-')[::-1])
                 title = '[CR]'.join([title, subtitle])
-        except KeyError:
+        except Exception:
             pass
         images = tile['images']
         if len(images) == 1:
@@ -467,8 +608,8 @@ def categories(url):
 # def search():
 #
 #     input_str = control.inputDialog()
-
-
+#
+#     _json = client.request(SEARCH, post=search_post(input_str), output='json')
 
 
 @urldispatcher.register('radios')
@@ -504,6 +645,15 @@ def radios():
                 'fanart': control.addonmedia('radio_fanart.jpg')
             }
         )
+
+    self_list.insert(
+        4,
+        {
+            'title': 'Zeppelin Radio 106.1', 'action': 'play', 'isFolder': 'False',
+            'url': ''.join([RADIO_STREAM, '/ert-zeppelin']), 'image': 'https://i.imgur.com/ep3LptZ.jpg',
+            'fanart': control.addonmedia('zeppelin_bg.jpg')
+        }
+    )
 
     _district = {
         'title': control.lang(30027), 'action': 'district', 'icon': 'district.jpg',

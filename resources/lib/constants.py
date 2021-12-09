@@ -23,6 +23,7 @@ SHOWS_LINK = '/'.join([BASE_LINK, 'show/ekpompes'])
 SPORTS_LINK = '/'.join([BASE_LINK, 'show/sport'])
 ARCHIVE_LINK = '/'.join([BASE_LINK, 'show/archives'])
 KIDS_LINK = '/'.join([BASE_LINK, 'show/children'])
+INDEX_LINK = 'https://www.ert.gr/index/'
 
 # to get codenames and ids for channels - GET METHOD
 FILTER_NOW_ON_TV_TILES = '/'.join(

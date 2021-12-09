@@ -89,7 +89,7 @@ msgid "Greek Documentaries"
 msgstr ""
 
 msgctxt "#30019"
-msgid "Learning at home"
+msgid "Index"
 msgstr ""
 
 msgctxt "#30020"
@@ -97,19 +97,19 @@ msgid "TV Shows"
 msgstr ""
 
 msgctxt "#30021"
-msgid "ERT 1"
+msgid "Description"
 msgstr ""
 
 msgctxt "#30022"
-msgid "ERT 2"
+msgid "No videos available"
 msgstr ""
 
 msgctxt "#30023"
-msgid "ERT 3"
+msgid ""
 msgstr ""
 
 msgctxt "#30024"
-msgid "ERT World"
+msgid ""
 msgstr ""
 
 msgctxt "#30025"
@@ -253,7 +253,7 @@ msgid "Clear bookmarks"
 msgstr ""
 
 msgctxt "#30060"
-msgid "Kids content"
+msgid "For kids"
 msgstr ""
 
 msgctxt "#30061"
@@ -261,7 +261,7 @@ msgid "Learning at home"
 msgstr ""
 
 msgctxt "#30062"
-msgid "Entertainment for kids"
+msgid ""
 msgstr ""
 
 msgctxt "#30063"
