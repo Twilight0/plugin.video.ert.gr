@@ -511,9 +511,12 @@ def recursive_list_items(url):
         plot = tile['shortDescription']
         year = tile.get('year')
         if not year:
-            year = 2021
+            try:
+                year = int(tile.get('productionYears')[:4])
+            except Exception:
+                year = 2021
 
-        if tile.get('hasPlayableStream'):
+        if tile.get('hasPlayableStream') and not tile.get('type') == 'ser':
             url = VOD_LINK.format('-'.join([vid, codename]))
         else:
             url = GET_SERIES_DETAILS.format(vid)
@@ -534,7 +537,7 @@ def recursive_list_items(url):
                 }
             )
 
-        if tile.get('hasPlayableStream'):
+        if tile.get('hasPlayableStream') and not tile.get('type') == 'ser':
             data.update({'action': 'play', 'isFolder': 'False'})
         else:
             data.update({'action': 'listing'})
