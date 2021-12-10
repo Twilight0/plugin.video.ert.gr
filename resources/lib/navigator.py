@@ -381,7 +381,7 @@ def read_plot():
 
 
 @cache_function(1800)
-def list_items(url):
+def recursive_list_items(url):
 
     page = 1
 
@@ -547,7 +547,7 @@ def list_items(url):
 @urldispatcher.register('listing', ['url'])
 def listing(url):
 
-    self_list = list_items(url)
+    self_list = recursive_list_items(url)
 
     for i in self_list:
         bookmark = dict((k, v) for k, v in iteritems(i) if not k == 'next')
@@ -592,9 +592,14 @@ def category_list(url):
             title=quote(section_codename), pagecodename=codename, backurl=codename,
             sectioncodename=list_['sectionContentCodename']
         )
-        data = {'title': title, 'url': url, 'nextaction': 'categories'}
+        data = {'title': title, 'url': url}
         if page < total_pages:
-            data.update({'nextlabel': 30500, 'nexticon': control.addonmedia('next.jpg'), 'next': next_url})
+            data.update(
+                {
+                    'nextaction': 'categories', 'nextlabel': 30500, 'nexticon': control.addonmedia('next.jpg'),
+                    'next': next_url
+                }
+            )
         self_list.append(data)
 
     return self_list
@@ -750,17 +755,21 @@ def resolve(url):
 
     _json = client.request(ACQUIRE_CONTENT.format(DEVICE_KEY, codename), output='json')
 
-    if len(_json['MediaFiles'][0]['Formats']) == 1:
+    for media in _json['MediaFiles']:
 
-        return _json['MediaFiles'][0]['Formats'][0]['Url']
+        if media['RoleName'] == 'main':
 
-    else:
+            if len(media['Formats']) == 1:
 
-        for result in _json['MediaFiles'][0]['Formats']:
-            if '.mpd' in result['Url'] and control.setting('prefer_mpd') == 'true':
-                return result['Url']
-            elif '.m3u8' in result['Url']:
-                return result['Url']
+                return media['Formats'][0]['Url']
+
+            else:
+
+                for result in media['Formats']:
+                    if '.mpd' in result['Url'] and control.setting('prefer_mpd') == 'true':
+                        return result['Url']
+                    elif '.m3u8' in result['Url']:
+                        return result['Url']
 
 
 @urldispatcher.register('play', ['url'])
