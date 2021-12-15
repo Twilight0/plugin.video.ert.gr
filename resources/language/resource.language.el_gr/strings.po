@@ -102,7 +102,7 @@ msgstr "Περιγραφή"
 
 msgctxt "#30022"
 msgid "No videos available"
-msgstr "Δεν βρεθήκανε βίντεο"
+msgstr "Δεν βρέθηκαν βίντεο"
 
 msgctxt "#30023"
 msgid ""

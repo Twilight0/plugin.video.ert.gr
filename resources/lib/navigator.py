@@ -316,6 +316,7 @@ def sub_index_listing(url):
     html = client.request(url)
 
     name = client.parseDOM(html, 'h1', attrs={'class': 'tdb-title-text'})[0]
+    name = client.replaceHTMLCodes(name)
 
     links = [l for l in list(itertags(html, 'a')) if 'su-button' in l.attributes.get('class', '')]
 
@@ -778,7 +779,7 @@ def resolve(url):
 @urldispatcher.register('play', ['url'])
 def play(url):
 
-    if ('m3u8' not in url or 'mpd' not in url) and 'radiostreaming' not in url:
+    if not any(['.m3u8' in url, '.mpd' in url, 'radiostreaming' in url]):
         url = resolve(url)
 
     dash = ('.m3u8' in url or '.mpd' in url) and control.kodi_version() >= 18.0
