@@ -69,8 +69,8 @@ msgid "Search"
 msgstr "Αναζήτηση"
 
 msgctxt "#30014"
-msgid "Inputstream addon is not enabled,[CR]do you want to enable it now?"
-msgstr "Το πρόσθετο inputstream δεν είναι ενεργοποιημένο,[CR]θέλετε να το ενεργοποιήσετε τώρα;"
+msgid "No description found"
+msgstr "Δεν βρέθηκε περιγραφή"
 
 msgctxt "#30015"
 msgid "Youtube Channel"

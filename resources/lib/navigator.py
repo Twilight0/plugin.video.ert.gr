@@ -482,35 +482,60 @@ def recursive_list_items(url):
                 title = '[CR]'.join([title, subtitle])
         except Exception:
             pass
+
         images = tile['images']
+        fanart = control.fanart()
+
         if len(images) == 1:
+
             image = images[0]['url']
-            fanart = control.fanart()
+
         else:
-            try:
-                image = [i['url'] for i in images if i['isMain']][0]
-            except IndexError:
-                try:
-                    image = [i['url'] for i in images if i['role'] == 'hbbtv-icon'][0]
-                except IndexError:
-                    try:
-                        image = [i['url'] for i in images if i['role'] == 'photo'][0]
-                    except IndexError:
-                        image = [i['url'] for i in images if i['role'] == 'hbbtv-background'][0]
-            try:
-                fanart = [i['url'] for i in images if i['role'] == 'photo-details'][0]
-            except IndexError:
-                try:
-                    fanart = [i['url'] for i in images if i['role'] == 'hbbtv-background'][1]
-                except IndexError:
-                    try:
-                        fanart = [i['url'] for i in images if i['role'] == 'hbbtv-background'][0]
-                    except IndexError:
-                        fanart = [i['url'] for i in images if i['role'] == 'photo' and 'ertflix-background' in i['url']][0]
+
+            image_list = [
+                [i['url'] for i in images if i['isMain']], [i['url'] for i in images if i['role'] == 'hbbtv-icon'],
+                [i['url'] for i in images if i['role'] == 'photo'], [i['url'] for i in images if i['role'] == 'hbbtv-background']
+            ]
+
+            image = images[0]['url']
+
+            for i in image_list:
+                if i:
+                    image = i[0]
+                    break
+
+            fanart_list = [
+                [i['url'] for i in images if i['role'] == 'photo-details'],
+                [i['url'] for i in images if i['role'] == 'hbbtv-background'],
+                [i['url'] for i in images if i['role'] == 'photo' and 'ertflix-background' in i['url']]
+            ]
+
+            for f in fanart_list:
+                if f and len(f) > 1:
+                    fanart = f[1]
+                    break
+                elif f and len(f) == 1:
+                    fanart = f[0]
+                    break
+
         codename = tile['codename']
         vid = tile['id']
-        plot = tile['shortDescription']
+
+        plots = [
+            tile.get('description'), tile.get('shortDescription'), tile.get('tinyDescription'), tile.get('subtitle'),
+            tile.get('subTitle')
+        ]
+
+        plot = control.lang(30014)
+
+        for p in plots:
+            if p:
+                plot = client.stripTags(p)
+                plot = client.replaceHTMLCodes(plot)
+                break
+
         year = tile.get('year')
+
         if not year:
             try:
                 year = int(tile.get('productionYears')[:4])

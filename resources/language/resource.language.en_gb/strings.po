@@ -69,7 +69,7 @@ msgid "Search"
 msgstr ""
 
 msgctxt "#30014"
-msgid "Inputstream addon is not enabled,[CR]do you want to enable it now?"
+msgid "No description found"
 msgstr ""
 
 msgctxt "#30015"
