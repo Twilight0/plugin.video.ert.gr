@@ -759,26 +759,8 @@ def district():
     directory.add(self_list)
 
 
-def yt_session(yt_id):
-
-    streams = yt_resolver(yt_id)
-
-    try:
-        addon_enabled = control.addon_details('inputstream.adaptive').get('enabled')
-    except KeyError:
-        addon_enabled = False
-
-    if not addon_enabled:
-
-        streams = [s for s in streams if 'mpd' not in s['title'].lower()]
-
-    stream = streams[0]['url']
-
-    return stream
-
-
 @cache_function(259200)
-def resolve(url):
+def cached_resolve(url):
 
     codename = split(url)[1].partition('-')[2]
 
@@ -799,6 +781,31 @@ def resolve(url):
                         return result['Url']
                     elif '.m3u8' in result['Url']:
                         return result['Url']
+
+
+def resolve(url):
+
+    if url.startswith('plugin://'):
+
+        vid = re.search(r'video_id=([\w-]{11})', url).group(1)
+
+        streams = yt_resolver(vid)
+
+        try:
+            addon_enabled = control.addon_details('inputstream.adaptive').get('enabled')
+        except KeyError:
+            addon_enabled = False
+
+        if not addon_enabled:
+            streams = [s for s in streams if 'mpd' not in s['title'].lower()]
+
+        stream = streams[0]['url']
+
+        return stream
+
+    else:
+
+        return cached_resolve(url)
 
 
 @urldispatcher.register('play', ['url'])
