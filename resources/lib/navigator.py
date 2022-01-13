@@ -357,10 +357,12 @@ def sub_index_listing(url):
         self_list.append(data)
 
     if not self_list:
-        self_list.append({
-        'title': ''.join([name, ' - ', control.lang(30022)]), 'action': 'read_plot', 'isFolder': 'False',
-        'isPlayable': 'False', 'plot': description, 'image': image, 'fanart': fanart
-    })
+        self_list.append(
+            {
+                'title': ''.join([name, ' - ', control.lang(30022)]), 'action': 'read_plot', 'isFolder': 'False',
+                'isPlayable': 'False', 'plot': description, 'image': image, 'fanart': fanart
+            }
+        )
 
     plot_item = {
         'title': ''.join(['[B]', name, ' - ', control.lang(30021), '[/B]']), 'action': 'read_plot', 'isFolder': 'False',
@@ -390,8 +392,10 @@ def recursive_list_items(url):
 
         if BASE_API_LINK not in url:
             html = client.request(url)
-            script = client.parseDOM(html, 'script')[0]
-            _json = json.loads(script.replace('var ___INITIAL_STATE__ = ', '')[:-1])
+            script = [i for i in client.parseDOM(html, 'script') if 'INITIAL_STATE' in i][0]
+            script = re.sub('var _*?INITIAL_STATE_*? = ', '', script).replace(';</script>', '')[:-1]
+            print(script)
+            _json = json.loads(script)
         else:
             _json = client.request(url, output='json')
 
@@ -600,7 +604,8 @@ def category_list(url):
     else:
 
         html = client.request(url)
-        script = client.parseDOM(html, 'script')[0].partition('</script>')[0].replace('var ___INITIAL_STATE__ = ', '')[:-1]
+        script = [i for i in client.parseDOM(html, 'script') if 'INITIAL_STATE' in i][0]
+        script = re.sub('var _*?INITIAL_STATE_*? = ', '', script).partition(';</script>')[0]
         _json = json.loads(script)
         pages = _json['pages']
         list_of_lists = [i for i in list(pages['sectionsByCodename'].values()) if 'adman' not in i['sectionContentCodename']]
