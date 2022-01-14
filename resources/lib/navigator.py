@@ -393,8 +393,9 @@ def recursive_list_items(url):
         if BASE_API_LINK not in url:
             html = client.request(url)
             script = [i for i in client.parseDOM(html, 'script') if 'INITIAL_STATE' in i][0]
-            script = re.sub('var _*?INITIAL_STATE_*? = ', '', script).replace(';</script>', '')[:-1]
-            print(script)
+            script = re.sub(r'var _*?\w+_*? = ', '', script).replace(';</script>', '')
+            if script.endswith(';'):
+                script = script[:-1]
             _json = json.loads(script)
         else:
             _json = client.request(url, output='json')
@@ -605,7 +606,9 @@ def category_list(url):
 
         html = client.request(url)
         script = [i for i in client.parseDOM(html, 'script') if 'INITIAL_STATE' in i][0]
-        script = re.sub('var _*?INITIAL_STATE_*? = ', '', script).partition(';</script>')[0]
+        script = re.sub(r'var _*?\w+_*? = ', '', script).partition(';</script>')[0]
+        if script.endswith(';'):
+            script = script[:-1]
         _json = json.loads(script)
         pages = _json['pages']
         list_of_lists = [i for i in list(pages['sectionsByCodename'].values()) if 'adman' not in i['sectionContentCodename']]
