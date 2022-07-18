@@ -621,15 +621,27 @@ def category_list(url):
     self_list = []
 
     for list_ in list_of_lists:
-        title = list_['portalName']
+
+        if 'Greek' in control.infoLabel('System.Language'):
+            try:
+                title = list_['algorithmParameters']['categories'][0]['categoryNameTransations']['el']['name']
+            except Exception:
+                title = list_['portalName']
+        else:
+            title = list_['portalName']
+
         section_codename = list_['sectionContentCodename']
+
         if not list_['tilesIds']:
             continue
+
         url = LIST_OF_LISTS_LINK.format(
             title=quote(section_codename), pagecodename=codename, backurl=codename,
             sectioncodename=list_['sectionContentCodename']
         )
+
         data = {'title': title, 'url': url}
+
         if page < total_pages:
             data.update(
                 {
