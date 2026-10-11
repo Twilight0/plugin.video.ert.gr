@@ -1,4 +1,9 @@
 
 \.idea/
 
-tests/
+
+resources/__pycache__/
+
+resources/lib/__pycache__/
+
+resources/media/ERTecho_16844536663-Back.png
