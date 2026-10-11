@@ -1,3 +1,11 @@
+[B]5.0.0[/B]
+- Reworked addon for OpenTV/Nagra backend (Samsung Tizen portal API)
+- Anonymous auth, new catalog (hierarchy/rails), live + radio via btv/services
+- VOD series/seasons/episodes resolvers with signed playback URLs + Widevine
+- Reworked search
+- Modernized stack: tulip 4.x, urldispatcher, netclient, unicache
+- Removed YouTube bridge and legacy ert.gr scrapers
+
 [B]4.0.X[/B]
 - Reworked addon for new website design, with API usage (when necessary)
 - Reworked index from another source

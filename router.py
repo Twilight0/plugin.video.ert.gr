@@ -8,28 +8,23 @@
     See LICENSES/GPL-3.0-only for more information.
 '''
 
-from __future__ import absolute_import
-
 import sys
-from tulip.compat import parse_qsl
-from tulip.control import infoLabel
-from tulip.url_dispatcher import urldispatcher
-# noinspection PyProtectedMember, PyUnresolvedReferences
-from resources.lib import navigator, utils
+from tulip.init import sysaddon, syshandle, params
+from urldispatcher import urldispatcher
+# noinspection PyUnresolvedReferences
+from resources.lib import navigator, utils  # noqa: F401  (route registration)
 
 
 def main(argv=None):
 
-    if sys.argv: argv = sys.argv
+    if argv is None:
+        argv = sys.argv
 
-    params = dict(parse_qsl(argv[2][1:]))
-    action = params.get('action', 'root')
-    if 'audio' in infoLabel('Container.FolderPath') and action in [None, 'root']:
-        action = 'radios'
-    urldispatcher.dispatch(action, params)
+    queries = dict(params)
+    action = queries.get('action', 'root')
+    urldispatcher.dispatch(action, queries)
 
 
 if __name__ == '__main__':
 
-    utils.keys_registration()
     sys.exit(main())

@@ -1,24 +1,16 @@
 ﻿<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
-<addon id="plugin.video.ert.gr" version="4.0.9" name="ERTflix" provider-name="Twilight0">
+<addon id="plugin.video.ert.gr" version="5.0.0" name="ERTflix" provider-name="Twilight0">
     <requires>
-        <import addon="xbmc.addon" version="16.1.000"/>
-        <import addon="script.module.tulip" version="3.0.1" />
-        <import addon="plugin.video.youtube" version="6.8.18"/>
+        <import addon="xbmc.python" version="3.0.0"/>
+        <import addon="script.module.tulip" version="4.1.5"/>
+        <import addon="script.module.urldispatcher" version="1.1.0"/>
+        <import addon="script.module.netclient" version="1.2.0"/>
+        <import addon="script.module.unicache" version="1.0.1"/>
+        <import addon="script.module.inputstreamhelper" version="0.5.0"/>
+        <import addon="inputstream.adaptive" version="21.0.0" optional="true"/>
     </requires>
     <extension point="xbmc.python.pluginsource" library="router.py">
-        <provides>video audio</provides>
-    </extension>
-    <extension point="kodi.context.item">
-        <menu id="kodi.core.main">
-            <item library="resources/lib/youtube_bookmark.py">
-                <label>30006</label>
-                <visible>
-                    String.StartsWith(Container.FolderPath,plugin://plugin.video.youtube/channel/UC0jVU-mK53vDQZcSZB5mVHg/) +
-                    !String.Contains(ListItem.Art(thumb),resources/media) +
-                    !String.Contains(ListItem.FolderPath,page_token)
-                </visible>
-            </item>
-        </menu>
+        <provides>video</provides>
     </extension>
     <extension point="xbmc.addon.metadata">
         <platform>all</platform>
@@ -26,32 +18,23 @@
         <language>en el</language>
         <summary lang="en_GB">ERTflix addon for Kodi</summary>
         <summary lang="el_GR">Πρόσθετο ERTflix για το Kodi</summary>
-        <description lang="en_GB">ERT live and on-demand broadcasts</description>
-        <description lang="el_GR">Ζωντανές και on demand υπηρεσίες της ΕΡΤ</description>
+        <description lang="en_GB">ERT live and on-demand broadcasts (OpenTV backend)</description>
+        <description lang="el_GR">Ζωντανές και on demand υπηρεσίες της ΕΡΤ (OpenTV backend)</description>
         <disclaimer lang="en_GB">This addon offers content available in Greece and is not published nor endorsed by ert.gr</disclaimer>
         <disclaimer lang="el_GR">Το πρόσθετο αυτό προσφέρει περιεχόμενο διαθέσιμο στην Ελλάδα και δεν έχει δημοσιευθεί ούτε εγκριθεί από το ert.gr</disclaimer>
         <license>GPL-3.0-only</license>
         <source>https://github.com/Twilight0/plugin.video.ert.gr</source>
-        <size>1153434</size>
         <website>https://www.ertflix.gr/</website>
-        <news>[B]4.0.X[/B]
-- Reworked addon for new website design, with API usage (when necessary)
-- Reworked index from another source
-- Rework routing scheme with url dispatcher
-- Remove service module, no longer needed
-- Added zeppelin radio station
-- Bug fixes
-
-[B]3.5.1[/B]
-- Various fixes
-
-[B]3.5.0[/B]
-- Mitigate live resolver
-- New YT API key</news>
+        <news>[B]5.0.0[/B]
+- Reworked addon for OpenTV/Nagra backend (Samsung Tizen portal API)
+- Anonymous auth, new catalog (hierarchy/rails), live TV via btv/services
+- VOD series/seasons/episodes resolvers with signed playback URLs + Widevine
+- Reworked search
+- Modernized stack: tulip 4.x, urldispatcher, netclient, unicache
+- Removed YouTube bridge and legacy ert.gr scrapers</news>
         <assets>
             <icon>icon.png</icon>
             <fanart>fanart.jpg</fanart>
         </assets>
-        <!--<forum></forum>-->
     </extension>
 </addon>

@@ -272,6 +272,34 @@ msgctxt "#30064"
 msgid "Episode"
 msgstr ""
 
+msgctxt "#30065"
+msgid "Widevine CDM is required"
+msgstr ""
+
+msgctxt "#30066"
+msgid "This stream is DRM protected and the Widevine CDM is missing. Install the InputStream Helper addon to download it?"
+msgstr ""
+
+msgctxt "#30067"
+msgid "Featured"
+msgstr ""
+
+msgctxt "#30068"
+msgid "Content language"
+msgstr ""
+
+msgctxt "#30069"
+msgid "Same as Kodi"
+msgstr ""
+
+msgctxt "#30070"
+msgid "Greek"
+msgstr ""
+
+msgctxt "#30071"
+msgid "English"
+msgstr ""
+
 msgctxt "#30402"
 msgid "Success"
 msgstr ""
